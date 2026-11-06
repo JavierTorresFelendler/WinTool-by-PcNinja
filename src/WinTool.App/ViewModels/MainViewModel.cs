@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Input;
+using System.Linq;
 using WinTool.Core;
+using WinTool.WindowsUpdate.Engine;
 
 namespace WinTool.App.ViewModels
 {
@@ -19,12 +21,14 @@ namespace WinTool.App.ViewModels
         private PageViewModel currentPage;
         private bool isCompact;
 
-        public MainViewModel(SettingsPageViewModel settingsPage)
+        public MainViewModel(SettingsPageViewModel settingsPage, IWindowsUpdateEnvironment windowsUpdate)
         {
+            var windowsUpdatePage = new WindowsUpdatePageViewModel(windowsUpdate);
+            var dashboardPage = new DashboardPageViewModel(windowsUpdate, windowsUpdatePage, Navigate);
             NavItems = new List<NavItemViewModel>
             {
-                Item("dashboard", "Nav_Dashboard", IconDashboard, false, new PlaceholderPageViewModel("Nav_Dashboard", "Page_Dashboard_Subtitle", 2)),
-                Item("windows-update", "Nav_WindowsUpdate", IconUpdate, true, new PlaceholderPageViewModel("Nav_WindowsUpdate", "Page_WindowsUpdate_Subtitle", 2)),
+                Item("dashboard", "Nav_Dashboard", IconDashboard, false, dashboardPage),
+                Item("windows-update", "Nav_WindowsUpdate", IconUpdate, true, windowsUpdatePage),
                 Item("windows-upgrade", "Nav_WindowsUpgrade", IconUpgrade, false, new PlaceholderPageViewModel("Nav_WindowsUpgrade", "Page_WindowsUpgrade_Subtitle", 4)),
                 Item("office", "Nav_Office", IconOffice, false, new PlaceholderPageViewModel("Nav_Office", "Page_Office_Subtitle", 5)),
                 Item("logs", "Nav_Logs", IconLogs, true, new PlaceholderPageViewModel("Nav_Logs", "Page_Logs_Subtitle", 2)),
@@ -42,7 +46,10 @@ namespace WinTool.App.ViewModels
         public PageViewModel CurrentPage
         {
             get => currentPage;
-            private set => Set(ref currentPage, value);
+            private set
+            {
+                if (Set(ref currentPage, value)) value?.OnActivated();
+            }
         }
 
         /// <summary>True on narrow windows: the sidebar shows icons only.</summary>
@@ -63,6 +70,12 @@ namespace WinTool.App.ViewModels
 
         /// <summary>Disabled until the self-update flow (roadmap phase 6).</summary>
         public ICommand CheckToolUpdateCommand { get; }
+
+        public void Navigate(string key)
+        {
+            var item = NavItems.FirstOrDefault(i => i.Key == key);
+            if (item != null) item.IsSelected = true;
+        }
 
         internal static void OpenUrl(string url)
         {

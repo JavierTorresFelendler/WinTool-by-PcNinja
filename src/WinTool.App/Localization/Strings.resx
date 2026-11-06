@@ -46,4 +46,142 @@ This computer runs {0}.</value></data>
   <data name="Startup_ElevationCancelled" xml:space="preserve"><value>WinTool needs administrator rights to manage Windows Update, upgrades and Office. Open it again and choose Yes.</value></data>
   <data name="Error_Unexpected" xml:space="preserve"><value>Something went wrong. The details are in the log:
 {0}</value></data>
+  <data name="Dash_Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Dash_OpenWindowsUpdate" xml:space="preserve"><value>Open Windows Update</value></data>
+  <data name="Dash_OpenUpgrade" xml:space="preserve"><value>Open Windows Upgrade</value></data>
+  <data name="Dash_OpenOffice" xml:space="preserve"><value>Open Office</value></data>
+  <data name="Dash_Windows" xml:space="preserve"><value>Windows</value></data>
+  <data name="Dash_Build" xml:space="preserve"><value>Build {0}</value></data>
+  <data name="Dash_Win10Eol" xml:space="preserve"><value>Windows 10 support ended in October 2025.</value></data>
+  <data name="Dash_NoOffice" xml:space="preserve"><value>No Click-to-Run Office is installed.</value></data>
+  <data name="Dash_OfficeEol" xml:space="preserve"><value>Support for this Office version has ended.</value></data>
+  <data name="Dash_VolumeLicense" xml:space="preserve"><value>Volume license</value></data>
+  <data name="Dash_ScheduleOff" xml:space="preserve"><value>Off</value></data>
+  <data name="Dash_LastRun" xml:space="preserve"><value>Last run</value></data>
+  <data name="Dash_Never" xml:space="preserve"><value>Never</value></data>
+  <data name="Dash_ThisComputer" xml:space="preserve"><value>This computer</value></data>
+  <data name="Dash_ComputerName" xml:space="preserve"><value>Computer name</value></data>
+  <data name="Dash_User" xml:space="preserve"><value>User</value></data>
+  <data name="Dash_Lan" xml:space="preserve"><value>LAN IP</value></data>
+  <data name="Dash_Wan" xml:space="preserve"><value>WAN IP</value></data>
+  <data name="Dash_Processor" xml:space="preserve"><value>Processor</value></data>
+  <data name="Dash_Threads" xml:space="preserve"><value>{0} threads</value></data>
+  <data name="Dash_Memory" xml:space="preserve"><value>Memory</value></data>
+  <data name="Dash_StorageLabel" xml:space="preserve"><value>Storage</value></data>
+  <data name="Dash_Storage" xml:space="preserve"><value>{0} · {1} free</value></data>
+  <data name="Dash_Graphics" xml:space="preserve"><value>Graphics</value></data>
+  <data name="Dash_Motherboard" xml:space="preserve"><value>Motherboard</value></data>
+  <data name="Dash_Bios" xml:space="preserve"><value>BIOS</value></data>
+  <data name="Dash_SecureBoot" xml:space="preserve"><value>Secure Boot</value></data>
+  <data name="Dash_On" xml:space="preserve"><value>On</value></data>
+  <data name="Dash_Off" xml:space="preserve"><value>Off</value></data>
+  <data name="Dash_LastRestart" xml:space="preserve"><value>Last restart</value></data>
+  <data name="Dash_DaysAgo" xml:space="preserve"><value>{0} day(s) ago</value></data>
+  <data name="Dash_HoursAgo" xml:space="preserve"><value>{0} hour(s) ago</value></data>
+  <data name="Dash_MinutesAgo" xml:space="preserve"><value>{0} minute(s) ago</value></data>
+  <data name="Dash_NotConnected" xml:space="preserve"><value>Not connected</value></data>
+  <data name="Dash_Checking" xml:space="preserve"><value>Checking…</value></data>
+  <data name="Dash_Version" xml:space="preserve"><value>Version</value></data>
+  <data name="Dash_InstallType" xml:space="preserve"><value>Installation</value></data>
+  <data name="Dash_Installed" xml:space="preserve"><value>Installed</value></data>
+  <data name="Dash_Portable" xml:space="preserve"><value>Portable</value></data>
+  <data name="Dash_RunningOperation" xml:space="preserve"><value>Running operation</value></data>
+  <data name="Dash_None" xml:space="preserve"><value>None</value></data>
+  <data name="WU_CheckForUpdates" xml:space="preserve"><value>Check for Updates</value></data>
+  <data name="WU_LastCheck" xml:space="preserve"><value>Last check: {0}</value></data>
+  <data name="WU_NotChecked" xml:space="preserve"><value>Not checked yet</value></data>
+  <data name="WU_Counts" xml:space="preserve"><value>{0} important · {1} other</value></data>
+  <data name="WU_RestartPending" xml:space="preserve"><value>Restart pending</value></data>
+  <data name="WU_NoRestart" xml:space="preserve"><value>No restart needed</value></data>
+  <data name="WU_RestartNow" xml:space="preserve"><value>Restart Now</value></data>
+  <data name="WU_Restart_Confirm" xml:space="preserve"><value>Restart the computer now? Save open work first.</value></data>
+  <data name="WU_RestartPrompt" xml:space="preserve"><value>Updates were installed. Restart the computer to finish; more updates may appear after the restart.</value></data>
+  <data name="WU_InstallSelected" xml:space="preserve"><value>Install Selected</value></data>
+  <data name="WU_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="WU_Available" xml:space="preserve"><value>Available updates</value></data>
+  <data name="WU_PressCheck" xml:space="preserve"><value>Press "Check for Updates" to see what is available.</value></data>
+  <data name="WU_NoUpdates" xml:space="preserve"><value>No updates are available. This computer is up to date.</value></data>
+  <data name="WU_ScanFailed" xml:space="preserve"><value>The search for updates failed: {0}</value></data>
+  <data name="WU_Kind_Important" xml:space="preserve"><value>Important</value></data>
+  <data name="WU_Kind_Optional" xml:space="preserve"><value>Optional</value></data>
+  <data name="WU_Kind_Driver" xml:space="preserve"><value>Driver</value></data>
+  <data name="WU_Kind_Firmware" xml:space="preserve"><value>BIOS / firmware</value></data>
+  <data name="WU_Item_Installed" xml:space="preserve"><value>Installed</value></data>
+  <data name="WU_Item_Failed" xml:space="preserve"><value>Failed ({0})</value></data>
+  <data name="WU_Progress_Starting" xml:space="preserve"><value>Preparing…</value></data>
+  <data name="WU_Progress_Searching" xml:space="preserve"><value>Searching for updates…</value></data>
+  <data name="WU_Progress_SearchingPass" xml:space="preserve"><value>Searching for updates (pass {0})…</value></data>
+  <data name="WU_Progress_Downloading" xml:space="preserve"><value>Downloading {0} of {1}: {2}</value></data>
+  <data name="WU_Progress_Installing" xml:space="preserve"><value>Installing {0} update(s). This can take a while…</value></data>
+  <data name="WU_Progress_Verifying" xml:space="preserve"><value>Checking what remains…</value></data>
+  <data name="WU_Progress_Resetting" xml:space="preserve"><value>Resetting Windows Update…</value></data>
+  <data name="WU_Busy_Question" xml:space="preserve"><value>{0}
+
+Stop Windows Update for now and continue with WinTool? Choose No to cancel.</value></data>
+  <data name="WU_Result_Succeeded" xml:space="preserve"><value>The updates were installed.</value></data>
+  <data name="WU_Result_SomeFailed" xml:space="preserve"><value>Some updates could not be installed. See the list for details.</value></data>
+  <data name="WU_Result_Restart" xml:space="preserve"><value>Updates were installed. Restart the computer to finish.</value></data>
+  <data name="WU_Result_Cancelled" xml:space="preserve"><value>Cancelled. Nothing more was installed.</value></data>
+  <data name="WU_Result_Other" xml:space="preserve"><value>The run did not finish: {0}</value></data>
+  <data name="WU_OperationRunning" xml:space="preserve"><value>Another WinTool operation is running. Try again when it has finished.</value></data>
+  <data name="WU_Firmware_Warning" xml:space="preserve"><value>You selected a BIOS / firmware update. Continue only if the computer has reliable power and will not be switched off during the update.</value></data>
+  <data name="WU_Firmware_Schedule_Warning" xml:space="preserve"><value>Scheduled runs will install BIOS / firmware updates without asking. Continue only for computers with reliable power.</value></data>
+  <data name="WU_Health" xml:space="preserve"><value>Health</value></data>
+  <data name="WU_Health_Ok" xml:space="preserve"><value>All good</value></data>
+  <data name="WU_Health_Warning" xml:space="preserve"><value>Needs attention</value></data>
+  <data name="WU_Health_Problem" xml:space="preserve"><value>Problem found</value></data>
+  <data name="WU_HealthItem_services_Ok" xml:space="preserve"><value>Update services are available</value></data>
+  <data name="WU_HealthItem_services_Problem" xml:space="preserve"><value>An update service is disabled or missing</value></data>
+  <data name="WU_HealthItem_disk_Ok" xml:space="preserve"><value>Enough free disk space</value></data>
+  <data name="WU_HealthItem_disk_Warning" xml:space="preserve"><value>Low free disk space</value></data>
+  <data name="WU_HealthItem_disk_Problem" xml:space="preserve"><value>Not enough free disk space</value></data>
+  <data name="WU_HealthItem_restart_Ok" xml:space="preserve"><value>No restart pending</value></data>
+  <data name="WU_HealthItem_restart_Warning" xml:space="preserve"><value>A restart is pending</value></data>
+  <data name="WU_HealthItem_activity_Ok" xml:space="preserve"><value>Windows Update is idle</value></data>
+  <data name="WU_HealthItem_activity_Warning" xml:space="preserve"><value>Windows Update is working in the background</value></data>
+  <data name="WU_HealthItem_network_Ok" xml:space="preserve"><value>Update servers are reachable</value></data>
+  <data name="WU_HealthItem_network_Problem" xml:space="preserve"><value>Update servers cannot be reached</value></data>
+  <data name="WU_HealthItem_microsoft_update_Ok" xml:space="preserve"><value>Microsoft Update is enabled</value></data>
+  <data name="WU_HealthItem_microsoft_update_Warning" xml:space="preserve"><value>Microsoft Update is not enabled</value></data>
+  <data name="WU_HealthItem_schedule_Ok" xml:space="preserve"><value>The scheduled task matches the settings</value></data>
+  <data name="WU_HealthItem_schedule_Problem" xml:space="preserve"><value>The scheduled task is missing or different</value></data>
+  <data name="WU_RunHealthCheck" xml:space="preserve"><value>Run Health Check</value></data>
+  <data name="WU_CollectLogs" xml:space="preserve"><value>Collect Logs</value></data>
+  <data name="WU_LogsCollected" xml:space="preserve"><value>Log package saved: {0}</value></data>
+  <data name="WU_Reset" xml:space="preserve"><value>Reset Windows Update</value></data>
+  <data name="WU_Reset_Confirm" xml:space="preserve"><value>Reset Windows Update? The update services are stopped, the update cache and signature database are rebuilt, and the services are started again. Windows will search for updates from the beginning.</value></data>
+  <data name="WU_Reset_Done" xml:space="preserve"><value>Windows Update was reset.</value></data>
+  <data name="WU_Reset_Warnings" xml:space="preserve"><value>Windows Update was reset with warnings: {0}</value></data>
+  <data name="WU_Schedule" xml:space="preserve"><value>Schedule</value></data>
+  <data name="WU_Schedule_On" xml:space="preserve"><value>On</value></data>
+  <data name="WU_Daily" xml:space="preserve"><value>Daily</value></data>
+  <data name="WU_Weekly" xml:space="preserve"><value>Weekly</value></data>
+  <data name="WU_Monthly" xml:space="preserve"><value>Monthly</value></data>
+  <data name="WU_Startup" xml:space="preserve"><value>Startup</value></data>
+  <data name="WU_Day" xml:space="preserve"><value>Day</value></data>
+  <data name="WU_MonthDay" xml:space="preserve"><value>Day of month</value></data>
+  <data name="WU_Time" xml:space="preserve"><value>Time</value></data>
+  <data name="WU_RunIfMissed" xml:space="preserve"><value>Run if the time was missed</value></data>
+  <data name="WU_Wake" xml:space="preserve"><value>Wake the computer</value></data>
+  <data name="WU_AutoRetry" xml:space="preserve"><value>Retry after a failure</value></data>
+  <data name="WU_RebootPrompt" xml:space="preserve"><value>Ask before restarting</value></data>
+  <data name="WU_Firmware" xml:space="preserve"><value>Allow BIOS / firmware updates</value></data>
+  <data name="WU_NextRun" xml:space="preserve"><value>Next run</value></data>
+  <data name="WU_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="WU_Schedule_Saved" xml:space="preserve"><value>The schedule was saved.</value></data>
+  <data name="WU_Schedule_Off" xml:space="preserve"><value>The schedule is off.</value></data>
+  <data name="WU_Schedule_Invalid" xml:space="preserve"><value>Check the time (HH:mm) and the day.</value></data>
+  <data name="WU_Schedule_Failed" xml:space="preserve"><value>The schedule was not saved: {0}</value></data>
+  <data name="WU_Schedule_NotScheduled" xml:space="preserve"><value>Not scheduled</value></data>
+  <data name="WU_Schedule_TaskMissing" xml:space="preserve"><value>The scheduled task is missing</value></data>
+  <data name="WU_Schedule_AtStartup" xml:space="preserve"><value>At the next startup</value></data>
+  <data name="WU_Schedule_Mismatch" xml:space="preserve"><value>The scheduled task does not match these settings. Press Save to repair it.</value></data>
+  <data name="WU_Schedule_Portable" xml:space="preserve"><value>This is a portable copy. The scheduled task will run it from:
+{0}
+
+If the file is moved or deleted, the schedule stops working. Continue?</value></data>
+  <data name="WU_Legacy_Found" xml:space="preserve"><value>WinUpdate Tool is installed on this computer. To avoid two tools updating the same computer, let WinTool take over its schedule.</value></data>
+  <data name="WU_Legacy_TakeOver" xml:space="preserve"><value>Take Over</value></data>
+  <data name="WU_Legacy_Confirm" xml:space="preserve"><value>Import the WinUpdate Tool settings and remove its scheduled tasks?</value></data>
+  <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool took over the schedule. Uninstall WinUpdate Tool from Settings &gt; Apps.</value></data>
 </root>

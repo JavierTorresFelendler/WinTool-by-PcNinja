@@ -31,7 +31,9 @@ namespace WinTool.App
             SystemParameters.StaticPropertyChanged += OnSystemParametersChanged;
 
             var settingsPage = new SettingsPageViewModel(settings, SaveSettings, ApplyTheme);
-            var window = new MainWindow { DataContext = new MainViewModel(settingsPage) };
+            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            var windowsUpdate = new WinTool.WindowsUpdate.Platform.WindowsUpdateEnvironment(exePath);
+            var window = new MainWindow { DataContext = new MainViewModel(settingsPage, windowsUpdate) };
             MainWindow = window;
             AppLog.Current.Info("App", "Window opened; theme " + ThemeManager.Current + ", language " + Loc.Instance.Language + ".");
             return Run(window);

@@ -1,0 +1,258 @@
+<UserControl x:Class="WinTool.App.Views.DashboardPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:WinTool.App.Localization">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Grid Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{Binding Title}" Style="{StaticResource Text.PageTitle}" />
+                <TextBlock Text="{Binding Subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,0" />
+            </StackPanel>
+            <Button Grid.Column="1" Style="{StaticResource Button.Secondary}" VerticalAlignment="Bottom" Command="{Binding RefreshCommand}" Content="{loc:Loc Dash_Refresh}" />
+        </Grid>
+
+        <UniformGrid Columns="3" Margin="0,0,0,14">
+            <!-- Windows Update -->
+            <Border Style="{StaticResource Card}" Margin="0,0,7,0">
+                <DockPanel>
+                    <Button DockPanel.Dock="Bottom" HorizontalAlignment="Left" Style="{StaticResource Button.Soft}" Margin="0,10,0,0"
+                            Command="{Binding OpenWindowsUpdateCommand}" Content="{loc:Loc Dash_OpenWindowsUpdate}" />
+                    <StackPanel>
+                        <TextBlock Text="{loc:Loc Nav_WindowsUpdate}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Brush.AccentText}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding UpdatesText}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <Border Style="{StaticResource Notice.Warning}" Padding="10,5" Margin="0,8,0,0" Visibility="{Binding RestartPending, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Text="{loc:Loc WU_RestartPending}" FontSize="12.5" Foreground="{DynamicResource Brush.WarnText}" />
+                        </Border>
+                        <TextBlock Text="{loc:Loc WU_Schedule}" FontSize="12" Foreground="{DynamicResource Brush.Muted}" Margin="0,10,0,0" />
+                        <TextBlock Text="{Binding ScheduleText}" FontSize="12.5" TextWrapping="Wrap" />
+                        <TextBlock Text="{loc:Loc Dash_LastRun}" FontSize="12" Foreground="{DynamicResource Brush.Muted}" Margin="0,8,0,0" />
+                        <TextBlock Text="{Binding LastRunText}" FontSize="12.5" TextWrapping="Wrap" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Windows -->
+            <Border Style="{StaticResource Card}" Margin="7,0">
+                <DockPanel>
+                    <Button DockPanel.Dock="Bottom" HorizontalAlignment="Left" Style="{StaticResource Button.Soft}" Margin="0,10,0,0"
+                            Command="{Binding OpenUpgradeCommand}" Content="{loc:Loc Dash_OpenUpgrade}" />
+                    <StackPanel>
+                        <TextBlock Text="{loc:Loc Dash_Windows}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Brush.AccentText}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding WindowsName}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" FlowDirection="LeftToRight" HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding WindowsBuild}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,2,0,0" />
+                        <Border Style="{StaticResource Notice.Warning}" Padding="10,5" Margin="0,8,0,0" Visibility="{Binding IsWindows10, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Text="{loc:Loc Dash_Win10Eol}" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource Brush.WarnText}" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Office -->
+            <Border Style="{StaticResource Card}" Margin="7,0,0,0">
+                <DockPanel>
+                    <Button DockPanel.Dock="Bottom" HorizontalAlignment="Left" Style="{StaticResource Button.Soft}" Margin="0,10,0,0"
+                            Command="{Binding OpenOfficeCommand}" Content="{loc:Loc Dash_OpenOffice}" />
+                    <StackPanel>
+                        <TextBlock Text="{loc:Loc Nav_Office}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Brush.AccentText}" Margin="0,0,0,6" />
+                        <TextBlock Text="{loc:Loc Dash_NoOffice}" FontSize="14" Foreground="{DynamicResource Brush.Muted}" Visibility="{Binding NoOffice, Converter={StaticResource BoolToVisibility}}" />
+                        <StackPanel Visibility="{Binding HasOffice, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Text="{Binding OfficeName}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" FlowDirection="LeftToRight" HorizontalAlignment="Left" />
+                            <TextBlock Text="{Binding OfficeDetails}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                            <Border Style="{StaticResource Notice.Warning}" Padding="10,5" Margin="0,8,0,0" Visibility="{Binding OfficeOutOfSupport, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="{loc:Loc Dash_OfficeEol}" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource Brush.WarnText}" />
+                            </Border>
+                            <TextBlock Text="{Binding OfficeApps}" FontSize="12.5" TextWrapping="Wrap" Margin="0,8,0,0" FlowDirection="LeftToRight" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </UniformGrid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.2*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="*" MinWidth="220" />
+            </Grid.ColumnDefinitions>
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="{loc:Loc Dash_ThisComputer}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_ComputerName}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding ComputerName}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding ComputerName}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_User}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding UserName}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding UserName}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_Lan}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding LanAddress}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding LanAddress}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_Wan}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding WanAddress}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding WanAddress}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_Processor}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Processor}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding Processor}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_Memory}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Memory}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding Memory}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_StorageLabel}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Storage}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding Storage}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_Graphics}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Graphics}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding Graphics}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_Motherboard}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Motherboard}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding Motherboard}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_Bios}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Bios}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding Bios}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_SecureBoot}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding SecureBoot}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding SecureBoot}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_LastRestart}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Uptime}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding Uptime}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock Text="WinTool" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,6" />
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_Version}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding ToolVersion}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding ToolVersion}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_InstallType}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding InstallType}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding InstallType}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                            <Border Padding="0,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{loc:Loc Dash_RunningOperation}" FontSize="12.5" Foreground="{DynamicResource Brush.Muted}" Margin="0,0,12,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding RunningOperation}" FontSize="12.5" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTip="{Binding RunningOperation}" FlowDirection="LeftToRight" />
+                                </Grid>
+                            </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </StackPanel>
+</UserControl>

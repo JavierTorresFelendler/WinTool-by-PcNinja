@@ -12,6 +12,11 @@ namespace WinTool.App.ViewModels
         public string SubtitleKey { get; }
         public string Title => T[TitleKey];
         public string Subtitle => SubtitleKey == null ? string.Empty : T[SubtitleKey];
+
+        /// <summary>Called each time the page is shown.</summary>
+        public virtual void OnActivated()
+        {
+        }
     }
 
     /// <summary>A screen that is planned for a later roadmap phase.</summary>

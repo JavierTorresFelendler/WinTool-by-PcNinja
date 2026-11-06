@@ -27,22 +27,22 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore
-        run: dotnet restore WinTool.sln
-
-      - name: Build
+      - name: Restore and build
         shell: pwsh
         run: |
-          dotnet build WinTool.sln -c ${{ matrix.configuration }} --no-restore "-flp:logfile=build.log;verbosity=minimal"
-          $code = $LASTEXITCODE
-          if ($code -ne 0) {
-            # Surface each compiler/XAML error as an annotation so it is readable without the raw log.
-            Get-Content build.log | Select-String -Pattern ': error ' | Select-Object -First 40 | ForEach-Object {
-              $line = $_.Line -replace '%', '%25' -replace "`r", '' -replace "`n", ' '
-              Write-Output "::error::$line"
+          function Invoke-Reported([string]$name, [string[]]$arguments) {
+            $output = & dotnet @arguments 2>&1 | ForEach-Object { "$_" }
+            $output | Write-Output
+            if ($LASTEXITCODE -ne 0) {
+              # Error lines (or the tail) become annotations, readable without the raw log.
+              $errors = $output | Where-Object { $_ -match '(error|Error|ERROR)' } | Select-Object -Unique -First 40
+              if (-not $errors) { $errors = $output | Select-Object -Last 25 }
+              foreach ($line in $errors) { Write-Output ("::error title=$name::" + ($line -replace '%', '%25')) }
+              exit $LASTEXITCODE
             }
-            exit $code
           }
+          Invoke-Reported "restore" @("restore", "WinTool.sln")
+          Invoke-Reported "build" @("build", "WinTool.sln", "-c", "${{ matrix.configuration }}", "--no-restore", "-v", "minimal")
 
       - name: Unit tests
         run: dotnet test tests/WinTool.Core.Tests/WinTool.Core.Tests.csproj -c ${{ matrix.configuration }} --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults

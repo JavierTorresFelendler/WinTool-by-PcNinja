@@ -67,11 +67,20 @@ namespace WinTool.Cli
                 }
                 else
                 {
-                    throw new UsageException("Unknown option: " + token);
+                    throw new UsageException("Unknown option: " + token + ". " + ValidOptions(switchSet, valueSet));
                 }
             }
 
             return result;
+        }
+
+        /// <summary>The options this command accepts, so a typo shows the right spelling.</summary>
+        private static string ValidOptions(IEnumerable<string> switchNames, IEnumerable<string> valueNames)
+        {
+            var names = switchNames.Select(n => "--" + n)
+                .Concat(valueNames.Select(n => "--" + n + " <value>"))
+                .OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+            return names.Count == 0 ? "This command has no options." : "Valid options: " + string.Join(", ", names) + ".";
         }
 
         public bool Has(string name) => switches.Contains(name);

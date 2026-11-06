@@ -61,6 +61,10 @@ failure, and the command line never asks a question.
 | `upgrade validate --iso <file> \| --mounted <drive-or-folder> [--sha256 HASH] [--image-index N]` | Yes | Validates one source without starting Setup. `--iso` mounts that exact file. |
 | `upgrade run --iso <file> \| --mounted <path> \| --download [--destination folder] [--sha256 HASH] [--image-index N] [--no-restart] [--quiet] --yes\|--dry-run` | Yes | Validates, then starts Windows Setup. Without `--yes` nothing starts (exit 2); `--dry-run` validates only. |
 
+A drive or folder that ends in a backslash must not be quoted: in cmd.exe
+`"E:\"` reaches the program as `E:"`. Write `--mounted E:\`, or
+`--mounted "C:\Win11 Extracted"` (no trailing backslash) when the path has spaces.
+
 `--sha256` (or the `PCNINJA_ISO_SHA256` environment variable) compares the ISO
 with a trusted hash. `--no-restart` adds `/noreboot`; restart yourself when
 ready. `--quiet` hides the Setup window only.

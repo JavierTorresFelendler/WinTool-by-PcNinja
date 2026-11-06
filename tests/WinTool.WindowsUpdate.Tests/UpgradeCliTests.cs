@@ -57,6 +57,16 @@ namespace WinTool.WindowsUpdate.Tests
         }
 
         [Fact]
+        public void An_unknown_option_lists_the_valid_ones()
+        {
+            var result = Run("run", "--Drive", "E:\\", "--dry-run");
+            Assert.Equal(CliExit.Usage, result.Exit);
+            Assert.Contains("Unknown option: --Drive", result.Err);
+            Assert.Contains("--mounted <value>", result.Err);
+            Assert.Contains("--dry-run", result.Err);
+        }
+
+        [Fact]
         public void A_usage_error_with_json_uses_the_original_result_contract()
         {
             var result = Run("run", "--iso", "a.iso", "--json");

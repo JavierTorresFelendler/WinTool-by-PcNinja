@@ -1,0 +1,27 @@
+<!-- Windows High Contrast: every brush comes from the system colors (docs/DECISIONS.md D-012). Keys must match every other theme file. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StaticResource x:Key="Brush.Bg" ResourceKey="{x:Static SystemColors.WindowBrushKey}" />
+    <StaticResource x:Key="Brush.Surface" ResourceKey="{x:Static SystemColors.WindowBrushKey}" />
+    <StaticResource x:Key="Brush.Side" ResourceKey="{x:Static SystemColors.ControlBrushKey}" />
+    <StaticResource x:Key="Brush.Raised" ResourceKey="{x:Static SystemColors.ControlBrushKey}" />
+    <StaticResource x:Key="Brush.Input" ResourceKey="{x:Static SystemColors.WindowBrushKey}" />
+    <StaticResource x:Key="Brush.Text" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.Muted" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.Divider" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.Border" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.CardBorder" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.Hover" ResourceKey="{x:Static SystemColors.HighlightBrushKey}" />
+    <StaticResource x:Key="Brush.Accent" ResourceKey="{x:Static SystemColors.HighlightBrushKey}" />
+    <StaticResource x:Key="Brush.OnAccent" ResourceKey="{x:Static SystemColors.HighlightTextBrushKey}" />
+    <StaticResource x:Key="Brush.AccentText" ResourceKey="{x:Static SystemColors.HotTrackBrushKey}" />
+    <StaticResource x:Key="Brush.AccentSoft" ResourceKey="{x:Static SystemColors.ControlBrushKey}" />
+    <StaticResource x:Key="Brush.Ok" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.Warn" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.WarnText" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.WarnSoft" ResourceKey="{x:Static SystemColors.ControlBrushKey}" />
+    <StaticResource x:Key="Brush.Danger" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.DangerBorder" ResourceKey="{x:Static SystemColors.WindowTextBrushKey}" />
+    <StaticResource x:Key="Brush.CaptionCloseHover" ResourceKey="{x:Static SystemColors.HighlightBrushKey}" />
+    <StaticResource x:Key="Brush.CaptionCloseText" ResourceKey="{x:Static SystemColors.HighlightTextBrushKey}" />
+</ResourceDictionary>

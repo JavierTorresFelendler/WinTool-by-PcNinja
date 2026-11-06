@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_Label" xml:space="preserve"><value>ניווט ראשי</value></data>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>לוח בקרה</value></data>
+  <data name="Nav_WindowsUpdate" xml:space="preserve"><value>עדכוני Windows</value></data>
+  <data name="Nav_WindowsUpgrade" xml:space="preserve"><value>שדרוג Windows</value></data>
+  <data name="Nav_Office" xml:space="preserve"><value>Office</value></data>
+  <data name="Nav_Logs" xml:space="preserve"><value>יומנים</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>הגדרות</value></data>
+  <data name="Nav_Links" xml:space="preserve"><value>דרייברים וקישורים</value></data>
+  <data name="Footer_Installed" xml:space="preserve"><value>גרסה {0}</value></data>
+  <data name="Footer_CheckToolUpdate" xml:space="preserve"><value>בדיקת עדכון לכלי</value></data>
+  <data name="Footer_CheckToolUpdate_Later" xml:space="preserve"><value>עדכוני התוכנה יתווספו בגרסה מאוחרת יותר.</value></data>
+  <data name="Footer_Help" xml:space="preserve"><value>עזרה</value></data>
+  <data name="Page_Dashboard_Subtitle" xml:space="preserve"><value>סיכום המחשב הזה.</value></data>
+  <data name="Page_WindowsUpdate_Subtitle" xml:space="preserve"><value>עדכונים, תקינות ותזמון במסך אחד.</value></data>
+  <data name="Page_WindowsUpgrade_Subtitle" xml:space="preserve"><value>שדרוג Windows 10 או Windows 11 תוך שמירה על התוכנות והקבצים.</value></data>
+  <data name="Page_Office_Subtitle" xml:space="preserve"><value>התקנה, יצירת חבילה או הסרה של Office באמצעות Office Deployment Tool של Microsoft.</value></data>
+  <data name="Page_Logs_Subtitle" xml:space="preserve"><value>היומנים נטענים רק כשהעמוד הזה פתוח.</value></data>
+  <data name="Page_Links_Subtitle" xml:space="preserve"><value>כלים שימושיים של PcNinja, עזרה ומקורות של יצרנים.</value></data>
+  <data name="Placeholder_Title" xml:space="preserve"><value>בקרוב</value></data>
+  <data name="Placeholder_Body" xml:space="preserve"><value>המסך הזה ייבנה בשלב {0} של מפת הדרכים.</value></data>
+  <data name="Settings_Appearance" xml:space="preserve"><value>מראה</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>ערכת נושא</value></data>
+  <data name="Settings_Theme_System" xml:space="preserve"><value>לפי המערכת</value></data>
+  <data name="Settings_Theme_Light" xml:space="preserve"><value>בהיר</value></data>
+  <data name="Settings_Theme_Dark" xml:space="preserve"><value>כהה</value></data>
+  <data name="Settings_Theme_Hint" xml:space="preserve"><value>'לפי המערכת' עוקב אחרי מצב האפליקציות ב־Windows ומשתנה יחד איתו.</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>שפה</value></data>
+  <data name="Settings_Spanish_Soon" xml:space="preserve"><value>ספרדית תתווסף לפני גרסה 1.0.</value></data>
+  <data name="Settings_About" xml:space="preserve"><value>אודות</value></data>
+  <data name="Settings_License" xml:space="preserve"><value>תוכנה חינמית · PcNinja Freeware Use License</value></data>
+  <data name="Settings_Repository" xml:space="preserve"><value>קוד המקור ב־GitHub</value></data>
+  <data name="Caption_Minimize" xml:space="preserve"><value>מזעור</value></data>
+  <data name="Caption_Maximize" xml:space="preserve"><value>הגדלה</value></data>
+  <data name="Caption_Restore" xml:space="preserve"><value>שחזור</value></data>
+  <data name="Caption_Close" xml:space="preserve"><value>סגירה</value></data>
+  <data name="Startup_Unsupported" xml:space="preserve"><value>WinTool דורש Windows 10 בגרסה 1903 ומעלה או Windows 11, בגרסת 64 סיביות.
+
+במחשב הזה מותקן {0}.</value></data>
+  <data name="Startup_AlreadyRunning" xml:space="preserve"><value>WinTool כבר פתוח אבל לא מגיב. סגור אותו ונסה שוב.</value></data>
+  <data name="Startup_ElevationCancelled" xml:space="preserve"><value>WinTool צריך הרשאות מנהל כדי לנהל עדכונים, שדרוגים ו־Office. פתח אותו שוב ובחר 'כן'.</value></data>
+  <data name="Error_Unexpected" xml:space="preserve"><value>משהו השתבש. הפרטים נמצאים ביומן:
+{0}</value></data>
+</root>

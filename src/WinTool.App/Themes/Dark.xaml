@@ -1,0 +1,27 @@
+<!-- Generated from the approved mockup palette (docs/DECISIONS.md D-012). Keys must match every other theme file. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="Brush.Bg" Color="#161826" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="#232532" />
+    <SolidColorBrush x:Key="Brush.Side" Color="#1C1E2B" />
+    <SolidColorBrush x:Key="Brush.Raised" Color="#2A2D3B" />
+    <SolidColorBrush x:Key="Brush.Input" Color="#1C1E2B" />
+    <SolidColorBrush x:Key="Brush.Text" Color="#ECECF1" />
+    <SolidColorBrush x:Key="Brush.Muted" Color="#AEB1C2" />
+    <SolidColorBrush x:Key="Brush.Divider" Color="#1FE9E9ED" />
+    <SolidColorBrush x:Key="Brush.Border" Color="#38E9E9ED" />
+    <SolidColorBrush x:Key="Brush.CardBorder" Color="#3F424D" />
+    <SolidColorBrush x:Key="Brush.Hover" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="#9184D9" />
+    <SolidColorBrush x:Key="Brush.OnAccent" Color="#161826" />
+    <SolidColorBrush x:Key="Brush.AccentText" Color="#D2CEFD" />
+    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#299184D9" />
+    <SolidColorBrush x:Key="Brush.Ok" Color="#7FD0A6" />
+    <SolidColorBrush x:Key="Brush.Warn" Color="#E9C46A" />
+    <SolidColorBrush x:Key="Brush.WarnText" Color="#F0D48C" />
+    <SolidColorBrush x:Key="Brush.WarnSoft" Color="#21E9C46A" />
+    <SolidColorBrush x:Key="Brush.Danger" Color="#EEB0B0" />
+    <SolidColorBrush x:Key="Brush.DangerBorder" Color="#C98A8A" />
+    <SolidColorBrush x:Key="Brush.CaptionCloseHover" Color="#C42B1C" />
+    <SolidColorBrush x:Key="Brush.CaptionCloseText" Color="#FFFFFF" />
+</ResourceDictionary>

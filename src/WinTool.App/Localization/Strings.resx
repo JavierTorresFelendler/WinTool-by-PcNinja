@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_Label" xml:space="preserve"><value>Main navigation</value></data>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Nav_WindowsUpdate" xml:space="preserve"><value>Windows Update</value></data>
+  <data name="Nav_WindowsUpgrade" xml:space="preserve"><value>Windows Upgrade</value></data>
+  <data name="Nav_Office" xml:space="preserve"><value>Office</value></data>
+  <data name="Nav_Logs" xml:space="preserve"><value>Logs</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Nav_Links" xml:space="preserve"><value>Drivers &amp; Links</value></data>
+  <data name="Footer_Installed" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="Footer_CheckToolUpdate" xml:space="preserve"><value>Check Tool Update</value></data>
+  <data name="Footer_CheckToolUpdate_Later" xml:space="preserve"><value>Application updates arrive in a later version.</value></data>
+  <data name="Footer_Help" xml:space="preserve"><value>Help</value></data>
+  <data name="Page_Dashboard_Subtitle" xml:space="preserve"><value>Summary of this computer.</value></data>
+  <data name="Page_WindowsUpdate_Subtitle" xml:space="preserve"><value>Updates, health and schedule on one screen.</value></data>
+  <data name="Page_WindowsUpgrade_Subtitle" xml:space="preserve"><value>Upgrade Windows 10 or Windows 11 while keeping your apps and files.</value></data>
+  <data name="Page_Office_Subtitle" xml:space="preserve"><value>Install, package or remove Office with the Microsoft Office Deployment Tool.</value></data>
+  <data name="Page_Logs_Subtitle" xml:space="preserve"><value>Logs load only when this page is open.</value></data>
+  <data name="Page_Links_Subtitle" xml:space="preserve"><value>Useful PcNinja tools, help and manufacturer sources.</value></data>
+  <data name="Placeholder_Title" xml:space="preserve"><value>Coming soon</value></data>
+  <data name="Placeholder_Body" xml:space="preserve"><value>This screen is built in phase {0} of the roadmap.</value></data>
+  <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Theme</value></data>
+  <data name="Settings_Theme_System" xml:space="preserve"><value>System</value></data>
+  <data name="Settings_Theme_Light" xml:space="preserve"><value>Light</value></data>
+  <data name="Settings_Theme_Dark" xml:space="preserve"><value>Dark</value></data>
+  <data name="Settings_Theme_Hint" xml:space="preserve"><value>System follows the Windows app mode and changes with it.</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Settings_Spanish_Soon" xml:space="preserve"><value>Spanish arrives before version 1.0.</value></data>
+  <data name="Settings_About" xml:space="preserve"><value>About</value></data>
+  <data name="Settings_License" xml:space="preserve"><value>Freeware · PcNinja Freeware Use License</value></data>
+  <data name="Settings_Repository" xml:space="preserve"><value>Source code on GitHub</value></data>
+  <data name="Caption_Minimize" xml:space="preserve"><value>Minimize</value></data>
+  <data name="Caption_Maximize" xml:space="preserve"><value>Maximize</value></data>
+  <data name="Caption_Restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="Caption_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Startup_Unsupported" xml:space="preserve"><value>WinTool needs 64-bit Windows 10 version 1903 or later, or Windows 11.
+
+This computer runs {0}.</value></data>
+  <data name="Startup_AlreadyRunning" xml:space="preserve"><value>WinTool is already open but is not responding. Close it and try again.</value></data>
+  <data name="Startup_ElevationCancelled" xml:space="preserve"><value>WinTool needs administrator rights to manage Windows Update, upgrades and Office. Open it again and choose Yes.</value></data>
+  <data name="Error_Unexpected" xml:space="preserve"><value>Something went wrong. The details are in the log:
+{0}</value></data>
+</root>

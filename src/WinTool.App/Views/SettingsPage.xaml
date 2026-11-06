@@ -1,0 +1,71 @@
+<UserControl x:Class="WinTool.App.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:WinTool.App.Localization">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    </UserControl.Resources>
+    <StackPanel MaxWidth="780" HorizontalAlignment="Left">
+        <TextBlock Text="{Binding Title}" Style="{StaticResource Text.PageTitle}" Margin="0,0,0,16" />
+
+        <Border Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Text="{loc:Loc Settings_Appearance}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,14" />
+
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{loc:Loc Settings_Theme}" Style="{StaticResource Text.Label}" />
+                    <StackPanel Grid.Column="1">
+                        <WrapPanel>
+                            <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Theme" Margin="0,0,6,6"
+                                         IsChecked="{Binding IsThemeSystem, Mode=TwoWay}" Content="{loc:Loc Settings_Theme_System}" />
+                            <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Theme" Margin="0,0,6,6"
+                                         IsChecked="{Binding IsThemeLight, Mode=TwoWay}" Content="{loc:Loc Settings_Theme_Light}" />
+                            <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Theme" Margin="0,0,6,6"
+                                         IsChecked="{Binding IsThemeDark, Mode=TwoWay}" Content="{loc:Loc Settings_Theme_Dark}" />
+                        </WrapPanel>
+                        <TextBlock Text="{loc:Loc Settings_Theme_Hint}" Style="{StaticResource Text.Subtitle}" FontSize="12" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{loc:Loc Settings_Language}" Style="{StaticResource Text.Label}" />
+                    <StackPanel Grid.Column="1">
+                        <WrapPanel>
+                            <!-- Language names are written in their own language and are not translated. -->
+                            <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Language" Margin="0,0,6,6"
+                                         IsChecked="{Binding IsEnglish, Mode=TwoWay}" Content="English" />
+                            <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Language" Margin="0,0,6,6"
+                                         IsChecked="{Binding IsHebrew, Mode=TwoWay}" Content="עברית" />
+                            <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Language" Margin="0,0,6,6"
+                                         IsEnabled="False" Content="Español" />
+                            <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Language" Margin="0,0,6,6"
+                                         IsChecked="{Binding IsPseudo, Mode=TwoWay}" Content="Pseudo (test)"
+                                         Visibility="{Binding ShowPseudo, Converter={StaticResource BoolToVisibility}}" />
+                        </WrapPanel>
+                        <TextBlock Text="{loc:Loc Settings_Spanish_Soon}" Style="{StaticResource Text.Subtitle}" FontSize="12" />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource Card}" Margin="0,14,0,0">
+            <StackPanel>
+                <TextBlock Text="{loc:Loc Settings_About}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,8" />
+                <TextBlock Style="{StaticResource Text.Body}"><Run Text="{Binding Version, Mode=OneWay}" /></TextBlock>
+                <TextBlock Text="{loc:Loc Settings_License}" Style="{StaticResource Text.Subtitle}" Margin="0,4,0,8" />
+                <WrapPanel>
+                    <Button Style="{StaticResource Button.Link}" Command="{Binding OpenWebsiteCommand}" Content="{Binding WebsiteText}" Margin="0,0,16,0" />
+                    <Button Style="{StaticResource Button.Link}" Command="{Binding OpenRepositoryCommand}" Content="{loc:Loc Settings_Repository}" />
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

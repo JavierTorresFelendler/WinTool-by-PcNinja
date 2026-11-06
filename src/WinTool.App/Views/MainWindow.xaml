@@ -1,0 +1,126 @@
+<Window x:Class="WinTool.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:WinTool.App.Localization"
+        xmlns:vm="clr-namespace:WinTool.App.ViewModels"
+        xmlns:views="clr-namespace:WinTool.App.Views"
+        Title="WinTool by PcNinja"
+        Width="1280" Height="800" MinWidth="1024" MinHeight="680"
+        WindowStartupLocation="CenterScreen"
+        Icon="/WinTool;component/Assets/PcNinja.ico"
+        Background="{DynamicResource Brush.Bg}"
+        Foreground="{DynamicResource Brush.Text}"
+        FontFamily="{StaticResource Font.Ui}"
+        FontSize="14"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True"
+        FlowDirection="{Binding FlowDirection, Source={x:Static loc:Loc.Instance}}">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+        <DataTemplate DataType="{x:Type vm:PlaceholderPageViewModel}">
+            <views:PlaceholderPage />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsPageViewModel}">
+            <views:SettingsPage />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Border x:Name="Root">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Style.Triggers>
+                    <!-- A maximized custom-chrome window overhangs the screen by the resize border. -->
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" Value="Maximized">
+                        <Setter Property="Margin" Value="7" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Title bar -->
+            <Border Grid.Row="0" Background="{DynamicResource Brush.Side}" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,0,1">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button x:Name="MinimizeButton" Style="{StaticResource Button.Caption}" Content="&#xE921;" Click="OnMinimize"
+                                AutomationProperties.Name="{loc:Loc Caption_Minimize}" />
+                        <Button x:Name="MaximizeButton" Style="{StaticResource Button.Caption}" Content="&#xE922;" Click="OnMaximizeRestore"
+                                AutomationProperties.Name="{loc:Loc Caption_Maximize}" />
+                        <Button x:Name="CloseButton" Style="{StaticResource Button.CaptionClose}" Content="&#xE8BB;" Click="OnClose"
+                                AutomationProperties.Name="{loc:Loc Caption_Close}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
+                        <Image Source="/WinTool;component/Assets/pcninja-mascot.png" Width="20" Height="20" RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Text="WinTool by PcNinja" Margin="8,0,0,0" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Sidebar -->
+                <Border Grid.Column="0" Background="{DynamicResource Brush.Side}" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,1,0">
+                    <DockPanel Margin="12,16,12,14">
+                        <StackPanel DockPanel.Dock="Bottom">
+                            <Border Height="1" Background="{DynamicResource Brush.Divider}" Margin="0,0,0,12" />
+                            <TextBlock Text="{Binding VersionText}" FontSize="12" Foreground="{DynamicResource Brush.Muted}" Margin="8,0,8,8" />
+                            <Button Style="{StaticResource Button.Secondary}" Command="{Binding CheckToolUpdateCommand}" HorizontalContentAlignment="Left"
+                                    Content="{loc:Loc Footer_CheckToolUpdate}" ToolTip="{loc:Loc Footer_CheckToolUpdate_Later}" ToolTipService.ShowOnDisabled="True" />
+                            <Button Style="{StaticResource Button.Soft}" Command="{Binding OpenHelpCommand}" Margin="0,6,0,0" ToolTip="help.pcninja.pro">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE897;" FontFamily="{StaticResource Font.Icons}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <TextBlock Text="{loc:Loc Footer_Help}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <ItemsControl ItemsSource="{Binding NavItems}" KeyboardNavigation.TabNavigation="Once" Focusable="False"
+                                      AutomationProperties.Name="{loc:Loc Nav_Label}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:NavItemViewModel}">
+                                    <StackPanel>
+                                        <Border Height="1" Background="{DynamicResource Brush.Divider}" Margin="6,8"
+                                                Visibility="{Binding SeparatorBefore, Converter={StaticResource BoolToVisibility}}" />
+                                        <RadioButton Style="{StaticResource RadioButton.Nav}" GroupName="Navigation" Margin="0,1"
+                                                     IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                     AutomationProperties.Name="{Binding Title}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Viewbox Width="18" Height="18">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Data="{Binding Icon}" StrokeThickness="1.7" StrokeLineJoin="Round"
+                                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                                <TextBlock Text="{Binding Title}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </RadioButton>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DockPanel>
+                </Border>
+
+                <!-- Content -->
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                    <ContentControl Content="{Binding CurrentPage}" Margin="24,20,24,24" Focusable="False" />
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,18 @@
+<UserControl x:Class="WinTool.App.Views.PlaceholderPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:WinTool.App.Localization">
+    <StackPanel>
+        <TextBlock Text="{Binding Title}" Style="{StaticResource Text.PageTitle}" />
+        <TextBlock Text="{Binding Subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,16" />
+        <Border Style="{StaticResource Card}" HorizontalAlignment="Left" MaxWidth="640">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/WinTool;component/Assets/pcninja-mascot.png" Width="56" Height="56" VerticalAlignment="Top" />
+                <StackPanel Margin="16,2,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="{loc:Loc Placeholder_Title}" Style="{StaticResource Text.CardTitle}" />
+                    <TextBlock Text="{Binding Body}" Style="{StaticResource Text.Subtitle}" Margin="0,4,0,0" MaxWidth="480" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

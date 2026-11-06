@@ -48,6 +48,7 @@ namespace WinTool.App.ViewModels
             operations.Add(new KeyValuePair<string, IOperationPage>("Nav_WindowsUpgrade", upgradePage));
             operations.Add(new KeyValuePair<string, IOperationPage>("Nav_Office", officePage));
             operations.Add(new KeyValuePair<string, IOperationPage>("Footer_CheckToolUpdate", updates));
+            windowsUpdatePage.InstallForSchedule = updates.InstallForScheduleAsync;
             updates.OperationRunning = () => operations.Any(o => !ReferenceEquals(o.Value, updates) && o.Value.IsBusy);
             CheckToolUpdateCommand = new RelayCommand(() => _ = updates.CheckAsync(true), () => !updates.IsBusy);
             NavItems[0].IsSelected = true;

@@ -86,6 +86,15 @@ namespace WinTool.Core.Updates
             return ReleaseFeed.Newest(ReleaseFeed.Parse(json), current, includeTestVersions);
         }
 
+        /// <summary>The published release of exactly this version (test versions included), or null.</summary>
+        public async Task<ReleaseInfo> FindReleaseAsync(AppVersion version, CancellationToken token)
+        {
+            var json = await web.GetStringAsync(FeedUrl, token).ConfigureAwait(false);
+            foreach (var release in ReleaseFeed.Parse(json))
+                if (release.Version.CompareTo(version) == 0) return release;
+            return null;
+        }
+
         /// <summary>Downloads one asset of the release and verifies it; returns its path.</summary>
         public async Task<string> DownloadVerifiedAsync(ReleaseInfo release, string assetName, IProgress<long> progress, CancellationToken token)
         {

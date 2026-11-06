@@ -394,4 +394,11 @@ Update now?</value></data>
   <data name="Close_OperationRunning" xml:space="preserve"><value>{0} is still running.
 
 Cancel what can be cancelled and close WinTool when it has stopped? An installer that is already running is never interrupted: WinTool closes after it finishes.</value></data>
+  <data name="WU_Schedule_InstallOffer" xml:space="preserve"><value>A schedule needs WinTool at a fixed place, and this copy is portable:
+{0}
+
+Yes: install WinTool now; the installer creates this schedule, and this window closes.
+No: schedule this portable copy anyway (do not move or delete the file).
+Cancel: do nothing.</value></data>
+  <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>The installer for WinTool {0} could not be downloaded. Download WinTool-by-PcNinja.msi from {1}.</value></data>
 </root>

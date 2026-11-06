@@ -10,6 +10,9 @@ namespace WinTool.App.ViewModels
         public static bool Confirm(string text) =>
             Show(text, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
 
+        /// <summary>Yes / No / Cancel; the text explains what Yes and No do.</summary>
+        public static MessageBoxResult Choose(string text) => Show(text, MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
         public static void Info(string text) => Show(text, MessageBoxButton.OK, MessageBoxImage.Information);
 
         public static void Error(string text) => Show(text, MessageBoxButton.OK, MessageBoxImage.Error);

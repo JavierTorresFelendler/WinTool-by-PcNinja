@@ -132,12 +132,57 @@ namespace WinTool.App.ViewModels
             }
         }
 
+        /// <summary>
+        /// D-014: installs this same version with the MSI, which also creates the schedule from
+        /// <paramref name="msiProperties"/>. Returns false (after telling the user) when the MSI is not available.
+        /// </summary>
+        public async Task<bool> InstallForScheduleAsync(string msiProperties)
+        {
+            if (IsBusy) return false;
+            IsBusy = true;
+            try
+            {
+                Status = T["UPD_Checking"];
+                var release = await updater.FindReleaseAsync(AppVersion.Current, CancellationToken.None);
+                if (release == null)
+                {
+                    Dialogs.Info(T.Format("UPD_NoInstallerForVersion", AppVersion.Current, ProductInfo.RepositoryUrl + "/releases"));
+                    return false;
+                }
+
+                var progress = new Progress<long>(bytes => Status = T.Format("UPD_Downloading", (bytes / 1048576.0).ToString("N1", T.Culture)));
+                var msi = await updater.DownloadVerifiedAsync(release, ReleaseFiles.Installer, progress, CancellationToken.None);
+                AppLog.Current.Info("Update", "Installing " + msi + " with the schedule from the portable copy.");
+                Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\" " + msiProperties) { UseShellExecute = true });
+                CloseForUpdate();
+                return true;
+            }
+            catch (Exception ex) when (!(ex is OutOfMemoryException))
+            {
+                AppLog.Current.Error("Update", "Installing for the schedule failed.", ex);
+                Dialogs.Info(T.Format("UPD_NoInstallerForVersion", AppVersion.Current, ProductInfo.RepositoryUrl + "/releases") + "\n\n" + ex.Message);
+                return false;
+            }
+            finally
+            {
+                IsBusy = false;
+                Status = null;
+            }
+        }
+
+        /// <summary>Closes WinTool for an update; not busy any more, so the close guard (F1) lets it go.</summary>
+        private void CloseForUpdate()
+        {
+            IsBusy = false;
+            Application.Current.Shutdown();
+        }
+
         /// <summary>The MSI replaces the installed copy; WinTool closes so its files are free.</summary>
-        private static void RunInstaller(string msi)
+        private void RunInstaller(string msi)
         {
             Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\"") { UseShellExecute = true });
             AppLog.Current.Info("Update", "Started the installer; closing.");
-            Application.Current.Shutdown();
+            CloseForUpdate();
         }
 
         private void ReplacePortable(string downloaded, ReleaseInfo release)
@@ -153,7 +198,7 @@ namespace WinTool.App.ViewModels
             start.EnvironmentVariables[WaitForPidVariable] = Process.GetCurrentProcess().Id.ToString(System.Globalization.CultureInfo.InvariantCulture);
             start.EnvironmentVariables[UpdatedFromVariable] = current.ToString();
             Process.Start(start);
-            Application.Current.Shutdown();
+            CloseForUpdate();
         }
     }
 }

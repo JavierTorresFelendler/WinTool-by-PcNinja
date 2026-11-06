@@ -165,6 +165,9 @@ namespace WinTool.App.ViewModels
         public ICommand CollectLogsCommand { get; }
         public ICommand ResetCommand { get; }
         public ICommand SaveScheduleCommand { get; }
+
+        /// <summary>D-014: installs WinTool with these MSI properties; set by the main view model.</summary>
+        public Func<string, Task<bool>> InstallForSchedule { get; set; }
         public ICommand TakeOverCommand { get; }
 
         /// <summary>Raised when the counts or restart state change, for the Dashboard.</summary>
@@ -445,8 +448,18 @@ namespace WinTool.App.ViewModels
 
             if (settings.InstallFirmwareUpdates && !current.InstallFirmwareUpdates && !Dialogs.Confirm(T["WU_Firmware_Schedule_Warning"])) return;
 
-            // D-014: a schedule needs a stable path. Until the MSI exists, warn when running a portable copy.
-            if (settings.ScheduleEnabled && IsPortableCopy() && !Dialogs.Confirm(T.Format("WU_Schedule_Portable", env.ExecutablePath))) return;
+            // D-014: a schedule needs a stable path. A portable copy offers to install WinTool, whose MSI creates the schedule.
+            if (settings.ScheduleEnabled && IsPortableCopy())
+            {
+                var choice = Dialogs.Choose(T.Format("WU_Schedule_InstallOffer", env.ExecutablePath));
+                if (choice == System.Windows.MessageBoxResult.Cancel) return;
+                if (choice == System.Windows.MessageBoxResult.Yes && InstallForSchedule != null)
+                {
+                    env.Store.SaveSettings(settings);
+                    if (await InstallForSchedule(MsiScheduleProperties.CommandLine(settings))) return;
+                    // The MSI is not available: fall through and schedule this copy, as with No.
+                }
+            }
 
             try
             {

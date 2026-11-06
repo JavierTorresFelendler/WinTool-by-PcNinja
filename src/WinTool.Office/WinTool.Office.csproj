@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- net48 is the product. net8.0-windows exists only so the unit tests also run on Linux during development. -->
+    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
+    <RootNamespace>WinTool.Office</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable Condition="'$(TargetFramework)' == 'net48'">annotations</Nullable>
+    <Nullable Condition="'$(TargetFramework)' != 'net48'">enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WinTool.Core\WinTool.Core.csproj" />
+    <InternalsVisibleTo Include="WinTool.Office.Tests" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Net.Http" />
+    <Using Include="System.Net.Http" />
+  </ItemGroup>
+</Project>

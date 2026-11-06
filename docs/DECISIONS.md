@@ -264,6 +264,26 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   exit codes must be updated; scripts that read `resultCode` keep working.
   Documented in `docs/CLI.md`.
 
+## D-022 Office: latest ODT, verified; all languages; CLI now; same products
+
+- **Status:** Accepted (2026-11-06). Owner's choices.
+- **Context:** Smart Office Installer downloads a fixed 2025 build of the
+  Office Deployment Tool (ODT); Microsoft says to always use the latest. It
+  offers English and Hebrew only and has no command line.
+- **Decision:**
+  - WinTool finds the latest ODT on Microsoft's download page each time, and
+    runs it only when it is signed by Microsoft. If the page cannot be read,
+    it uses a fixed ODT address that is updated with each WinTool release
+    (also signature-checked).
+  - Every language the ODT supports is offered, with search; English and
+    Hebrew are selected by default.
+  - Office gets command-line commands in this phase (`office ...`), on the same
+    library as the screen.
+  - Products stay as they are: Office LTSC Professional Plus 2024 and
+    Microsoft 365 Apps for Enterprise, each optionally with Visio and Project.
+- **Consequences:** `docs/specs/OFFICE-BEHAVIOR.md` lists every behavior of
+  the original tool and what changed.
+
 ---
 
 ## Open questions

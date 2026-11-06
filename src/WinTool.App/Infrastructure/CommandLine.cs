@@ -82,6 +82,14 @@ namespace WinTool.App.Infrastructure
             writer.WriteLine("  schedule import  <settings.json>");
             writer.WriteLine("  schedule import-v2   Take over the WinUpdate Tool V1/V2 schedule");
             writer.WriteLine();
+            writer.WriteLine("Windows Upgrade (never restarts the computer by itself after a failure)");
+            writer.WriteLine("  upgrade status   Windows, storage, previous upgrade");
+            writer.WriteLine("  upgrade downloads  Matching download page; downloads nothing");
+            writer.WriteLine("  upgrade scan     Local ISO files, mounted Windows media, download drives");
+            writer.WriteLine("  upgrade validate --iso <file> | --mounted <drive-or-folder>  [--sha256 HASH] [--image-index N]   (admin)");
+            writer.WriteLine("  upgrade run      --iso <file> | --mounted <drive-or-folder> | --download [--destination folder]");
+            writer.WriteLine("                   [--sha256 HASH] [--image-index N] [--no-restart] [--quiet] --yes | --dry-run       (admin)");
+            writer.WriteLine();
             writer.WriteLine("Other");
             writer.WriteLine("  status           Version, last update run, schedule, pending restart");
             writer.WriteLine("  logs collect     [--output folder-or-file.zip]");

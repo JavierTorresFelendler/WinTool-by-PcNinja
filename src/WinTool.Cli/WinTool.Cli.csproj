@@ -7,6 +7,10 @@
   <ItemGroup>
     <ProjectReference Include="..\WinTool.Core\WinTool.Core.csproj" />
     <ProjectReference Include="..\WinTool.WindowsUpdate\WinTool.WindowsUpdate.csproj" />
+    <ProjectReference Include="..\WinTool.Upgrade\WinTool.Upgrade.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="WinTool.WindowsUpdate.Tests" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.IO.Compression" />

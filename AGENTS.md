@@ -20,3 +20,8 @@ Read before changing anything in this repository.
    edit them here alone; see `shared/README.md`.
 8. Documentation and code comments are in English. Conversation with the owner
    may be in Hebrew.
+9. **Windows Upgrade safety** (`docs/specs/WINUPGRADE-BEHAVIOR.md`): never
+   start Windows Setup or upgrade a development or build machine, never run
+   Setup on Windows Server, never fall back to a clean or data-only install,
+   and never weaken the media, image, edition, language, storage or
+   answer-file checks.

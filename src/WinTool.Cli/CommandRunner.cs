@@ -44,6 +44,7 @@ namespace WinTool.Cli
                 case "schedule":
                 case "status":
                 case "logs":
+                case "upgrade":
                     return true;
                 default:
                     return false;
@@ -86,6 +87,9 @@ namespace WinTool.Cli
                     case "logs":
                         if (command == "collect") return LogsCollect(rest);
                         break;
+                    case "upgrade":
+                        return new UpgradeCommands(() => new WinTool.Upgrade.UpgradeEngine(), () => env.IsAdministrator, output, error)
+                            .Run(command, rest);
                 }
 
                 throw new UsageException("Unknown command: " + string.Join(" ", args.Take(2)) + ". Run \"WinTool-by-PcNinja.exe help\".");

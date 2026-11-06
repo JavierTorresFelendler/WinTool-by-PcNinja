@@ -28,6 +28,7 @@ namespace WinTool.Cli
             var valueSet = new HashSet<string>(allowedValues ?? new string[0], StringComparer.OrdinalIgnoreCase);
             var result = new Arguments();
             var list = tokens.ToList();
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < list.Count; i++)
             {
                 var token = list[i];
@@ -45,6 +46,8 @@ namespace WinTool.Cli
                     inlineValue = name.Substring(equals + 1);
                     name = name.Substring(0, equals);
                 }
+
+                if (!seen.Add(name)) throw new UsageException("Option --" + name + " was given more than once.");
 
                 if (switchSet.Contains(name) && inlineValue == null)
                 {

@@ -248,6 +248,22 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   with `start /wait` (cmd.exe) or `Start-Process -Wait -PassThru` (PowerShell),
   as documented in `docs/CLI.md` and in `help`.
 
+## D-021 Windows Upgrade commands use WinTool's exit codes
+
+- **Status:** Accepted (2026-11-06). Owner's choice.
+- **Context:** The Windows Upgrade Tool's exit codes (0-8) give other meanings
+  to numbers WinTool already uses (its 3 is a failed validation, WinTool's 3 is
+  cancelled).
+- **Decision:** One scheme for every WinTool command. Shared meanings keep
+  their numbers (0, 1, 2, 3 cancelled, 5 administrator, 21 busy); Windows
+  Upgrade results get 30 blocked/validation failed, 31 download failed,
+  32 Setup failed, 33 Setup outcome unconfirmed. The JSON result contract
+  (schemaVersion 1, `resultCode`, `readyForRestart`, original field names) is
+  kept exactly. The command line never prompts: starting Setup needs `--yes`.
+- **Consequences:** Scripts written for the Windows Upgrade Tool that check
+  exit codes must be updated; scripts that read `resultCode` keep working.
+  Documented in `docs/CLI.md`.
+
 ---
 
 ## Open questions

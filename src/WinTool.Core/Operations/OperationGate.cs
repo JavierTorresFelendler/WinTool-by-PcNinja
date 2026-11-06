@@ -59,7 +59,7 @@ public static class OperationGate
         try
         {
             var wait = Native.WaitForSingleObject(handle, 0);
-            if (wait == 258) throw new InvalidOperationException("Another WinTool operation is running. Wait for it to finish, then try again.");
+            if (wait == 258) throw new OperationBusyException();
             if (wait != 0) throw new Win32Exception(Marshal.GetLastWin32Error(), "The application operation gate could not be acquired.");
             acquired = true;
             var state = new State(definition.Name, handle, update, handoff: false);
@@ -348,4 +348,11 @@ public sealed class OperationLease : IDisposable
         OperationGate.Leave(_scope);
         _state.ReleaseReference();
     }
+}
+
+/// <summary>Another WinTool operation holds the machine-wide gate (CLI exit code 21).</summary>
+public sealed class OperationBusyException : InvalidOperationException
+{
+    public OperationBusyException()
+        : base("Another WinTool operation is running. Wait for it to finish, then try again.") { }
 }

@@ -130,6 +130,18 @@ jobs:
           $after = Invoke-WinTool @('schedule', 'show', '--json') @(0)
           if ($after -notmatch '"task": null') { Write-Output "::error title=cli::task still present after remove"; exit 1 }
           Invoke-WinTool @('logs', 'collect', '--output', (Join-Path $env:RUNNER_TEMP 'logs.zip')) @(0) | Out-Null
+          # Windows Upgrade: read-only commands and refusals only. Never --yes here: Setup must not run on a build machine.
+          $upgrade = Invoke-WinTool @('upgrade', 'status', '--json') @(0)
+          if ($upgrade -notmatch '"resultCode": "STATUS_REPORTED"' -or $upgrade -notmatch '"readyForRestart": false') {
+            Write-Host "::error title=cli::upgrade status --json broke the result contract"
+            exit 1
+          }
+          Invoke-WinTool @('upgrade', 'scan', '--json') @(0) | Out-Null
+          Invoke-WinTool @('upgrade', 'downloads', '--json') @(0, 31) | Out-Null
+          Invoke-WinTool @('upgrade', 'run', '--mounted', 'C:\NoSuchMedia') @(2) | Out-Null
+          # The build machine is Windows Server: validation must be refused (30), never attempted.
+          Invoke-WinTool @('upgrade', 'validate', '--mounted', 'C:\NoSuchMedia', '--json') @(30) | Out-Null
+          Invoke-WinTool @('upgrade', 'run', '--mounted', 'C:\NoSuchMedia', '--dry-run', '--json') @(30) | Out-Null
           # A real Windows Update search. Build machines may have the service restricted, so a failure is reported, not fatal.
           $scan = Start-Process -FilePath $exe -ArgumentList @('update', 'scan', '--json') -Wait -PassThru -NoNewWindow -RedirectStandardOutput (Join-Path $env:RUNNER_TEMP 'scan.json')
           Get-Content (Join-Path $env:RUNNER_TEMP 'scan.json')

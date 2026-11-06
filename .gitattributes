@@ -12,3 +12,6 @@
 *.png binary
 *.ico binary
 *.wav binary
+
+# shared/ must stay byte-identical with the other PcNinja tools
+shared/** -text

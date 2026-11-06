@@ -298,6 +298,24 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   - Order in phase 6: the Logs and Drivers & Links pages first, then
     self-update and the release workflow.
 
+## D-024 Version numbers for files and the MSI
+
+- **Status:** Accepted (2026-11-06). Technical consequence of D-018 and D-023.
+- **Context:** Releases are `1.2.3` or test versions `1.2.3-alpha.N`,
+  `-beta.N`, `-rc.N`. Windows Installer compares only the first three parts of
+  a version, so `1.0.0-rc.1` and `1.0.0` would look the same and the final
+  release would "repair" the RC instead of upgrading it.
+- **Decision:** One rule, in `AppVersion` and nowhere else:
+  - File version `Major.Minor.Patch.S` with S = 1000+N (alpha), 2000+N
+    (beta), 3000+N (rc), 9000 (stable). Previous-copy names (D-018) never
+    collide.
+  - MSI version `Major.Minor.(Patch*1000 + T)` with T = N (alpha),
+    200+N (beta), 400+N (rc), 999 (stable). Patch is at most 64.
+  - The release workflow stamps the tag's version, and the MSI build takes
+    its version from the EXE (`version --json`), so they cannot disagree.
+- **Consequences:** Programs and Features shows the MSI version (for example
+  1.0.999 for 1.0.0). WinTool itself shows 1.0.0.
+
 ---
 
 ## Open questions

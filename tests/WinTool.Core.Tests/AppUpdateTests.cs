@@ -31,8 +31,31 @@ namespace WinTool.Core.Tests
         {
             var version = AppVersion.Parse("1.2.3-rc.4+abcdef");
             Assert.Equal("1.2.3-rc.4", version.ToString());
-            Assert.Equal(new Version(1, 2, 3, 0), version.FileVersion);
+            Assert.Equal(new Version(1, 2, 3, 3004), version.FileVersion);
             Assert.Equal(0, version.CompareTo(AppVersion.Parse("v1.2.3-RC4")));
+        }
+
+        [Theory]
+        [InlineData("1.0.0-alpha.3", "1.0.0.1003", "1.0.3")]
+        [InlineData("1.0.0-beta.2", "1.0.0.2002", "1.0.202")]
+        [InlineData("1.0.0-rc.1", "1.0.0.3001", "1.0.401")]
+        [InlineData("1.0.0", "1.0.0.9000", "1.0.999")]
+        [InlineData("1.0.1", "1.0.1.9000", "1.0.1999")]
+        [InlineData("2.3.64-rc.12", "2.3.64.3012", "2.3.64412")]
+        public void File_and_msi_versions_follow_D_024(string text, string file, string msi)
+        {
+            var version = AppVersion.Parse(text);
+            Assert.Equal(Version.Parse(file), version.FileVersion);
+            Assert.Equal(msi, version.MsiVersion);
+        }
+
+        [Fact]
+        public void Msi_versions_order_like_releases()
+        {
+            var ordered = new[] { "1.0.0-alpha.1", "1.0.0-beta.1", "1.0.0-rc.1", "1.0.0-rc.2", "1.0.0", "1.0.1-beta.1", "1.0.1", "1.1.0-rc.1", "1.1.0" }
+                .Select(t => Version.Parse(AppVersion.Parse(t).MsiVersion)).ToList();
+            for (var i = 1; i < ordered.Count; i++) Assert.True(ordered[i] > ordered[i - 1], ordered[i] + " should be newer than " + ordered[i - 1]);
+            Assert.Throws<InvalidOperationException>(() => AppVersion.Parse("1.0.65").MsiVersion);
         }
 
         [Theory]
@@ -127,7 +150,7 @@ namespace WinTool.Core.Tests
             }
         }
 
-        private (AppUpdater Updater, ReleaseInfo Release, FakeWeb Web) Setup(byte[] exe, string sumsHash, string product = ProductInfo.Name, string fileVersion = "1.2.0.0")
+        private (AppUpdater Updater, ReleaseInfo Release, FakeWeb Web) Setup(byte[] exe, string sumsHash, string product = ProductInfo.Name, string fileVersion = "1.2.0.9000")
         {
             var release = ReleaseFeed.Parse(Feed(Release("v1.2.0", false))).Single();
             var web = new FakeWeb();
@@ -163,7 +186,7 @@ namespace WinTool.Core.Tests
 
         [Theory]
         [InlineData("Other Product", "1.2.0.0")]
-        [InlineData(ProductInfo.Name, "1.1.0.0")]
+        [InlineData(ProductInfo.Name, "1.2.0.0")]
         public async Task An_exe_that_is_not_the_release_is_deleted(string product, string version)
         {
             var bytes = Encoding.UTF8.GetBytes("exe");

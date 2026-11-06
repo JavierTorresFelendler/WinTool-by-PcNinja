@@ -5,6 +5,13 @@ on:
     branches: [main, "phase*/**"]
   pull_request:
   workflow_dispatch:
+  # The release workflow runs this whole pipeline on a tag, stamped with the release version.
+  workflow_call:
+    inputs:
+      tag:
+        description: Release tag such as v1.0.0 or v1.0.0-rc.1 (empty for a normal CI build)
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -27,6 +34,24 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Release version (D-024)
+        if: inputs.tag != ''
+        shell: pwsh
+        run: |
+          $tag = "${{ inputs.tag }}"
+          if ($tag -notmatch '^v(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?$') {
+            Write-Host "::error title=version::Tag '$tag' is not v<major>.<minor>.<patch> or v<...>-alpha|beta|rc.<n>"
+            exit 1
+          }
+          $version = $tag.Substring(1)
+          $code = if ($Matches[4]) { @{ alpha = 1000; beta = 2000; rc = 3000 }[$Matches[4]] + [int]$Matches[5] } else { 9000 }
+          $file = "$($Matches[1]).$($Matches[2]).$($Matches[3]).$code"
+          $assembly = "$($Matches[1]).$($Matches[2]).$($Matches[3]).0"
+          "WINTOOL_VERSION=$version" | Out-File -Append $env:GITHUB_ENV
+          "WINTOOL_FILE_VERSION=$file" | Out-File -Append $env:GITHUB_ENV
+          "WINTOOL_VERSION_ARGS=-p:Version=$version -p:FileVersion=$file -p:AssemblyVersion=$assembly" | Out-File -Append $env:GITHUB_ENV
+          Write-Host "Release $version, file version $file"
+
       - name: Restore and build
         shell: pwsh
         run: |
@@ -42,7 +67,15 @@ jobs:
             }
           }
           Invoke-Reported "restore" @("restore", "WinTool.sln")
-          Invoke-Reported "build" @("build", "WinTool.sln", "-c", "${{ matrix.configuration }}", "--no-restore", "-v", "minimal")
+          $build = @("build", "WinTool.sln", "-c", "${{ matrix.configuration }}", "--no-restore", "-v", "minimal")
+          if ($env:WINTOOL_VERSION_ARGS) { $build += $env:WINTOOL_VERSION_ARGS.Split(' ') }
+          Invoke-Reported "build" $build
+          if ($env:WINTOOL_VERSION) {
+            # The EXE's own version rules (AppVersion) must agree with the stamped file.
+            $exe = "src/WinTool.App/bin/${{ matrix.configuration }}/net48/WinTool-by-PcNinja.exe"
+            $info = (Get-Item $exe).VersionInfo
+            if ($info.FileVersion -ne $env:WINTOOL_FILE_VERSION) { Write-Host "::error title=version::EXE file version $($info.FileVersion), expected $env:WINTOOL_FILE_VERSION"; exit 1 }
+          }
 
       - name: Unit tests
         shell: pwsh
@@ -164,9 +197,17 @@ jobs:
         run: |
           dotnet tool install --global wix --version 6.0.2
           wix extension add -g WixToolset.UI.wixext/6.0.2 WixToolset.Util.wixext/6.0.2
-          [xml]$props = Get-Content Directory.Build.props
-          $version = ($props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
           $exe = (Resolve-Path "src/WinTool.App/bin/Release/net48/WinTool-by-PcNinja.exe").Path
+          # The MSI version comes from the EXE itself (AppVersion.MsiVersion, D-024), so the two can never disagree.
+          $versionOut = Join-Path $env:RUNNER_TEMP "version.json"
+          Start-Process -FilePath $exe -ArgumentList @('version', '--json') -Wait -NoNewWindow -RedirectStandardOutput $versionOut
+          $info = Get-Content $versionOut -Raw | ConvertFrom-Json
+          Write-Host "Version $($info.version), file $($info.fileVersion), MSI $($info.msiVersion)"
+          if ($env:WINTOOL_VERSION -and ($info.version -ne $env:WINTOOL_VERSION -or $info.fileVersion -ne $env:WINTOOL_FILE_VERSION)) {
+            Write-Host "::error title=version::The EXE reports $($info.version) / $($info.fileVersion), the tag says $env:WINTOOL_VERSION / $env:WINTOOL_FILE_VERSION"
+            exit 1
+          }
+          $version = $info.msiVersion
           $assets = (Resolve-Path "src/WinTool.App/Assets").Path
           $out = Join-Path $env:RUNNER_TEMP "msi"
           New-Item -ItemType Directory -Force $out | Out-Null

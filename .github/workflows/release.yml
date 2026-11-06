@@ -1,0 +1,51 @@
+name: Release
+
+# A tag v1.2.3 or v1.2.3-rc.1 runs the whole CI (build, every test, portable
+# self-test, UI smoke, Windows integration, MSI build and install tests) with
+# that version stamped in, then creates a DRAFT GitHub release with the EXE,
+# the MSI and SHA256SUMS.txt. Only what passed is attached. The owner reviews
+# the draft and publishes it; WinTool's self-update ignores drafts (D-023).
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+    with:
+      tag: ${{ github.ref_name }}
+
+  draft:
+    name: Draft release
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: WinTool-by-PcNinja-portable-unsigned
+          path: release
+      - uses: actions/download-artifact@v5
+        with:
+          name: WinTool-by-PcNinja-msi-unsigned
+          path: release
+      - name: Checksums
+        working-directory: release
+        run: |
+          ls -l
+          test -f WinTool-by-PcNinja.exe && test -f WinTool-by-PcNinja.msi
+          sha256sum WinTool-by-PcNinja.exe WinTool-by-PcNinja.msi > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          flags=(--draft --generate-notes --title "WinTool by PcNinja ${TAG#v}" --repo "$GITHUB_REPOSITORY" --verify-tag)
+          # A test version is a pre-release; ReleaseFeed rejects a release whose label disagrees with its tag.
+          if [[ "$TAG" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$TAG" release/WinTool-by-PcNinja.exe release/WinTool-by-PcNinja.msi release/SHA256SUMS.txt "${flags[@]}"

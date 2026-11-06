@@ -29,8 +29,31 @@ namespace WinTool.Core.Updates
         public int StageNumber { get; }
         public bool IsTest => Stage != null;
 
-        /// <summary>The four-part Windows file version (D-018).</summary>
-        public Version FileVersion => new Version(Number.Major, Number.Minor, Number.Build, 0);
+        /// <summary>
+        /// The four-part Windows file version (D-018, D-024): the fourth part is the stage,
+        /// alpha.N = 1000+N, beta.N = 2000+N, rc.N = 3000+N, stable = 9000. So every build
+        /// has its own file version and the previous-copy names never collide.
+        /// </summary>
+        public Version FileVersion => new Version(Number.Major, Number.Minor, Number.Build, StageCode(1000, 9000));
+
+        /// <summary>
+        /// The MSI ProductVersion (D-024). Windows Installer compares only three parts, so the
+        /// stage goes into the third: patch*1000 + (alpha.N = N, beta.N = 200+N, rc.N = 400+N, stable = 999).
+        /// A final release therefore upgrades its release candidates. Patch is at most 64.
+        /// </summary>
+        public string MsiVersion
+        {
+            get
+            {
+                if (Number.Build > 64 || StageNumber > 199) throw new InvalidOperationException("Version " + this + " does not fit the MSI version scheme (D-024).");
+                var third = Number.Build * 1000 + StageCode(200, 999);
+                return Number.Major.ToString(CultureInfo.InvariantCulture) + "." + Number.Minor.ToString(CultureInfo.InvariantCulture) + "." +
+                       third.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        private int StageCode(int step, int stable) =>
+            !IsTest ? stable : (Stage == "alpha" ? 0 : Stage == "beta" ? step : 2 * step) + StageNumber + (step == 1000 ? 1000 : 0);
 
         public static bool TryParse(string text, out AppVersion version)
         {

@@ -36,7 +36,21 @@ namespace WinTool.App.Infrastructure
             {
                 case "--version":
                 case "version":
-                    Console.WriteLine(ProductInfo.Name + " " + ProductInfo.InformationalVersion);
+                    if (args.Length > 1 && args[1] == "--json")
+                    {
+                        // The release workflow reads the file and MSI versions from here (D-024).
+                        var current = WinTool.Core.Updates.AppVersion.Current;
+                        Console.WriteLine(WinTool.Core.Json.JsonText.Serialize(new
+                        {
+                            Name = ProductInfo.Name,
+                            Version = current.ToString(),
+                            ProductInfo.InformationalVersion,
+                            FileVersion = current.FileVersion.ToString(),
+                            current.MsiVersion,
+                            current.IsTest
+                        }));
+                    }
+                    else Console.WriteLine(ProductInfo.Name + " " + ProductInfo.InformationalVersion);
                     return Program.ExitOk;
                 case "--self-test":
                     return SelfTest.Run(Console.Out);
@@ -99,6 +113,12 @@ namespace WinTool.App.Infrastructure
             writer.WriteLine("  office tool-check  Download and signature-check the Office Deployment Tool; runs nothing");
             writer.WriteLine("  options: --family m365|ltsc  --channel Current|MonthlyEnterprise|SemiAnnual");
             writer.WriteLine("           --apps Word,Excel,...  --languages en-us,he-il,...  --visio  --project  --x86  --no-activate");
+            writer.WriteLine();
+            writer.WriteLine("WinTool itself");
+            writer.WriteLine("  app-update check     [--test-versions]   Is a newer WinTool on GitHub?");
+            writer.WriteLine("  app-update install   --yes [--test-versions]   Portable: replace this copy (the old one is kept as -v<version>.exe);");
+            writer.WriteLine("                       installed: download and verify the MSI and print the command to run it");
+            writer.WriteLine("  version [--json]");
             writer.WriteLine();
             writer.WriteLine("Other");
             writer.WriteLine("  status           Version, last update run, schedule, pending restart");

@@ -46,6 +46,7 @@ namespace WinTool.Cli
                 case "logs":
                 case "upgrade":
                 case "office":
+                case "app-update":
                     return true;
                 default:
                     return false;
@@ -88,6 +89,8 @@ namespace WinTool.Cli
                     case "logs":
                         if (command == "collect") return LogsCollect(rest);
                         break;
+                    case "app-update":
+                        return new AppUpdateCommands(() => new WinTool.Core.Updates.AppUpdater(), env.ExecutablePath, output, error).Run(command, rest);
                     case "office":
                         return new OfficeCommands(() => new WinTool.Office.OfficeDeployment(), () => env.IsAdministrator, output, error)
                             .Run(command, rest);

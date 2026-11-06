@@ -127,6 +127,14 @@ installation). `--quiet` hides the Office installer window.
 start /wait WinTool-by-PcNinja.exe office install --family ltsc --languages he-il,en-us --visio --quiet
 ```
 
+## WinTool itself
+
+| Command | What it does |
+| --- | --- |
+| `app-update check [--test-versions] [--json]` | Is a newer WinTool published on GitHub? Test versions only with `--test-versions` (D-023). |
+| `app-update install --yes [--test-versions] [--json]` | Portable: downloads and verifies the new EXE and replaces this one; the old one stays as `WinTool-by-PcNinja-v<file version>.exe` (D-018). Installed: downloads and verifies the MSI and prints the `msiexec` command to run once WinTool is closed. |
+| `version [--json]` | Version; with `--json` also the file and MSI versions (D-024). |
+
 ## Other
 
 | Command | What it does |

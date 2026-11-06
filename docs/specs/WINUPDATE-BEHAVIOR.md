@@ -62,7 +62,7 @@ Line numbers refer to that commit.
 | WU-40 | Restart pending when either key exists: `CBS\RebootPending`, `WindowsUpdate\Auto Update\RebootRequired`. | Core 1807 | **Keep**. |
 | WU-41 | `PendingFileRenameOperations` counts only when a path touches servicing or drivers (WinSxS, servicing, SoftwareDistribution, catroot, drivers, DriverStore, INF, pending.xml, wu*, uso*, mus*). Other renames are only a warning, because many programs leave harmless entries. | Core 1706 | **Keep**. This avoids false "restart required" reports. |
 | WU-42 | A pending computer rename counts as pending restart. | Core 1837 | **Keep**. |
-| WU-43 | "Restart now" restarts at once with no warning to signed-in users. | Core 1858 | **Owner** (Q-WU-3). |
+| WU-43 | "Restart now" restarts at once with no warning to signed-in users. | Core 1858 | **Keep** (owner, Q-WU-3): restart immediately. The button already asks for confirmation in the app. |
 
 ## 5. Schedule
 
@@ -91,7 +91,7 @@ Line numbers refer to that commit.
 | --- | --- | --- | --- |
 | WU-70 | Requires explicit confirmation (`-ConfirmReset` in the CLI, a dialog in the UI). | Script 1676 | **Keep**. |
 | WU-71 | Stops `UsoSvc`, `wuauserv`, `bits`, `dosvc`, `cryptsvc`; deletes and recreates `%SystemRoot%\SoftwareDistribution` (refuses any other path); up to 3 attempts; restarts the services; result Succeeded or SucceededWithWarnings. | Core 947 | **Keep**. |
-| WU-72 | `catroot2` is not reset. | Core 947 | **Owner** (Q-WU-2). |
+| WU-72 | `catroot2` is not reset. | Core 947 | **Change** (owner, Q-WU-2): with `cryptsvc` stopped, also rename `%SystemRoot%\System32\catroot2` to a dated backup, which Windows rebuilds, as in Microsoft's reset procedure. Refuses any other path. |
 | WU-73 | The `-ForceReset` switch is accepted but does nothing. | Core 949 | **Drop**. |
 
 ## 8. Configuration, state and records
@@ -101,8 +101,8 @@ Line numbers refer to that commit.
 | WU-80 | Machine config `%ProgramData%\PcNinja\WinUpdateTool\config.json` and state `state.json`, written atomically; version-based migration of old defaults. | Core 1177–1340 | **Keep** the content, new folder `%ProgramData%\PcNinja\WinTool`. Import the V2 file on takeover (D-015). |
 | WU-81 | State: last run started/finished/type/result/message, last success, retry scheduled/reason/count, restart required. | Core 1282 | **Keep**. Shown on the Dashboard and the Windows Update screen. |
 | WU-82 | Run lock file with process id and a 6-hour stale timeout. | Core 1359 | **Change**. The machine-wide operation lock (`OperationLock`) replaces it; the system releases it if the process dies. |
-| WU-83 | Every log line also goes to the Windows Application event log (source "PcNinja WinUpdate Tool"). Event ids are reused for different meanings (for example 1080–1086). | Core 1097 | **Owner** (Q-WU-4). If kept: one fixed event id per meaning. |
-| WU-84 | Important message boxes play a soft alert sound. | Core 185 | **Owner** (Q-WU-4). |
+| WU-83 | Every log line also goes to the Windows Application event log (source "PcNinja WinUpdate Tool"). Event ids are reused for different meanings (for example 1080–1086). | Core 1097 | **Change** (owner, Q-WU-4): keep the event log with source `WinTool by PcNinja`, one fixed event id per meaning, documented in a table. |
+| WU-84 | Important message boxes play a soft alert sound. | Core 185 | **Drop** (owner, Q-WU-4). |
 | WU-85 | Log collection: a zip with logs, config, state, exported task XML and a status JSON. | Script 1480 | **Keep** as `logs collect`, covering all WinTool modules. |
 | WU-86 | Status (`-Mode Status`): tool, version, computer, user, admin, paths, config, state, tasks, pending restart, activity, recent log lines. | Script 359 | **Keep** as `status --json`. |
 
@@ -123,15 +123,15 @@ Line numbers refer to that commit.
 
 | Id | V2 behavior | Source | WinTool |
 | --- | --- | --- | --- |
-| WU-99 | Driver inventory report (CSV, JSON, summary) with manufacturer recommendations. | Core 2348–3014 | **Owner** (Q-WU-1). The Drivers screen was removed; driver updates through Windows Update stay (WU-03, WU-07). |
+| WU-99 | Driver inventory report (CSV, JSON, summary) with manufacturer recommendations. | Core 2348–3014 | **Drop** (owner, Q-WU-1). Driver updates through Windows Update stay (WU-03, WU-07); manufacturer links are on the Drivers & Links screen. |
 
 ---
 
-## Owner questions
+## Owner decisions (2026-11-06)
 
-| Id | Question | Recommendation |
+| Id | Question | Decision |
 | --- | --- | --- |
-| Q-WU-1 | Drop the driver audit report entirely? | Drop. Driver updates still come from Windows Update. |
-| Q-WU-2 | Also reset `catroot2` during "Reset Windows Update"? | Yes. It is part of the standard Microsoft reset procedure and fixes signature-database problems. |
-| Q-WU-3 | "Restart now": immediate, or a short countdown that warns signed-in users? | 60-second countdown with a message, cancellable from the app. |
-| Q-WU-4 | Keep writing to the Windows event log, and keep the alert sound? | Event log yes (monitoring tools read it); sound no. |
+| Q-WU-1 | Drop the driver audit report? | Dropped. |
+| Q-WU-2 | Also reset `catroot2`? | Yes. |
+| Q-WU-3 | "Restart now": immediate or countdown? | Immediate, as in V2. |
+| Q-WU-4 | Event log and alert sound? | Event log yes, sound no. |

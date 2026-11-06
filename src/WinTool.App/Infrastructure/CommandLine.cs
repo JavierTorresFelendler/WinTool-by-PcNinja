@@ -46,7 +46,7 @@ namespace WinTool.App.Infrastructure
         {
             writer.WriteLine(ProductInfo.Name + " " + ProductInfo.Version);
             writer.WriteLine();
-            writer.WriteLine("Usage: WinTool.exe [command]");
+            writer.WriteLine("Usage: WinTool-by-PcNinja.exe [command]");
             writer.WriteLine();
             writer.WriteLine("  (no command)   Open the application window");
             writer.WriteLine("  version        Show the version");

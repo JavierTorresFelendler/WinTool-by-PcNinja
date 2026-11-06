@@ -41,7 +41,7 @@ namespace WinTool.App.Theming
 
             var dictionary = theme == VisualTheme.HighContrast
                 ? CreateHighContrastDictionary()
-                : new ResourceDictionary { Source = new Uri("pack://application:,,,/WinTool;component/Themes/" + theme + ".xaml", UriKind.Absolute) };
+                : new ResourceDictionary { Source = new Uri("pack://application:,,,/WinTool-by-PcNinja;component/Themes/" + theme + ".xaml", UriKind.Absolute) };
 
             var merged = application.Resources.MergedDictionaries;
             if (active != null) merged.Remove(active);
@@ -96,11 +96,11 @@ namespace WinTool.App.Theming
             return dictionary;
         }
 
-        /// <summary>Names of the compiled XAML resources inside WinTool.exe.</summary>
+        /// <summary>Names of the compiled XAML resources inside WinTool-by-PcNinja.exe.</summary>
         public static HashSet<string> CompiledResourceKeys()
         {
             var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var manager = new ResourceManager("WinTool.g", typeof(ThemeManager).Assembly);
+            var manager = new ResourceManager("WinTool-by-PcNinja.g", typeof(ThemeManager).Assembly);
             var set = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false);
             if (set == null) return keys;
             foreach (DictionaryEntry entry in set) keys.Add((string)entry.Key);

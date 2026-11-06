@@ -5,9 +5,9 @@
         xmlns:vm="clr-namespace:WinTool.App.ViewModels"
         xmlns:views="clr-namespace:WinTool.App.Views"
         Title="WinTool by PcNinja"
-        Width="1280" Height="800" MinWidth="1024" MinHeight="680"
+        Width="1280" Height="800" MinWidth="760" MinHeight="520"
         WindowStartupLocation="CenterScreen"
-        Icon="/WinTool;component/Assets/PcNinja.ico"
+        Icon="/WinTool-by-PcNinja;component/Assets/PcNinja.ico"
         Background="{DynamicResource Brush.Bg}"
         Foreground="{DynamicResource Brush.Text}"
         FontFamily="{StaticResource Font.Ui}"
@@ -60,7 +60,7 @@
                                 AutomationProperties.Name="{loc:Loc Caption_Close}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                        <Image Source="/WinTool;component/Assets/pcninja-mascot.png" Width="20" Height="20" RenderOptions.BitmapScalingMode="HighQuality" />
+                        <Image Source="/WinTool-by-PcNinja;component/Assets/pcninja-mascot.png" Width="20" Height="20" RenderOptions.BitmapScalingMode="HighQuality" />
                         <TextBlock Text="WinTool by PcNinja" Margin="8,0,0,0" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
                     </StackPanel>
                 </DockPanel>
@@ -68,22 +68,43 @@
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <!-- Sidebar -->
                 <Border Grid.Column="0" Background="{DynamicResource Brush.Side}" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,0,1,0">
-                    <DockPanel Margin="12,16,12,14">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Width" Value="220" />
+                            <Style.Triggers>
+                                <!-- Small screens (decision D-019): icons only; names appear as tooltips. -->
+                                <DataTrigger Binding="{Binding IsCompact}" Value="True">
+                                    <Setter Property="Width" Value="64" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <DockPanel Margin="10,14,10,12">
                         <StackPanel DockPanel.Dock="Bottom">
                             <Border Height="1" Background="{DynamicResource Brush.Divider}" Margin="0,0,0,12" />
-                            <TextBlock Text="{Binding VersionText}" FontSize="12" Foreground="{DynamicResource Brush.Muted}" Margin="8,0,8,8" />
-                            <Button Style="{StaticResource Button.Secondary}" Command="{Binding CheckToolUpdateCommand}" HorizontalContentAlignment="Left"
-                                    Content="{loc:Loc Footer_CheckToolUpdate}" ToolTip="{loc:Loc Footer_CheckToolUpdate_Later}" ToolTipService.ShowOnDisabled="True" />
-                            <Button Style="{StaticResource Button.Soft}" Command="{Binding OpenHelpCommand}" Margin="0,6,0,0" ToolTip="help.pcninja.pro">
+                            <TextBlock Text="{Binding VersionText}" FontSize="12" Foreground="{DynamicResource Brush.Muted}" Margin="8,0,8,8"
+                                       Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibility}}" />
+                            <Button Style="{StaticResource Button.Secondary}" Command="{Binding CheckToolUpdateCommand}" Padding="10,7"
+                                    ToolTip="{loc:Loc Footer_CheckToolUpdate_Later}" ToolTipService.ShowOnDisabled="True"
+                                    AutomationProperties.Name="{loc:Loc Footer_CheckToolUpdate}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#xE897;" FontFamily="{StaticResource Font.Icons}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                                    <TextBlock Text="{loc:Loc Footer_Help}" />
+                                    <TextBlock Text="&#xE895;" FontFamily="{StaticResource Font.Icons}" VerticalAlignment="Center" />
+                                    <TextBlock Text="{loc:Loc Footer_CheckToolUpdate}" Margin="8,0,0,0"
+                                               Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibility}}" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource Button.Soft}" Command="{Binding OpenHelpCommand}" Margin="0,6,0,0" Padding="10,7"
+                                    ToolTip="help.pcninja.pro" AutomationProperties.Name="{loc:Loc Footer_Help}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE897;" FontFamily="{StaticResource Font.Icons}" VerticalAlignment="Center" />
+                                    <TextBlock Text="{loc:Loc Footer_Help}" Margin="8,0,0,0"
+                                               Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibility}}" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -97,7 +118,9 @@
                                                 Visibility="{Binding SeparatorBefore, Converter={StaticResource BoolToVisibility}}" />
                                         <RadioButton Style="{StaticResource RadioButton.Nav}" GroupName="Navigation" Margin="0,1"
                                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                     AutomationProperties.Name="{Binding Title}">
+                                                     AutomationProperties.Name="{Binding Title}"
+                                                     ToolTip="{Binding Title}"
+                                                     ToolTipService.IsEnabled="{Binding DataContext.IsCompact, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Viewbox Width="18" Height="18">
                                                     <Canvas Width="24" Height="24">
@@ -106,7 +129,8 @@
                                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                                                     </Canvas>
                                                 </Viewbox>
-                                                <TextBlock Text="{Binding Title}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding Title}" Margin="10,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                           Visibility="{Binding DataContext.IsExpanded, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BoolToVisibility}}" />
                                             </StackPanel>
                                         </RadioButton>
                                     </StackPanel>
@@ -118,7 +142,18 @@
 
                 <!-- Content -->
                 <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
-                    <ContentControl Content="{Binding CurrentPage}" Margin="24,20,24,24" Focusable="False" />
+                    <ContentControl Content="{Binding CurrentPage}" Focusable="False">
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="Margin" Value="24,20,24,24" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCompact}" Value="True">
+                                        <Setter Property="Margin" Value="16,14,16,16" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
                 </ScrollViewer>
             </Grid>
         </Grid>

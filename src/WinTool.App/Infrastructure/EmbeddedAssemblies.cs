@@ -5,7 +5,7 @@ using System.Reflection;
 namespace WinTool.App.Infrastructure
 {
     /// <summary>
-    /// Loads referenced assemblies that the build embedded into WinTool.exe.
+    /// Loads referenced assemblies that the build embedded into WinTool-by-PcNinja.exe.
     /// The portable EXE is one file; nothing is extracted to disk (lesson from
     /// WinUpdate Tool V2.2.5: no dropped executables).
     /// This class must not reference WinTool.Core: it runs before Core can load.

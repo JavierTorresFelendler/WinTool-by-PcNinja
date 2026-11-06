@@ -17,6 +17,7 @@ namespace WinTool.App.ViewModels
         private const string IconLinks = "M10,14 A4.5,4.5 0 0 0 16.4,14 L19.4,11 A4.5,4.5 0 0 0 13,4.6 L12,5.6 M14,10 A4.5,4.5 0 0 0 7.6,10 L4.6,13 A4.5,4.5 0 0 0 11,19.4 L12,18.4";
 
         private PageViewModel currentPage;
+        private bool isCompact;
 
         public MainViewModel(SettingsPageViewModel settingsPage)
         {
@@ -43,6 +44,18 @@ namespace WinTool.App.ViewModels
             get => currentPage;
             private set => Set(ref currentPage, value);
         }
+
+        /// <summary>True on narrow windows: the sidebar shows icons only.</summary>
+        public bool IsCompact
+        {
+            get => isCompact;
+            set
+            {
+                if (Set(ref isCompact, value)) OnPropertyChanged(nameof(IsExpanded));
+            }
+        }
+
+        public bool IsExpanded => !isCompact;
 
         public string VersionText => T.Format("Footer_Installed", ProductInfo.Version);
 

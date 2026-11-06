@@ -87,19 +87,19 @@ Footer: installed version, latest version, **Check Tool Update**.
 One CLI grammar for all modules, which the scheduled task also uses:
 
 ```text
-WinTool.exe <area> <command> [options] [--json]
+WinTool-by-PcNinja.exe <area> <command> [options] [--json]
 
-WinTool.exe update scan
-WinTool.exe update install [--include-optional] [--no-reboot]
-WinTool.exe update reset
-WinTool.exe schedule show
-WinTool.exe schedule set --frequency Monthly --day 15 --time 03:00 ...
-WinTool.exe schedule remove
-WinTool.exe upgrade status | scan | validate | run
-WinTool.exe office status | install --product ... | remove
-WinTool.exe app-update check | install
-WinTool.exe status [--json]
-WinTool.exe logs collect
+WinTool-by-PcNinja.exe update scan
+WinTool-by-PcNinja.exe update install [--include-optional] [--no-reboot]
+WinTool-by-PcNinja.exe update reset
+WinTool-by-PcNinja.exe schedule show
+WinTool-by-PcNinja.exe schedule set --frequency Monthly --day 15 --time 03:00 ...
+WinTool-by-PcNinja.exe schedule remove
+WinTool-by-PcNinja.exe upgrade status | scan | validate | run
+WinTool-by-PcNinja.exe office status | install --product ... | remove
+WinTool-by-PcNinja.exe app-update check | install
+WinTool-by-PcNinja.exe status [--json]
+WinTool-by-PcNinja.exe logs collect
 ```
 
 Exit codes are documented per command. `--json` output is stable and

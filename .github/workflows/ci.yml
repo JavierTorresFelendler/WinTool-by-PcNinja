@@ -56,17 +56,18 @@ jobs:
             exit $LASTEXITCODE
           }
 
-      - name: Portable EXE self-test (WinTool.exe alone in an empty folder)
+      - name: Portable EXE self-test (WinTool-by-PcNinja.exe alone in an empty folder)
         shell: pwsh
         run: |
-          $source = "src/WinTool.App/bin/${{ matrix.configuration }}/net48/WinTool.exe"
+          $source = "src/WinTool.App/bin/${{ matrix.configuration }}/net48/WinTool-by-PcNinja.exe"
           if (-not (Test-Path $source)) { Write-Output "::warning title=self-test::$source not found, searching" }
-          if (-not (Test-Path $source)) { $source = Get-ChildItem -Recurse -Filter WinTool.exe src/WinTool.App/bin | Where-Object FullName -like "*${{ matrix.configuration }}*" | Select-Object -First 1 -ExpandProperty FullName }
+          if (-not (Test-Path $source)) { $source = Get-ChildItem -Recurse -Filter WinTool-by-PcNinja.exe src/WinTool.App/bin | Where-Object FullName -like "*${{ matrix.configuration }}*" | Select-Object -First 1 -ExpandProperty FullName }
           $portable = Join-Path $env:RUNNER_TEMP "portable"
           New-Item -ItemType Directory -Force $portable | Out-Null
           Copy-Item $source $portable
+          if ((Split-Path $source -Leaf) -ne "WinTool-by-PcNinja.exe") { Write-Output "::error title=naming::Official file name must be WinTool-by-PcNinja.exe"; exit 1 }
           Get-ChildItem $portable | Format-Table Name, Length
-          $exe = Join-Path $portable "WinTool.exe"
+          $exe = Join-Path $portable "WinTool-by-PcNinja.exe"
           $out = Join-Path $env:RUNNER_TEMP "selftest.txt"
           $p = Start-Process -FilePath $exe -ArgumentList "--self-test" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out
           Get-Content $out
@@ -88,6 +89,6 @@ jobs:
         if: matrix.configuration == 'Release'
         uses: actions/upload-artifact@v6
         with:
-          name: WinTool-portable-unsigned
-          path: src/WinTool.App/bin/Release/net48/WinTool.exe
+          name: WinTool-by-PcNinja-portable-unsigned
+          path: src/WinTool.App/bin/Release/net48/WinTool-by-PcNinja.exe
           if-no-files-found: error

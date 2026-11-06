@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
     <RootNamespace>WinTool.App</RootNamespace>
-    <AssemblyName>WinTool</AssemblyName>
+    <AssemblyName>WinTool-by-PcNinja</AssemblyName>
     <ApplicationIcon>Assets\PcNinja.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>WinTool.App.Program</StartupObject>
@@ -26,13 +26,13 @@
     <Resource Include="Assets\PcNinja.ico" />
   </ItemGroup>
 
-  <!-- Every language is a neutral resource inside WinTool.exe (no satellite folders), so the portable EXE is one file. -->
+  <!-- Every language is a neutral resource inside WinTool-by-PcNinja.exe (no satellite folders), so the portable EXE is one file. -->
   <ItemGroup>
     <EmbeddedResource Update="Localization\Strings.he.resx" WithCulture="false" LogicalName="WinTool.App.Localization.Strings.he.resources" />
     <EmbeddedResource Update="Localization\Strings.resx" LogicalName="WinTool.App.Localization.Strings.resources" />
   </ItemGroup>
 
-  <!-- Embed referenced assemblies (WinTool.Core.dll, ...) so WinTool.exe runs on its own. See Infrastructure\EmbeddedAssemblies.cs. -->
+  <!-- Embed referenced assemblies (WinTool.Core.dll, ...) so WinTool-by-PcNinja.exe runs on its own. See Infrastructure\EmbeddedAssemblies.cs. -->
   <Target Name="EmbedReferencedAssemblies" AfterTargets="ResolveAssemblyReferences">
     <ItemGroup>
       <EmbeddedResource Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll'">

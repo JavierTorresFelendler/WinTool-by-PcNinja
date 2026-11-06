@@ -206,6 +206,38 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - **Note:** The shared file password shown on the Drivers & Links screen is
   public on purpose (it carries the PcNinja name).
 
+## D-018 Official file names and how updates replace them
+
+- **Status:** Accepted (2026-11-06). Updates the file name in D-016.
+- **Decision:**
+  - The executable is always `WinTool-by-PcNinja.exe` and the installer is
+    always `WinTool-by-PcNinja.msi`. Release file names never contain a
+    version; the version lives in the file properties.
+  - **Portable update:** after the new EXE is downloaded and its SHA-256 is
+    verified, the running copy is renamed with its version, for example
+    `WinTool-by-PcNinja-v1.2.0.0.exe`, the new file takes the official
+    name, and the app restarts. The previous version stays next to it
+    (the same approach as Smart Office Installer).
+  - **MSI:** standard Windows Installer behavior. A newer version upgrades
+    in place. The same version opens maintenance (Repair or Remove). An
+    older version is blocked with a message. See `docs/MSI-AND-CLI.md`.
+
+## D-019 Works on small screens down to 1024x768
+
+- **Status:** Accepted (2026-11-06)
+- **Context:** Freshly installed computers often run at 1024x768 before the
+  display driver is installed. 1366x768 laptops at 125% scaling leave about
+  1093x582 usable pixels.
+- **Decision:**
+  - The window opens at 1280x800 when it fits, otherwise maximized. Minimum
+    size is 760x520.
+  - Below 1100 pixels wide the sidebar shows icons only, with the names as
+    tooltips.
+  - Every screen scrolls instead of cutting content. Each screen is checked
+    at 1024x768 in both languages, in addition to the checks in D-012.
+- **Consequences:** Layouts use wrapping and flexible columns, never fixed
+  page widths.
+
 ---
 
 ## Open questions

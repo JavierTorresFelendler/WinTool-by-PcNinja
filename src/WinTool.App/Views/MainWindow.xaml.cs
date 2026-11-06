@@ -1,6 +1,8 @@
 using System;
 using System.Windows;
 using WinTool.App.Localization;
+using WinTool.App.ViewModels;
+using WinTool.Core.Platform;
 
 namespace WinTool.App.Views
 {
@@ -9,8 +11,30 @@ namespace WinTool.App.Views
         public MainWindow()
         {
             InitializeComponent();
+            ApplyOpeningSize();
             StateChanged += OnStateChanged;
+            SizeChanged += (sender, e) => UpdateCompactLayout();
+            DataContextChanged += (sender, e) => UpdateCompactLayout();
             Loc.Instance.LanguageChanged += (sender, e) => UpdateMaximizeButton();
+        }
+
+        /// <summary>Fits the window to small screens such as 1024x768 (decision D-019).</summary>
+        private void ApplyOpeningSize()
+        {
+            var workArea = SystemParameters.WorkArea;
+            var placement = WindowSizing.Choose(workArea.Width, workArea.Height);
+            Width = placement.Width;
+            Height = placement.Height;
+            if (placement.Maximize) WindowState = WindowState.Maximized;
+        }
+
+        private void UpdateCompactLayout()
+        {
+            if (DataContext is MainViewModel model)
+            {
+                var width = ActualWidth > 0 ? ActualWidth : Width;
+                model.IsCompact = WindowSizing.UseCompactSidebar(width);
+            }
         }
 
         private void OnMinimize(object sender, RoutedEventArgs e)

@@ -8,8 +8,10 @@
 | Scope | Per-machine, x64 |
 | Install folder | `%ProgramFiles%\PcNinja\WinTool` |
 | UpgradeCode | New GUID, fixed forever after the first release |
-| Upgrades | Major upgrade; installing a newer version replaces the old one |
-| Downgrade | Blocked, with a message |
+| File name | Always `WinTool-by-PcNinja.msi`, without a version (D-018) |
+| Newer version | Major upgrade; the old version is replaced in place |
+| Same version | Maintenance: the setup offers **Repair** or **Remove** |
+| Older version | Blocked, with a message that a newer version is installed |
 | Toolset | WiX (same major version as WinUpdate V2) |
 
 ## Interactive setup pages
@@ -72,12 +74,22 @@ msiexec /i WinTool-by-PcNinja.msi /qn /norestart ^
 msiexec /x WinTool-by-PcNinja.msi /qn
 ```
 
+Repair (same version, silent):
+
+```bat
+msiexec /fa WinTool-by-PcNinja.msi /qn /norestart
+```
+
+Exit codes scripts should expect: `0` success, `3010` success with restart
+required, `1618` another installation is running (try again later, D-013),
+`1603` failed (see the log).
+
 ## How the schedule is applied
 
 The MSI does not create the scheduled task itself. After the files are
-installed, a custom action runs `WinTool.exe schedule set ...` with the
+installed, a custom action runs `WinTool-by-PcNinja.exe schedule set ...` with the
 property values. The MSI, the GUI and the CLI therefore share one code path for
-schedules. Uninstall runs `WinTool.exe schedule remove` before removing files.
+schedules. Uninstall runs `WinTool-by-PcNinja.exe schedule remove` before removing files.
 
 ## Command line
 

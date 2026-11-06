@@ -49,10 +49,12 @@ Versions before 1.0 are internal previews.
 
 ## Phase 6: Release readiness (0.9)
 
-- One self-update flow for MSI and portable installs.
+- One self-update flow for MSI and portable installs (D-018: portable keeps
+  the previous copy as `WinTool-by-PcNinja-v<version>.exe`).
 - Spanish translation.
 - Release workflow that publishes only tested packages, with SHA-256 hashes.
-- VM test checklist across Windows 10 1903, Windows 10 22H2 and Windows 11.
+- VM test checklist across Windows 10 1903, Windows 10 22H2 and Windows 11,
+  including 1024x768 and 1366x768 at 125% (D-019).
 
 ## Phase 7: 1.0
 

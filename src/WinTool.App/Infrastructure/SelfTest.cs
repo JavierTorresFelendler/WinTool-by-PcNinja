@@ -8,7 +8,7 @@ using WinTool.Core.Diagnostics;
 namespace WinTool.App.Infrastructure
 {
     /// <summary>
-    /// "--self-test": proves that a copied WinTool.exe is complete. CI runs it
+    /// "--self-test": proves that a copied WinTool-by-PcNinja.exe is complete. CI runs it
     /// on the portable EXE alone in an empty folder.
     /// </summary>
     internal static class SelfTest

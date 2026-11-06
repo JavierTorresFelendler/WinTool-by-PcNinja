@@ -21,9 +21,9 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
 
@@ -31,7 +31,18 @@ jobs:
         run: dotnet restore WinTool.sln
 
       - name: Build
-        run: dotnet build WinTool.sln -c ${{ matrix.configuration }} --no-restore
+        shell: pwsh
+        run: |
+          dotnet build WinTool.sln -c ${{ matrix.configuration }} --no-restore "-flp:logfile=build.log;verbosity=minimal"
+          $code = $LASTEXITCODE
+          if ($code -ne 0) {
+            # Surface each compiler/XAML error as an annotation so it is readable without the raw log.
+            Get-Content build.log | Select-String -Pattern ': error ' | Select-Object -First 40 | ForEach-Object {
+              $line = $_.Line -replace '%', '%25' -replace "`r", '' -replace "`n", ' '
+              Write-Output "::error::$line"
+            }
+            exit $code
+          }
 
       - name: Unit tests
         run: dotnet test tests/WinTool.Core.Tests/WinTool.Core.Tests.csproj -c ${{ matrix.configuration }} --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
@@ -58,14 +69,14 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results-${{ matrix.configuration }}
           path: TestResults
 
       - name: Upload portable EXE
         if: matrix.configuration == 'Release'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: WinTool-portable-unsigned
           path: src/WinTool.App/bin/**/Release/net48/WinTool.exe

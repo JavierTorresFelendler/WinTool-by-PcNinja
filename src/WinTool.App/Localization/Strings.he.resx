@@ -276,4 +276,69 @@
   <data name="UP_ChooseDownloadFolderTitle" xml:space="preserve"><value>בחר את תיקיית ההורדה</value></data>
   <data name="UP_SelectedFolder" xml:space="preserve"><value>תיקייה שנבחרה</value></data>
   <data name="UP_IsoFilter" xml:space="preserve"><value>קובצי ISO</value></data>
+  <data name="OF_Family" xml:space="preserve"><value>משפחת מוצרים</value></data>
+  <data name="OF_Mode" xml:space="preserve"><value>מצב</value></data>
+  <data name="OF_ModeInstall" xml:space="preserve"><value>התקנה במחשב הזה</value></data>
+  <data name="OF_ModePackage" xml:space="preserve"><value>חבילה לא מקוונת</value></data>
+  <data name="OF_ModeRemove" xml:space="preserve"><value>הסרת כל ה־Office</value></data>
+  <data name="OF_Channel" xml:space="preserve"><value>ערוץ עדכונים</value></data>
+  <data name="OF_ChannelLtsc" xml:space="preserve"><value>קבוע ב־Office LTSC 2024</value></data>
+  <data name="OF_Ch_Current" xml:space="preserve"><value>ערוץ שוטף (Current)</value></data>
+  <data name="OF_Ch_MonthlyEnterprise" xml:space="preserve"><value>ערוץ חודשי לארגונים</value></data>
+  <data name="OF_Ch_SemiAnnual" xml:space="preserve"><value>ערוץ חצי־שנתי לארגונים</value></data>
+  <data name="OF_Arch" xml:space="preserve"><value>ארכיטקטורה</value></data>
+  <data name="OF_Arch64" xml:space="preserve"><value>64 סיביות</value></data>
+  <data name="OF_Arch32" xml:space="preserve"><value>32 סיביות</value></data>
+  <data name="OF_Apps" xml:space="preserve"><value>יישומים כלולים</value></data>
+  <data name="OF_Languages" xml:space="preserve"><value>שפות</value></data>
+  <data name="OF_LanguagesHint" xml:space="preserve"><value>השפה הראשונה היא השפה הראשית.</value></data>
+  <data name="OF_AddLanguage" xml:space="preserve"><value>הוספת שפה</value></data>
+  <data name="OF_SearchLanguage" xml:space="preserve"><value>חיפוש שפה</value></data>
+  <data name="OF_RemoveLanguage" xml:space="preserve"><value>הסרת {0}</value></data>
+  <data name="OF_Addons" xml:space="preserve"><value>מוצרים נוספים</value></data>
+  <data name="OF_AutoActivate" xml:space="preserve"><value>הפעלת רישיון הנפח במהלך ההתקנה</value></data>
+  <data name="OF_RemoveExisting" xml:space="preserve"><value>הסרת ה־Office המותקן תחילה</value></data>
+  <data name="OF_PackageFolder" xml:space="preserve"><value>תיקיית החבילה</value></data>
+  <data name="OF_PackageHint" xml:space="preserve"><value>Office נשמר בתיקייה OFFICE-OFFLINE בתוך התיקייה שתבחר.</value></data>
+  <data name="OF_ChooseFolder" xml:space="preserve"><value>בחירה…</value></data>
+  <data name="OF_ChoosePackageFolderTitle" xml:space="preserve"><value>בחר היכן ליצור את החבילה הלא מקוונת</value></data>
+  <data name="OF_RemoveWarning" xml:space="preserve"><value>כל מוצרי ה־Office מסוג Click-to-Run במחשב הזה יוסרו.</value></data>
+  <data name="OF_Summary" xml:space="preserve"><value>סיכום</value></data>
+  <data name="OF_Current" xml:space="preserve"><value>מותקן כעת</value></data>
+  <data name="OF_NoneInstalled" xml:space="preserve"><value>אין Office</value></data>
+  <data name="OF_Reading" xml:space="preserve"><value>קורא…</value></data>
+  <data name="OF_WillReplace" xml:space="preserve"><value>יוסר לפני ההתקנה החדשה.</value></data>
+  <data name="OF_AppsCount" xml:space="preserve"><value>{0} מתוך {1}</value></data>
+  <data name="OF_LicenseNote" xml:space="preserve"><value>נדרש רישוי תקף של Microsoft. לא כלולים כלי הפעלה.</value></data>
+  <data name="OF_Install" xml:space="preserve"><value>התקנת Office</value></data>
+  <data name="OF_CreatePackage" xml:space="preserve"><value>יצירת חבילה</value></data>
+  <data name="OF_Remove" xml:space="preserve"><value>הסרת Office</value></data>
+  <data name="OF_Cancel" xml:space="preserve"><value>ביטול</value></data>
+  <data name="OF_Log" xml:space="preserve"><value>פרטים</value></data>
+  <data name="OF_Stage_FindingTool" xml:space="preserve"><value>מאתר את הגרסה האחרונה של כלי הפריסה של Office…</value></data>
+  <data name="OF_Stage_DownloadingTool" xml:space="preserve"><value>מוריד את כלי הפריסה של Office…</value></data>
+  <data name="OF_Stage_CheckingTool" xml:space="preserve"><value>בודק את החתימה של Microsoft…</value></data>
+  <data name="OF_Stage_ExtractingTool" xml:space="preserve"><value>מחלץ את כלי הפריסה של Office…</value></data>
+  <data name="OF_Stage_Installing" xml:space="preserve"><value>מתקין את Office. זה יכול לקחת 10 עד 30 דקות.</value></data>
+  <data name="OF_Stage_DownloadingOffice" xml:space="preserve"><value>מוריד את Office: {0} MB. זה יכול לקחת 20 עד 40 דקות.</value></data>
+  <data name="OF_Stage_Removing" xml:space="preserve"><value>מסיר את Office. זה יכול לקחת כמה דקות.</value></data>
+  <data name="OF_Stage_WritingPackage" xml:space="preserve"><value>כותב את קובצי החבילה…</value></data>
+  <data name="OF_Stage_CleaningUp" xml:space="preserve"><value>מנקה…</value></data>
+  <data name="OF_Done_Install" xml:space="preserve"><value>Office הותקן.</value></data>
+  <data name="OF_Done_Remove" xml:space="preserve"><value>Office הוסר.</value></data>
+  <data name="OF_Done_Package" xml:space="preserve"><value>החבילה מוכנה. העתק את כל התיקייה למחשב היעד והרץ את Install-Office.bat כמנהל.</value></data>
+  <data name="OF_OpenPackage" xml:space="preserve"><value>פתיחת התיקייה</value></data>
+  <data name="OF_Cancelled" xml:space="preserve"><value>בוטל. Office לא שונה.</value></data>
+  <data name="OF_Busy" xml:space="preserve"><value>פעולה אחרת של WinTool פועלת. המתן לסיומה ונסה שוב.</value></data>
+  <data name="OF_ToolUnavailable" xml:space="preserve"><value>לא ניתן היה להוריד את כלי הפריסה של Office מ־Microsoft.</value></data>
+  <data name="OF_ToolNotTrusted" xml:space="preserve"><value>הכלי שהורד אינו חתום על ידי Microsoft. לא הורץ דבר.</value></data>
+  <data name="OF_SetupFailed" xml:space="preserve"><value>מתקין ה־Office נעצר עם הקוד {0}.</value></data>
+  <data name="OF_Failed" xml:space="preserve"><value>הפעולה נעצרה:</value></data>
+  <data name="OF_Confirm_Remove" xml:space="preserve"><value>להסיר את כל מוצרי ה־Office מסוג Click-to-Run מהמחשב הזה?
+
+לא ניתן לבטל זאת מתוך WinTool.</value></data>
+  <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>ה־Office המותקן יוסר לפני ההתקנה החדשה. להמשיך?</value></data>
+  <data name="OF_NeedApp" xml:space="preserve"><value>בחר לפחות יישום אחד.</value></data>
+  <data name="OF_NeedLanguage" xml:space="preserve"><value>בחר לפחות שפה אחת.</value></data>
+  <data name="OF_NeedFolder" xml:space="preserve"><value>בחר את תיקיית החבילה.</value></data>
 </root>

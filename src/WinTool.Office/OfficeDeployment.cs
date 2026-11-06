@@ -225,6 +225,9 @@ public sealed class OfficeDeployment
 
     // ---------------------------------------------------------------- shared flow
 
+    /// <summary>A progress line; bytes only for the running Office download size (not written to the log each second).</summary>
+    private delegate void Reporter(int percent, OfficeStage stage, string message, long? bytes = null);
+
     private sealed class Work
     {
         public Work(string folder) { Folder = folder; }
@@ -234,12 +237,12 @@ public sealed class OfficeDeployment
     }
 
     private async Task<OfficeOutcome> RunAsync(IProgress<OfficeProgress>? progress, CancellationToken token,
-        Func<Work, Action<int, OfficeStage, string>, Task<OfficeOutcome>> body)
+        Func<Work, Reporter, Task<OfficeOutcome>> body)
     {
-        void Report(int percent, OfficeStage stage, string message)
+        void Report(int percent, OfficeStage stage, string message, long? bytes = null)
         {
-            AppLog.Current.Info(LogArea, message);
-            progress?.Report(new OfficeProgress(percent, stage, message));
+            if (bytes == null) AppLog.Current.Info(LogArea, message);
+            progress?.Report(new OfficeProgress(percent, stage, message, bytes));
         }
 
         using (var gate = acquireLock())
@@ -268,7 +271,7 @@ public sealed class OfficeDeployment
         }
     }
 
-    private async Task PrepareToolAsync(Work work, Action<int, OfficeStage, string> report, CancellationToken token)
+    private async Task PrepareToolAsync(Work work, Reporter report, CancellationToken token)
     {
         report(3, OfficeStage.FindingTool, "Finding the latest Office Deployment Tool.");
         var link = await OdtSource.ResolveAsync(tools, message => AppLog.Current.Warn(LogArea, message), token).ConfigureAwait(false);
@@ -304,7 +307,7 @@ public sealed class OfficeDeployment
     }
 
     /// <summary>The original tool's download meter: folder size every second, a report at least every 10 seconds.</summary>
-    private static async Task MonitorDownloadAsync(Task run, string officeFolder, Action<int, OfficeStage, string> report)
+    private static async Task MonitorDownloadAsync(Task run, string officeFolder, Reporter report)
     {
         var started = DateTime.UtcNow;
         var lastReport = DateTime.MinValue;
@@ -320,7 +323,7 @@ public sealed class OfficeDeployment
             if (bytes > lastBytes) byTime = Math.Max(byTime, percent + 1);
             percent = Math.Min(88, Math.Max(percent, byTime));
             report(percent, OfficeStage.DownloadingOffice, string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                "Downloading Office... {0:N0} MB", bytes / 1048576.0));
+                "Downloading Office... {0:N0} MB", bytes / 1048576.0), bytes);
             lastReport = now;
             lastBytes = bytes;
         }

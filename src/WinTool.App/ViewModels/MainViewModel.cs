@@ -30,7 +30,7 @@ namespace WinTool.App.ViewModels
                 Item("dashboard", "Nav_Dashboard", IconDashboard, false, dashboardPage),
                 Item("windows-update", "Nav_WindowsUpdate", IconUpdate, true, windowsUpdatePage),
                 Item("windows-upgrade", "Nav_WindowsUpgrade", IconUpgrade, false, new WindowsUpgradePageViewModel()),
-                Item("office", "Nav_Office", IconOffice, false, new PlaceholderPageViewModel("Nav_Office", "Page_Office_Subtitle", 5)),
+                Item("office", "Nav_Office", IconOffice, false, new OfficePageViewModel()),
                 Item("logs", "Nav_Logs", IconLogs, true, new PlaceholderPageViewModel("Nav_Logs", "Page_Logs_Subtitle", 2)),
                 Item("settings", "Nav_Settings", IconSettings, false, settingsPage),
                 Item("links", "Nav_Links", IconLinks, false, new PlaceholderPageViewModel("Nav_Links", "Page_Links_Subtitle", 2))

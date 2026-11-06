@@ -27,7 +27,7 @@ public static class OdtSource
     public const string DownloadPage = "https://www.microsoft.com/en-us/download/details.aspx?id=49117";
 
     /// <summary>Update with each WinTool release (OFFICE-BEHAVIOR OF-20).</summary>
-    public const string FallbackUrl = "https://download.microsoft.com/download/6c1eeb25-cf8b-41d9-8d0d-cc1dbc032140/officedeploymenttool_18827-20140.exe";
+    public const string FallbackUrl = "https://download.microsoft.com/download/6c1eeb25-cf8b-41d9-8d0d-cc1dbc032140/officedeploymenttool_20430-20146.exe";
 
     private static readonly Regex Link = new Regex(
         @"https://download\.microsoft\.com/download/[A-Za-z0-9/\-]+/officedeploymenttool_(\d+)-(\d+)\.exe",

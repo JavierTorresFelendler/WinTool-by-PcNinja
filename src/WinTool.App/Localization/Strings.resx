@@ -276,4 +276,69 @@ Windows Setup will run silently.</value></data>
   <data name="UP_ChooseDownloadFolderTitle" xml:space="preserve"><value>Choose the download folder</value></data>
   <data name="UP_SelectedFolder" xml:space="preserve"><value>Selected folder</value></data>
   <data name="UP_IsoFilter" xml:space="preserve"><value>ISO files</value></data>
+  <data name="OF_Family" xml:space="preserve"><value>Product family</value></data>
+  <data name="OF_Mode" xml:space="preserve"><value>Mode</value></data>
+  <data name="OF_ModeInstall" xml:space="preserve"><value>Install on this PC</value></data>
+  <data name="OF_ModePackage" xml:space="preserve"><value>Offline package</value></data>
+  <data name="OF_ModeRemove" xml:space="preserve"><value>Remove all Office</value></data>
+  <data name="OF_Channel" xml:space="preserve"><value>Update channel</value></data>
+  <data name="OF_ChannelLtsc" xml:space="preserve"><value>Fixed for Office LTSC 2024</value></data>
+  <data name="OF_Ch_Current" xml:space="preserve"><value>Current Channel</value></data>
+  <data name="OF_Ch_MonthlyEnterprise" xml:space="preserve"><value>Monthly Enterprise Channel</value></data>
+  <data name="OF_Ch_SemiAnnual" xml:space="preserve"><value>Semi-Annual Enterprise Channel</value></data>
+  <data name="OF_Arch" xml:space="preserve"><value>Architecture</value></data>
+  <data name="OF_Arch64" xml:space="preserve"><value>64-bit</value></data>
+  <data name="OF_Arch32" xml:space="preserve"><value>32-bit</value></data>
+  <data name="OF_Apps" xml:space="preserve"><value>Included apps</value></data>
+  <data name="OF_Languages" xml:space="preserve"><value>Languages</value></data>
+  <data name="OF_LanguagesHint" xml:space="preserve"><value>The first language is the main one.</value></data>
+  <data name="OF_AddLanguage" xml:space="preserve"><value>Add language</value></data>
+  <data name="OF_SearchLanguage" xml:space="preserve"><value>Search languages</value></data>
+  <data name="OF_RemoveLanguage" xml:space="preserve"><value>Remove {0}</value></data>
+  <data name="OF_Addons" xml:space="preserve"><value>Additional products</value></data>
+  <data name="OF_AutoActivate" xml:space="preserve"><value>Activate the volume license during installation</value></data>
+  <data name="OF_RemoveExisting" xml:space="preserve"><value>Remove the installed Office first</value></data>
+  <data name="OF_PackageFolder" xml:space="preserve"><value>Package folder</value></data>
+  <data name="OF_PackageHint" xml:space="preserve"><value>Office is saved in an OFFICE-OFFLINE folder inside the folder you choose.</value></data>
+  <data name="OF_ChooseFolder" xml:space="preserve"><value>Choose…</value></data>
+  <data name="OF_ChoosePackageFolderTitle" xml:space="preserve"><value>Choose where to create the offline package</value></data>
+  <data name="OF_RemoveWarning" xml:space="preserve"><value>Every Click-to-Run Office product on this computer will be removed.</value></data>
+  <data name="OF_Summary" xml:space="preserve"><value>Summary</value></data>
+  <data name="OF_Current" xml:space="preserve"><value>Installed now</value></data>
+  <data name="OF_NoneInstalled" xml:space="preserve"><value>No Office</value></data>
+  <data name="OF_Reading" xml:space="preserve"><value>Reading…</value></data>
+  <data name="OF_WillReplace" xml:space="preserve"><value>Will be removed before the new installation.</value></data>
+  <data name="OF_AppsCount" xml:space="preserve"><value>{0} of {1}</value></data>
+  <data name="OF_LicenseNote" xml:space="preserve"><value>Valid Microsoft licensing is required. No activation tools are included.</value></data>
+  <data name="OF_Install" xml:space="preserve"><value>Install Office</value></data>
+  <data name="OF_CreatePackage" xml:space="preserve"><value>Create Package</value></data>
+  <data name="OF_Remove" xml:space="preserve"><value>Remove Office</value></data>
+  <data name="OF_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="OF_Log" xml:space="preserve"><value>Details</value></data>
+  <data name="OF_Stage_FindingTool" xml:space="preserve"><value>Finding the latest Office Deployment Tool…</value></data>
+  <data name="OF_Stage_DownloadingTool" xml:space="preserve"><value>Downloading the Office Deployment Tool…</value></data>
+  <data name="OF_Stage_CheckingTool" xml:space="preserve"><value>Checking the Microsoft signature…</value></data>
+  <data name="OF_Stage_ExtractingTool" xml:space="preserve"><value>Extracting the Office Deployment Tool…</value></data>
+  <data name="OF_Stage_Installing" xml:space="preserve"><value>Installing Office. This can take 10 to 30 minutes.</value></data>
+  <data name="OF_Stage_DownloadingOffice" xml:space="preserve"><value>Downloading Office: {0} MB. This can take 20 to 40 minutes.</value></data>
+  <data name="OF_Stage_Removing" xml:space="preserve"><value>Removing Office. This can take several minutes.</value></data>
+  <data name="OF_Stage_WritingPackage" xml:space="preserve"><value>Writing the package files…</value></data>
+  <data name="OF_Stage_CleaningUp" xml:space="preserve"><value>Cleaning up…</value></data>
+  <data name="OF_Done_Install" xml:space="preserve"><value>Office was installed.</value></data>
+  <data name="OF_Done_Remove" xml:space="preserve"><value>Office was removed.</value></data>
+  <data name="OF_Done_Package" xml:space="preserve"><value>The package is ready. Copy the whole folder to the target computer and run Install-Office.bat as administrator.</value></data>
+  <data name="OF_OpenPackage" xml:space="preserve"><value>Open folder</value></data>
+  <data name="OF_Cancelled" xml:space="preserve"><value>Cancelled. Office was not changed.</value></data>
+  <data name="OF_Busy" xml:space="preserve"><value>Another WinTool operation is running. Wait for it to finish, then try again.</value></data>
+  <data name="OF_ToolUnavailable" xml:space="preserve"><value>The Office Deployment Tool could not be downloaded from Microsoft.</value></data>
+  <data name="OF_ToolNotTrusted" xml:space="preserve"><value>The downloaded tool is not signed by Microsoft. Nothing was run.</value></data>
+  <data name="OF_SetupFailed" xml:space="preserve"><value>The Office installer stopped with code {0}.</value></data>
+  <data name="OF_Failed" xml:space="preserve"><value>The operation stopped:</value></data>
+  <data name="OF_Confirm_Remove" xml:space="preserve"><value>Remove every Click-to-Run Office product from this computer?
+
+This cannot be undone from WinTool.</value></data>
+  <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>The installed Office will be removed before the new installation. Continue?</value></data>
+  <data name="OF_NeedApp" xml:space="preserve"><value>Choose at least one app.</value></data>
+  <data name="OF_NeedLanguage" xml:space="preserve"><value>Choose at least one language.</value></data>
+  <data name="OF_NeedFolder" xml:space="preserve"><value>Choose the package folder.</value></data>
 </root>

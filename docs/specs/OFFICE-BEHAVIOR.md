@@ -38,7 +38,7 @@ Line numbers refer to `InstallerForm.cs` at `381a08e`.
 
 | Id | Original | WinTool |
 | --- | --- | --- |
-| OF-20 | Downloads a fixed ODT build (`officedeploymenttool_18827-20140.exe`) with WebClient. (1792) | **Change** (D-022): the newest `officedeploymenttool_*.exe` link on Microsoft's download page (id 49117), else the fixed address in `OdtSource.FallbackUrl`, updated with each WinTool release. |
+| OF-20 | Downloads a fixed ODT build (`officedeploymenttool_18827-20140.exe`) with WebClient. (1792) | **Change** (D-022): the newest `officedeploymenttool_*.exe` link on Microsoft's download page (id 49117), else the fixed address in `OdtSource.FallbackUrl` (now 20430-20146, October 2026), updated with each WinTool release. `office tool-check` on CI proves the page lookup and the signature on every build. |
 | OF-21 | Runs the download without checking it. | **Change**: the downloaded ODT and the extracted `setup.exe` must have a valid Microsoft Corporation signature before they run (`DeploymentTests`). Exit code 41 otherwise. |
 | OF-22 | Extracts with `/quiet /extract:`; a non-zero exit is a failure. (1800) | **Keep**. Also a failure when `setup.exe` is missing afterwards. |
 

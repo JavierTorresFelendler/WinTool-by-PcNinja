@@ -107,12 +107,18 @@ namespace WinTool.App.Infrastructure
                     root.SetBinding(FrameworkElement.FlowDirectionProperty, new System.Windows.Data.Binding("FlowDirection") { Source = Loc.Instance });
                     var host = new System.Windows.Controls.Border { Child = root, FlowDirection = FlowDirection.LeftToRight };
                     host.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "Brush.Bg");
+                    // What the window gives its content (Codex T-003: dark captures lost text colour and font).
+                    host.SetResourceReference(System.Windows.Documents.TextElement.ForegroundProperty, "Brush.Text");
+                    System.Windows.Documents.TextElement.SetFontFamily(host, window.FontFamily);
+                    System.Windows.Documents.TextElement.SetFontSize(host, window.FontSize);
+                    System.Windows.Media.TextOptions.SetTextFormattingMode(host, System.Windows.Media.TextOptions.GetTextFormattingMode(window));
+                    host.UseLayoutRounding = window.UseLayoutRounding;
                     var sizes = new[]
                     {
                         new ShotSize("1280", 1280, 800, 96),
                         new ShotSize("1024", 1024, 728, 96),
-                        // 1024x768 at 125 % scaling: 819x614 device-independent pixels, drawn at 120 dpi.
-                        new ShotSize("1024at125", 819, 574, 120)
+                        // 1024x768 at 125 % scaling, less the taskbar: exactly 1024x718 pixels at 120 dpi (no partly covered edge pixels).
+                        new ShotSize("1024at125", 819.2, 574.4, 120)
                     };
                     foreach (var theme in new[] { VisualTheme.Dark, VisualTheme.Light })
                     {

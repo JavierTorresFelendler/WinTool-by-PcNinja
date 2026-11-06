@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  WinTool by PcNinja installer (docs/MSI-AND-CLI.md, decisions D-007, D-013, D-018).
+  The schedule is not created here: a deferred custom action runs the installed
+  WinTool-by-PcNinja.exe "schedule set", so the MSI, the window and the command
+  line share one code path. An invalid value fails the install (no silent fixes).
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+  <Package Name="WinTool by PcNinja"
+           Manufacturer="PcNinja"
+           Version="$(ProductVersion)"
+           UpgradeCode="{6E0B6C2A-4F1D-4B8E-9C3A-7A2D5E9B1F40}"
+           Scope="perMachine"
+           Compressed="yes">
+
+    <SummaryInformation Description="WinTool by PcNinja installer" Manufacturer="PcNinja" />
+
+    <!-- Newer: upgrade in place. Same MSI again: maintenance (Repair/Remove). Older: blocked. -->
+    <MajorUpgrade AllowSameVersionUpgrades="yes"
+                  DowngradeErrorMessage="A newer version of WinTool by PcNinja is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="PcNinjaIcon" SourceFile="$(AssetsDir)\PcNinja.ico" />
+    <Property Id="ARPPRODUCTICON" Value="PcNinjaIcon" />
+    <Property Id="ARPURLINFOABOUT" Value="https://www.pcninja.pro" />
+    <Property Id="ARPHELPLINK" Value="https://help.pcninja.pro" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <!-- Public properties (docs/MSI-AND-CLI.md). Checkboxes delete the property when unchecked; the CLI reads empty as off. -->
+    <Property Id="WINTOOL_START_MENU_SHORTCUT" Value="1" Secure="yes" />
+    <Property Id="WINTOOL_DESKTOP_SHORTCUT" Secure="yes" />
+    <Property Id="WINTOOL_LANGUAGE" Value="auto" Secure="yes" />
+    <Property Id="WINTOOL_APP_UPDATE_CHECK" Value="1" Secure="yes" />
+    <Property Id="WINTOOL_ENABLE_SCHEDULE" Secure="yes" />
+    <Property Id="WINTOOL_FREQUENCY" Value="Monthly" Secure="yes" />
+    <Property Id="WINTOOL_TIME" Value="03:00" Secure="yes" />
+    <Property Id="WINTOOL_DAY_OF_WEEK" Value="Sunday" Secure="yes" />
+    <Property Id="WINTOOL_MONTHLY_DAY" Value="15" Secure="yes" />
+    <Property Id="WINTOOL_RUN_AT_STARTUP" Secure="yes" />
+    <Property Id="WINTOOL_STARTUP_DELAY" Value="5" Secure="yes" />
+    <Property Id="WINTOOL_RUN_IF_MISSED" Value="1" Secure="yes" />
+    <Property Id="WINTOOL_WAKE_TO_RUN" Secure="yes" />
+    <Property Id="WINTOOL_ALLOW_FIRMWARE" Secure="yes" />
+    <Property Id="WINTOOL_REBOOT_PROMPT" Value="1" Secure="yes" />
+    <Property Id="WINTOOL_ENABLE_AUTORETRY" Value="1" Secure="yes" />
+    <Property Id="WINTOOL_RETRY_INITIAL_DELAY" Value="5" Secure="yes" />
+    <Property Id="WINTOOL_RETRY_MAX_ATTEMPTS" Value="3" Secure="yes" />
+    <Property Id="WINTOOL_RETRY_BACKOFF" Value="2" Secure="yes" />
+    <Property Id="WINTOOL_MINIMUM_COOLDOWN" Value="5" Secure="yes" />
+
+    <Property Id="INSTALLFOLDER">
+      <RegistrySearch Id="PreviousInstallFolder" Root="HKLM" Key="SOFTWARE\PcNinja\WinTool" Name="InstallFolder" Type="raw" />
+    </Property>
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="PcNinjaFolder" Name="PcNinja">
+        <Directory Id="INSTALLFOLDER" Name="WinTool" />
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+    <StandardDirectory Id="DesktopFolder" />
+
+    <Component Id="MainExecutable" Directory="INSTALLFOLDER" Guid="{3F1B0A8E-2C4D-4E6F-8A9B-1C2D3E4F5A60}">
+      <File Id="MainExe" Source="$(ExePath)" Name="WinTool-by-PcNinja.exe" KeyPath="yes" />
+    </Component>
+
+    <Component Id="InstallRegistry" Directory="INSTALLFOLDER" Guid="{8C7D6E5F-4A3B-4C2D-9E1F-0A1B2C3D4E51}">
+      <RegistryValue Root="HKLM" Key="SOFTWARE\PcNinja\WinTool" Name="InstallFolder" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+      <RegistryValue Root="HKLM" Key="SOFTWARE\PcNinja\WinTool" Name="Language" Type="string" Value="[WINTOOL_LANGUAGE]" />
+      <RegistryValue Root="HKLM" Key="SOFTWARE\PcNinja\WinTool" Name="CheckForAppUpdates" Type="string" Value="[WINTOOL_APP_UPDATE_CHECK]" />
+    </Component>
+
+    <Component Id="StartMenuShortcut" Directory="ProgramMenuFolder" Guid="{5A4B3C2D-1E0F-4A9B-8C7D-6E5F4A3B2C12}" Condition="WINTOOL_START_MENU_SHORTCUT = &quot;1&quot;">
+      <Shortcut Id="StartMenuShortcutLink" Name="WinTool by PcNinja" Description="Windows Update, Windows Upgrade and Office tools"
+                Target="[#MainExe]" WorkingDirectory="INSTALLFOLDER" Icon="PcNinjaIcon" />
+      <RegistryValue Root="HKLM" Key="SOFTWARE\PcNinja\WinTool" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <Component Id="DesktopShortcut" Directory="DesktopFolder" Guid="{9B8A7C6D-5E4F-4D3C-AB2A-1F0E9D8C7B63}" Condition="WINTOOL_DESKTOP_SHORTCUT = &quot;1&quot;">
+      <Shortcut Id="DesktopShortcutLink" Name="WinTool by PcNinja" Target="[#MainExe]" WorkingDirectory="INSTALLFOLDER" Icon="PcNinjaIcon" />
+      <RegistryValue Root="HKLM" Key="SOFTWARE\PcNinja\WinTool" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <Feature Id="Main" Title="WinTool by PcNinja" Level="1">
+      <ComponentRef Id="MainExecutable" />
+      <ComponentRef Id="InstallRegistry" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+
+    <!-- D-013: a running WinTool is asked to close (interactive and silent) before its file is replaced. -->
+    <util:CloseApplication Id="CloseWinTool" Target="WinTool-by-PcNinja.exe" CloseMessage="yes" RebootPrompt="no" />
+
+    <!-- Schedule: the installed EXE applies it as SYSTEM. Only when the schedule option is on, so an upgrade keeps an existing schedule. -->
+    <CustomAction Id="ApplySchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="check"
+                  ExeCommand="schedule set --enable --frequency=[WINTOOL_FREQUENCY] --time=[WINTOOL_TIME] --day=[WINTOOL_DAY_OF_WEEK] --month-day=[WINTOOL_MONTHLY_DAY] --at-startup=[WINTOOL_RUN_AT_STARTUP] --startup-delay=[WINTOOL_STARTUP_DELAY] --run-if-missed=[WINTOOL_RUN_IF_MISSED] --wake=[WINTOOL_WAKE_TO_RUN] --firmware=[WINTOOL_ALLOW_FIRMWARE] --reboot-prompt=[WINTOOL_REBOOT_PROMPT] --auto-retry=[WINTOOL_ENABLE_AUTORETRY] --retry-delay=[WINTOOL_RETRY_INITIAL_DELAY] --retry-attempts=[WINTOOL_RETRY_MAX_ATTEMPTS] --retry-backoff=[WINTOOL_RETRY_BACKOFF] --cooldown=[WINTOOL_MINIMUM_COOLDOWN]" />
+
+    <!-- Uninstall (not an upgrade): remove the scheduled tasks while the EXE still exists. -->
+    <CustomAction Id="RemoveSchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="schedule remove" />
+
+    <InstallExecuteSequence>
+      <Custom Action="ApplySchedule" After="InstallFiles" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
+      <Custom Action="RemoveSchedule" Before="RemoveFiles" Condition="REMOVE = &quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
+    </InstallExecuteSequence>
+
+    <!-- Finish page: optional launch, as the signed-in user. -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Open WinTool by PcNinja" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <Property Id="WixShellExecTarget" Value="[#MainExe]" />
+    <CustomAction Id="LaunchWinTool" BinaryRef="Wix4UtilCA_X64" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+
+    <UI>
+      <Dialog Id="WinToolOptionsDlg" Width="370" Height="270" Title="[ProductName] Setup">
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Options" />
+        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="Shortcuts and the language WinTool starts in." />
+        <Control Id="TopLine" Type="Line" X="0" Y="50" Width="370" Height="0" />
+        <Control Id="StartMenu" Type="CheckBox" X="25" Y="64" Width="320" Height="17" Property="WINTOOL_START_MENU_SHORTCUT" CheckBoxValue="1" Text="Add a Start menu shortcut" />
+        <Control Id="Desktop" Type="CheckBox" X="25" Y="86" Width="320" Height="17" Property="WINTOOL_DESKTOP_SHORTCUT" CheckBoxValue="1" Text="Add a desktop shortcut" />
+        <Control Id="LanguageLabel" Type="Text" X="25" Y="118" Width="80" Height="15" Text="Language:" />
+        <Control Id="LanguageCombo" Type="ComboBox" X="108" Y="114" Width="150" Height="18" Property="WINTOOL_LANGUAGE" ComboList="yes">
+          <ComboBox Property="WINTOOL_LANGUAGE">
+            <ListItem Text="Same as Windows" Value="auto" />
+            <ListItem Text="English" Value="en" />
+            <ListItem Text="Hebrew" Value="he" />
+          </ComboBox>
+        </Control>
+        <Control Id="Updates" Type="CheckBox" X="25" Y="144" Width="320" Height="17" Property="WINTOOL_APP_UPDATE_CHECK" CheckBoxValue="1" Text="Check for WinTool updates at startup" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="Back" />
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Next" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel" />
+      </Dialog>
+
+      <Dialog Id="WinToolScheduleDlg" Width="370" Height="270" Title="[ProductName] Setup">
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Windows Update schedule" />
+        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="Optional. Off unless checked; an existing schedule is kept." />
+        <Control Id="TopLine" Type="Line" X="0" Y="50" Width="370" Height="0" />
+        <Control Id="EnableSchedule" Type="CheckBox" X="25" Y="58" Width="320" Height="17" Property="WINTOOL_ENABLE_SCHEDULE" CheckBoxValue="1" Text="Run Windows Update on a schedule" />
+        <Control Id="FrequencyLabel" Type="Text" X="40" Y="84" Width="65" Height="15" Text="Frequency:" />
+        <Control Id="FrequencyCombo" Type="ComboBox" X="108" Y="80" Width="90" Height="18" Property="WINTOOL_FREQUENCY" ComboList="yes">
+          <ComboBox Property="WINTOOL_FREQUENCY">
+            <ListItem Text="Daily" Value="Daily" />
+            <ListItem Text="Weekly" Value="Weekly" />
+            <ListItem Text="Monthly" Value="Monthly" />
+            <ListItem Text="Startup" Value="Startup" />
+          </ComboBox>
+        </Control>
+        <Control Id="TimeLabel" Type="Text" X="215" Y="84" Width="35" Height="15" Text="Time:" />
+        <Control Id="TimeEdit" Type="Edit" X="252" Y="80" Width="55" Height="18" Property="WINTOOL_TIME" />
+        <Control Id="TimeHint" Type="Text" X="310" Y="84" Width="40" Height="15" Text="HH:mm" />
+        <Control Id="DayLabel" Type="Text" X="40" Y="109" Width="65" Height="15" Text="Week day:" />
+        <Control Id="DayCombo" Type="ComboBox" X="108" Y="105" Width="90" Height="18" Property="WINTOOL_DAY_OF_WEEK" ComboList="yes">
+          <ComboBox Property="WINTOOL_DAY_OF_WEEK">
+            <ListItem Text="Sunday" Value="Sunday" />
+            <ListItem Text="Monday" Value="Monday" />
+            <ListItem Text="Tuesday" Value="Tuesday" />
+            <ListItem Text="Wednesday" Value="Wednesday" />
+            <ListItem Text="Thursday" Value="Thursday" />
+            <ListItem Text="Friday" Value="Friday" />
+            <ListItem Text="Saturday" Value="Saturday" />
+          </ComboBox>
+        </Control>
+        <Control Id="MonthDayLabel" Type="Text" X="215" Y="109" Width="70" Height="15" Text="Month day:" />
+        <Control Id="MonthDayEdit" Type="Edit" X="288" Y="105" Width="28" Height="18" Property="WINTOOL_MONTHLY_DAY" />
+        <Control Id="MonthDayHint" Type="Text" X="320" Y="109" Width="30" Height="15" Text="1-28" />
+        <Control Id="RunAtStartup" Type="CheckBox" X="40" Y="133" Width="220" Height="17" Property="WINTOOL_RUN_AT_STARTUP" CheckBoxValue="1" Text="Also run after computer startup" />
+        <Control Id="StartupDelayLabel" Type="Text" X="262" Y="134" Width="34" Height="15" Text="Delay:" />
+        <Control Id="StartupDelayEdit" Type="Edit" X="298" Y="130" Width="28" Height="18" Property="WINTOOL_STARTUP_DELAY" />
+        <Control Id="StartupDelayHint" Type="Text" X="330" Y="134" Width="25" Height="15" Text="min" />
+        <Control Id="RunIfMissed" Type="CheckBox" X="40" Y="156" Width="170" Height="17" Property="WINTOOL_RUN_IF_MISSED" CheckBoxValue="1" Text="Run if the time was missed" />
+        <Control Id="WakeToRun" Type="CheckBox" X="218" Y="156" Width="130" Height="17" Property="WINTOOL_WAKE_TO_RUN" CheckBoxValue="1" Text="Wake the computer" />
+        <Control Id="AutoRetry" Type="CheckBox" X="40" Y="177" Width="170" Height="17" Property="WINTOOL_ENABLE_AUTORETRY" CheckBoxValue="1" Text="Retry after a failure" />
+        <Control Id="RebootPrompt" Type="CheckBox" X="218" Y="177" Width="130" Height="17" Property="WINTOOL_REBOOT_PROMPT" CheckBoxValue="1" Text="Ask before restarting" />
+        <Control Id="Firmware" Type="CheckBox" X="40" Y="198" Width="300" Height="17" Property="WINTOOL_ALLOW_FIRMWARE" CheckBoxValue="1" Text="Allow BIOS / firmware updates (reliable power only)" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="Back" />
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Next" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel" />
+      </Dialog>
+
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="WinToolOptionsDlg" Order="10" Condition="1" />
+      <Publish Dialog="WinToolOptionsDlg" Control="Back" Event="NewDialog" Value="InstallDirDlg" />
+      <Publish Dialog="WinToolOptionsDlg" Control="Cancel" Event="SpawnDialog" Value="CancelDlg" />
+      <Publish Dialog="WinToolOptionsDlg" Control="Next" Event="NewDialog" Value="WinToolScheduleDlg" />
+      <Publish Dialog="WinToolScheduleDlg" Control="Back" Event="NewDialog" Value="WinToolOptionsDlg" />
+      <Publish Dialog="WinToolScheduleDlg" Control="Cancel" Event="SpawnDialog" Value="CancelDlg" />
+      <Publish Dialog="WinToolScheduleDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WinToolScheduleDlg" Order="10" Condition="NOT Installed" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchWinTool"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+    </UI>
+  </Package>
+</Wix>

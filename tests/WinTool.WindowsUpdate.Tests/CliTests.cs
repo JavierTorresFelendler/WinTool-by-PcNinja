@@ -200,6 +200,23 @@ namespace WinTool.WindowsUpdate.Tests
         }
 
         [Fact]
+        public void Schedule_set_accepts_the_msi_value_form()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                var result = Run(env, "schedule", "set", "--enable", "--frequency=Weekly", "--day=Friday", "--time=04:30",
+                    "--wake=1", "--run-if-missed=0", "--at-startup=", "--firmware=0", "--reboot-prompt=1", "--auto-retry=1", "--retry-delay=5");
+                Assert.Equal(0, result.code);
+                var s = env.Memory.Settings;
+                Assert.True(s.WakeToRun);
+                Assert.False(s.RunIfMissed);
+                Assert.False(s.RunAtStartup);
+                Assert.Equal("Friday", s.DayOfWeek);
+                Assert.Equal(CliExit.Usage, Run(env, "schedule", "set", "--wake=maybe").code);
+            }
+        }
+
+        [Fact]
         public void Invalid_schedule_changes_nothing()
         {
             using (var env = new FakeEnvironment())

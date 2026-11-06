@@ -45,7 +45,7 @@ namespace WinTool.App
             }
 
             var settings = new SettingsStore(SettingsStore.DefaultPath).Load();
-            Loc.Instance.SetLanguage(LanguageResolver.Resolve(settings.Language, null, CultureInfo.CurrentUICulture.Name, Loc.PseudoAllowed));
+            Loc.Instance.SetLanguage(LanguageResolver.Resolve(settings.Language, InstallDefault("Language"), CultureInfo.CurrentUICulture.Name, Loc.PseudoAllowed));
 
             var os = OsInfo.ReadCurrent();
             AppLog.Current.Info("App", "Windows: " + os.FriendlyName + " (build " + os.Build + "." + os.Revision + ")");
@@ -80,6 +80,19 @@ namespace WinTool.App
                 var app = new App();
                 app.InitializeComponent();
                 return app.RunMainWindow(settings);
+            }
+        }
+
+        /// <summary>A value the MSI wrote under HKLM\SOFTWARE\PcNinja\WinTool, or null.</summary>
+        internal static string InstallDefault(string name)
+        {
+            try
+            {
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\PcNinja\WinTool")) return key?.GetValue(name) as string;
+            }
+            catch (System.Security.SecurityException)
+            {
+                return null;
             }
         }
 

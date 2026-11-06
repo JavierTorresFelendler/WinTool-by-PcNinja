@@ -50,6 +50,12 @@ namespace WinTool.Cli
                 {
                     result.switches.Add(name);
                 }
+                else if (switchSet.Contains(name))
+                {
+                    // "--wake=1" / "--wake=0": the form the MSI passes. An empty value (an unchecked MSI checkbox) is "off".
+                    if (ParseBool(inlineValue)) result.switches.Add(name);
+                    else if (switchSet.Contains("no-" + name)) result.switches.Add("no-" + name);
+                }
                 else if (valueSet.Contains(name))
                 {
                     var value = inlineValue ?? (i + 1 < list.Count ? list[++i] : null);
@@ -66,6 +72,24 @@ namespace WinTool.Cli
         }
 
         public bool Has(string name) => switches.Contains(name);
+
+        private static bool ParseBool(string text)
+        {
+            switch ((text ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "1":
+                case "true":
+                case "yes":
+                    return true;
+                case "":
+                case "0":
+                case "false":
+                case "no":
+                    return false;
+                default:
+                    throw new UsageException("Expected 1 or 0, got: " + text);
+            }
+        }
 
         public string Value(string name)
         {

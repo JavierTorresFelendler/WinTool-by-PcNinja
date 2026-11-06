@@ -163,8 +163,9 @@ namespace WinTool.WindowsUpdate.Schedule
                 if (delay != null) text += "+" + delay;
                 foreach (var schedule in trigger.Elements().Where(e => e.Name.LocalName.StartsWith("ScheduleBy", StringComparison.Ordinal)))
                 {
+                    // Task Scheduler may store the elements in another order (Months before DaysOfMonth), so sort them.
                     text += "|" + schedule.Name.LocalName + ":" + string.Join(",",
-                        schedule.Descendants().Where(d => !d.HasElements).Select(d => d.Name.LocalName + "=" + d.Value.Trim()));
+                        schedule.Descendants().Where(d => !d.HasElements).Select(d => d.Name.LocalName + "=" + d.Value.Trim()).OrderBy(x => x, StringComparer.Ordinal));
                 }
 
                 return text;

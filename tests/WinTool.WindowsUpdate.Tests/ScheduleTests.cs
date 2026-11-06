@@ -175,6 +175,22 @@ namespace WinTool.WindowsUpdate.Tests
         }
 
         [Fact]
+        public void Matching_ignores_the_order_task_scheduler_stores_monthly_elements_in()
+        {
+            // Seen on Windows 11 23H2: the registered task lists Months before DaysOfMonth.
+            var settings = new WindowsUpdateSettings { ScheduleEnabled = true, Frequency = "Monthly", MonthlyDay = 15 };
+            var service = Service(new FakeTasks());
+            var built = TaskXmlBuilder.BuildSchedule(settings, Exe, new DateTime(2026, 11, 6, 14, 23, 0));
+            var doc = System.Xml.Linq.XDocument.Parse(built);
+            System.Xml.Linq.XNamespace ns = "http://schemas.microsoft.com/windows/2004/02/mit/task";
+            var byMonth = doc.Descendants(ns + "ScheduleByMonth").Single();
+            var days = byMonth.Element(ns + "DaysOfMonth");
+            days.Remove();
+            byMonth.Add(days);
+            Assert.True(service.Matches(doc.ToString(), settings), string.Join(" ", service.Compare(doc.ToString(), settings)));
+        }
+
+        [Fact]
         public void Retry_task_is_registered_and_cancelled()
         {
             var tasks = new FakeTasks();

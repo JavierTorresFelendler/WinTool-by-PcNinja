@@ -125,6 +125,7 @@ namespace WinTool.App.ViewModels
         private int monthlyDay;
         private string time;
         private bool runIfMissed;
+        private bool runAtStartup;
         private bool wakeToRun;
         private bool autoRetry;
         private bool rebootPrompt;
@@ -140,7 +141,7 @@ namespace WinTool.App.ViewModels
             ScanCommand = new AsyncCommand(ScanAsync, () => !busy);
             InstallCommand = new AsyncCommand(InstallAsync, () => !busy && Rows.Any(r => r.IsSelected));
             CancelCommand = new RelayCommand(() => cancellation?.Cancel(), () => busy && cancellation != null);
-            RestartCommand = new RelayCommand(RestartNow, () => pending.Pending);
+            RestartCommand = new RelayCommand(RestartNow, () => pending.Pending && !busy);
             HealthCheckCommand = new AsyncCommand(() => HealthAsync(true), () => !busy);
             CollectLogsCommand = new AsyncCommand(CollectLogsAsync, () => !busy);
             ResetCommand = new AsyncCommand(ResetAsync, () => !busy);
@@ -204,6 +205,7 @@ namespace WinTool.App.ViewModels
         public int MonthlyDay { get => monthlyDay; set => Set(ref monthlyDay, value); }
         public string Time { get => time; set => Set(ref time, value); }
         public bool RunIfMissed { get => runIfMissed; set => Set(ref runIfMissed, value); }
+        public bool RunAtStartup { get => runAtStartup; set => Set(ref runAtStartup, value); }
         public bool WakeToRun { get => wakeToRun; set => Set(ref wakeToRun, value); }
         public bool AutoRetry { get => autoRetry; set => Set(ref autoRetry, value); }
         public bool RebootPrompt { get => rebootPrompt; set => Set(ref rebootPrompt, value); }
@@ -215,6 +217,7 @@ namespace WinTool.App.ViewModels
         public bool ShowDay => IsWeekly;
         public bool ShowMonthDay => IsMonthly;
         public bool ShowTime => !IsStartup;
+        public bool ShowRunAtStartup => !IsStartup;
 
         public IReadOnlyList<DayOption> Days =>
             Enum.GetValues(typeof(System.DayOfWeek)).Cast<System.DayOfWeek>()
@@ -404,6 +407,7 @@ namespace WinTool.App.ViewModels
             MonthlyDay = settings.MonthlyDay;
             Time = settings.Time;
             RunIfMissed = settings.RunIfMissed;
+            RunAtStartup = settings.RunAtStartup;
             WakeToRun = settings.WakeToRun;
             AutoRetry = settings.AutoRetryEnabled;
             RebootPrompt = settings.ShowRebootPrompt;
@@ -421,6 +425,7 @@ namespace WinTool.App.ViewModels
             settings.MonthlyDay = MonthlyDay;
             settings.Time = (Time ?? string.Empty).Trim();
             settings.RunIfMissed = RunIfMissed;
+            settings.RunAtStartup = RunAtStartup && frequency != Frequencies.Startup;
             settings.WakeToRun = WakeToRun;
             settings.AutoRetryEnabled = AutoRetry;
             settings.ShowRebootPrompt = RebootPrompt;
@@ -476,7 +481,7 @@ namespace WinTool.App.ViewModels
         private void SetFrequency(string value)
         {
             frequency = Array.IndexOf(Frequencies.All, value) >= 0 ? value : Frequencies.Monthly;
-            foreach (var name in new[] { nameof(IsDaily), nameof(IsWeekly), nameof(IsMonthly), nameof(IsStartup), nameof(ShowDay), nameof(ShowMonthDay), nameof(ShowTime) })
+            foreach (var name in new[] { nameof(IsDaily), nameof(IsWeekly), nameof(IsMonthly), nameof(IsStartup), nameof(ShowDay), nameof(ShowMonthDay), nameof(ShowTime), nameof(ShowRunAtStartup) })
             {
                 OnPropertyChanged(name);
             }

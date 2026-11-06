@@ -184,4 +184,5 @@ If the file is moved or deleted, the schedule stops working. Continue?</value></
   <data name="WU_Legacy_TakeOver" xml:space="preserve"><value>Take Over</value></data>
   <data name="WU_Legacy_Confirm" xml:space="preserve"><value>Import the WinUpdate Tool settings and remove its scheduled tasks?</value></data>
   <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool took over the schedule. Uninstall WinUpdate Tool from Settings &gt; Apps.</value></data>
+  <data name="WU_RunAtStartup" xml:space="preserve"><value>Also run after startup (5 min)</value></data>
 </root>

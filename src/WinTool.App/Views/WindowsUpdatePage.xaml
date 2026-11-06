@@ -242,6 +242,8 @@
                             <TextBox Text="{Binding Time, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" />
                         </StackPanel>
                     </Grid>
+                    <CheckBox Margin="0,0,0,8" IsChecked="{Binding RunAtStartup, Mode=TwoWay}" Content="{loc:Loc WU_RunAtStartup}"
+                              Visibility="{Binding ShowRunAtStartup, Converter={StaticResource BoolToVisibility}}" />
                     <CheckBox Margin="0,0,0,8" IsChecked="{Binding RunIfMissed, Mode=TwoWay}" Content="{loc:Loc WU_RunIfMissed}" />
                     <CheckBox Margin="0,0,0,8" IsChecked="{Binding WakeToRun, Mode=TwoWay}" Content="{loc:Loc WU_Wake}" />
                     <CheckBox Margin="0,0,0,8" IsChecked="{Binding AutoRetry, Mode=TwoWay}" Content="{loc:Loc WU_AutoRetry}" />

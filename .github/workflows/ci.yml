@@ -117,6 +117,14 @@ jobs:
             Write-Host "::error title=cli::registered task does not match the settings"
             exit 1
           }
+          # Monthly too: Task Scheduler stores its elements in another order (found on Windows 11 23H2).
+          Invoke-WinTool @('schedule', 'set', '--frequency', 'Monthly', '--month-day', '15', '--at-startup') @(0) | Out-Null
+          $monthly = Invoke-WinTool @('schedule', 'show', '--json') @(0)
+          if ($monthly -notmatch '"matchesSettings": true') {
+            Invoke-WinTool @('schedule', 'show') @(0) | Out-Null
+            Write-Host "::error title=cli::monthly task does not match the settings"
+            exit 1
+          }
           Invoke-WinTool @('update', 'health', '--no-network') @(0, 1, 11) | Out-Null
           Invoke-WinTool @('schedule', 'remove') @(0) | Out-Null
           $after = Invoke-WinTool @('schedule', 'show', '--json') @(0)

@@ -184,4 +184,5 @@
   <data name="WU_Legacy_TakeOver" xml:space="preserve"><value>קבלת התזמון</value></data>
   <data name="WU_Legacy_Confirm" xml:space="preserve"><value>לייבא את ההגדרות של WinUpdate Tool ולהסיר את המשימות המתוזמנות שלו?</value></data>
   <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool קיבל את התזמון. הסר את WinUpdate Tool דרך הגדרות &gt; אפליקציות.</value></data>
+  <data name="WU_RunAtStartup" xml:space="preserve"><value>להריץ גם אחרי הפעלת המחשב (5 דק׳)</value></data>
 </root>

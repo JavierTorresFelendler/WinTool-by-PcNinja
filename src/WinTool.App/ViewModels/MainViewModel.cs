@@ -33,9 +33,9 @@ namespace WinTool.App.ViewModels
                 Item("windows-update", "Nav_WindowsUpdate", IconUpdate, true, windowsUpdatePage),
                 Item("windows-upgrade", "Nav_WindowsUpgrade", IconUpgrade, false, upgradePage),
                 Item("office", "Nav_Office", IconOffice, false, officePage),
-                Item("logs", "Nav_Logs", IconLogs, true, new PlaceholderPageViewModel("Nav_Logs", "Page_Logs_Subtitle", 2)),
+                Item("logs", "Nav_Logs", IconLogs, true, new LogsPageViewModel(windowsUpdate)),
                 Item("settings", "Nav_Settings", IconSettings, false, settingsPage),
-                Item("links", "Nav_Links", IconLinks, false, new PlaceholderPageViewModel("Nav_Links", "Page_Links_Subtitle", 2))
+                Item("links", "Nav_Links", IconLinks, false, new LinksPageViewModel())
             };
 
             OpenHelpCommand = new RelayCommand(() => OpenUrl(ProductInfo.HelpUrl));
@@ -50,7 +50,10 @@ namespace WinTool.App.ViewModels
             get => currentPage;
             private set
             {
-                if (Set(ref currentPage, value)) value?.OnActivated();
+                var previous = currentPage;
+                if (!Set(ref currentPage, value)) return;
+                previous?.OnDeactivated();
+                value?.OnActivated();
             }
         }
 

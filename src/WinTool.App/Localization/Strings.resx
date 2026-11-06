@@ -348,4 +348,26 @@ This cannot be undone from WinTool.</value></data>
   <data name="Dash_Upgrade_OutcomeUnconfirmed" xml:space="preserve"><value>result not confirmed</value></data>
   <data name="Dash_Upgrade_RollbackObserved" xml:space="preserve"><value>Windows rolled back</value></data>
   <data name="Dash_Upgrade_TargetWindowsObserved" xml:space="preserve"><value>completed</value></data>
+  <data name="LG_Follow" xml:space="preserve"><value>Follow</value></data>
+  <data name="LG_Collect" xml:space="preserve"><value>Collect Logs</value></data>
+  <data name="LG_OpenFolder" xml:space="preserve"><value>Open Folder</value></data>
+  <data name="LG_All" xml:space="preserve"><value>All</value></data>
+  <data name="LG_Day" xml:space="preserve"><value>Day</value></data>
+  <data name="LG_Empty" xml:space="preserve"><value>No entries for this day and filter.</value></data>
+  <data name="LG_Shown" xml:space="preserve"><value>{0} entries (the last {1} are shown)</value></data>
+  <data name="LG_Count" xml:space="preserve"><value>{0} entries</value></data>
+  <data name="LG_Collected" xml:space="preserve"><value>Log package created: {0}</value></data>
+  <data name="LG_CollectFailed" xml:space="preserve"><value>The log package could not be created.</value></data>
+  <data name="LK_HelpTitle" xml:space="preserve"><value>Need help?</value></data>
+  <data name="LK_HelpBody" xml:space="preserve"><value>Step-by-step guides for every WinTool screen on the PcNinja help site.</value></data>
+  <data name="LK_FreeTools" xml:space="preserve"><value>PcNinja Free Tools</value></data>
+  <data name="LK_FreeToolsSub" xml:space="preserve"><value>Download links and shared file password.</value></data>
+  <data name="LK_Activation" xml:space="preserve"><value>Windows &amp; Office Activation</value></data>
+  <data name="LK_Repo" xml:space="preserve"><value>WinTool on GitHub</value></data>
+  <data name="LK_FilePassword" xml:space="preserve"><value>File password</value></data>
+  <data name="LK_Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="LK_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="LK_Vendors" xml:space="preserve"><value>Manufacturer Sources (Reference Only)</value></data>
+  <data name="LK_VendorsSub" xml:space="preserve"><value>Use these sources for reference and manual research. WinTool does not install vendor packages from these links.</value></data>
+  <data name="LK_VendorsNote" xml:space="preserve"><value>Driver installation stays with Windows Update.</value></data>
 </root>

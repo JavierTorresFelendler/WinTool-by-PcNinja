@@ -17,6 +17,11 @@ namespace WinTool.App.ViewModels
         public virtual void OnActivated()
         {
         }
+
+        /// <summary>Called when another page is shown instead.</summary>
+        public virtual void OnDeactivated()
+        {
+        }
     }
 
     /// <summary>A screen that is planned for a later roadmap phase.</summary>

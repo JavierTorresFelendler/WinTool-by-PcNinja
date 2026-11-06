@@ -348,4 +348,26 @@
   <data name="Dash_Upgrade_OutcomeUnconfirmed" xml:space="preserve"><value>התוצאה לא אושרה</value></data>
   <data name="Dash_Upgrade_RollbackObserved" xml:space="preserve"><value>Windows חזר לגרסה הקודמת</value></data>
   <data name="Dash_Upgrade_TargetWindowsObserved" xml:space="preserve"><value>הושלם</value></data>
+  <data name="LG_Follow" xml:space="preserve"><value>מעקב</value></data>
+  <data name="LG_Collect" xml:space="preserve"><value>איסוף יומנים</value></data>
+  <data name="LG_OpenFolder" xml:space="preserve"><value>פתיחת התיקייה</value></data>
+  <data name="LG_All" xml:space="preserve"><value>הכול</value></data>
+  <data name="LG_Day" xml:space="preserve"><value>יום</value></data>
+  <data name="LG_Empty" xml:space="preserve"><value>אין רשומות ליום ולסינון האלה.</value></data>
+  <data name="LG_Shown" xml:space="preserve"><value>{0} רשומות (מוצגות {1} האחרונות)</value></data>
+  <data name="LG_Count" xml:space="preserve"><value>{0} רשומות</value></data>
+  <data name="LG_Collected" xml:space="preserve"><value>חבילת היומנים נוצרה: {0}</value></data>
+  <data name="LG_CollectFailed" xml:space="preserve"><value>לא ניתן היה ליצור את חבילת היומנים.</value></data>
+  <data name="LK_HelpTitle" xml:space="preserve"><value>צריך עזרה?</value></data>
+  <data name="LK_HelpBody" xml:space="preserve"><value>מדריכים צעד אחר צעד לכל מסך ב־WinTool באתר העזרה של PcNinja.</value></data>
+  <data name="LK_FreeTools" xml:space="preserve"><value>הכלים החינמיים של PcNinja</value></data>
+  <data name="LK_FreeToolsSub" xml:space="preserve"><value>קישורי הורדה וסיסמת הקבצים המשותפת.</value></data>
+  <data name="LK_Activation" xml:space="preserve"><value>הפעלת Windows ו־Office</value></data>
+  <data name="LK_Repo" xml:space="preserve"><value>WinTool ב־GitHub</value></data>
+  <data name="LK_FilePassword" xml:space="preserve"><value>סיסמת הקבצים</value></data>
+  <data name="LK_Copy" xml:space="preserve"><value>העתקה</value></data>
+  <data name="LK_Copied" xml:space="preserve"><value>הועתק</value></data>
+  <data name="LK_Vendors" xml:space="preserve"><value>מקורות יצרנים (לעיון בלבד)</value></data>
+  <data name="LK_VendorsSub" xml:space="preserve"><value>המקורות האלה מיועדים לעיון ולחיפוש ידני. WinTool לא מתקין חבילות של יצרנים מהקישורים האלה.</value></data>
+  <data name="LK_VendorsNote" xml:space="preserve"><value>התקנת מנהלי התקנים נשארת באחריות Windows Update.</value></data>
 </root>

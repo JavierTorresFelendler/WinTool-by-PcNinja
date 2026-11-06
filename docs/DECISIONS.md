@@ -284,6 +284,20 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - **Consequences:** `docs/specs/OFFICE-BEHAVIOR.md` lists every behavior of
   the original tool and what changed.
 
+## D-023 Self-update asks; stable channel with an opt-in for test builds; Spanish reviewed
+
+- **Status:** Accepted (2026-11-06). Owner's choices.
+- **Decision:**
+  - WinTool checks GitHub for a newer version at startup (when the setting
+    is on), shows what is new, and updates only after the user agrees.
+    Nothing is replaced without consent.
+  - Stable releases by default. A setting, "Also get test versions",
+    includes beta and release-candidate builds.
+  - Spanish: Claude translates now; the strings are marked "needs review"
+    until a Spanish speaker chosen by the owner checks them before 1.0.
+  - Order in phase 6: the Logs and Drivers & Links pages first, then
+    self-update and the release workflow.
+
 ---
 
 ## Open questions

@@ -205,6 +205,7 @@ public sealed class OfficeDeployment
 
     internal const string InstallScript =
         "@echo off\r\n" +
+        "setlocal\r\n" +
         "net session >nul 2>&1\r\n" +
         "if %errorLevel% neq 0 (\r\n" +
         "    echo.\r\n" +
@@ -219,9 +220,16 @@ public sealed class OfficeDeployment
         "cd /d \"%~dp0\"\r\n" +
         "echo  Starting installation, please wait...\r\n" +
         "setup.exe /configure Office_Config.xml\r\n" +
+        "set \"setupExitCode=%errorlevel%\"\r\n" +
         "echo.\r\n" +
-        "echo  Done. Press any key to exit.\r\n" +
-        "pause > nul\r\n";
+        "if \"%setupExitCode%\"==\"0\" (\r\n" +
+        "    echo  Office installation succeeded.\r\n" +
+        ") else (\r\n" +
+        "    echo  ERROR: Office installation failed with exit code %setupExitCode%.\r\n" +
+        ")\r\n" +
+        "echo  Press any key to exit.\r\n" +
+        "pause > nul\r\n" +
+        "exit /b %setupExitCode%\r\n";
 
     // ---------------------------------------------------------------- shared flow
 

@@ -176,10 +176,29 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ---
 
+## D-014 Portable EXE offers installation before scheduling
+
+- **Status:** Accepted (2026-11-06). Answers Q-1.
+- **Decision:** A scheduled task needs a stable path. When the portable EXE is
+  asked to create a Windows Update schedule, it offers to install WinTool
+  (run the MSI) and creates the schedule from the installed copy.
+
+## D-015 WinTool takes over from WinUpdate Tool V2
+
+- **Status:** Accepted (2026-11-06). Answers Q-2.
+- **Decision:** When WinTool finds WinUpdate Tool V1 or V2 or their scheduled
+  tasks (`PcNinja WinUpdate Tool`, `... Retry`, `... Run Once`), it explains
+  the situation, offers to import the schedule settings, and offers to
+  uninstall the old tool. Two tools never update the same machine.
+
+## D-016 One EXE for GUI and CLI
+
+- **Status:** Accepted (2026-11-06). Answers Q-3.
+- **Decision:** `WinTool.exe` runs the GUI with no arguments and the CLI with
+  arguments, as the Windows Upgrade Tool already does.
+
+---
+
 ## Open questions
 
-| Id | Question | Owner decision |
-| --- | --- | --- |
-| Q-1 | Can the portable EXE create a Windows Update schedule? A scheduled task needs a stable path. Proposal: the portable EXE offers to install itself (run the MSI) before scheduling. | Pending |
-| Q-2 | Machines that already have WinUpdate Tool V2 have their own scheduled tasks (`PcNinja WinUpdate Tool`, `... Retry`, `... Run Once`). Proposal: WinTool detects them and offers to take over the schedule and uninstall V2, so two tools never update the same machine. | Pending |
-| Q-3 | One EXE for both GUI and CLI (as in the Upgrade Tool), or a separate console EXE in the MSI for cleaner scheduled-task output? Proposal: one EXE, as the Upgrade Tool already does. | Pending |
+None at the moment.

@@ -1,4 +1,5 @@
 using System;
+using System.Security.Principal;
 using System.Threading;
 
 namespace WinTool.Core.Operations
@@ -7,57 +8,59 @@ namespace WinTool.Core.Operations
     /// Machine-wide lock for operations that change the computer (install
     /// updates, upgrade, Office install or removal, reset). The GUI, the CLI
     /// and scheduled runs all take it, so two such operations never overlap.
+    /// Built on <see cref="OperationGate"/>: a protected, non-thread-affine
+    /// semaphore, so the lease may be released after an await on another thread.
+    /// Nested acquisition in the same logical flow is allowed.
     /// </summary>
     public sealed class OperationLock : IDisposable
     {
-        public const string DefaultName = @"Global\PcNinja.WinTool.Operation.v1";
+        private OperationLease lease;
 
-        private Mutex mutex;
-
-        private OperationLock(Mutex mutex, string operation)
+        private OperationLock(OperationLease lease, string operation)
         {
-            this.mutex = mutex;
+            this.lease = lease;
             Operation = operation;
         }
 
         public string Operation { get; }
 
-        /// <summary>Returns the held lock, or null when another operation holds it after <paramref name="timeout"/>.</summary>
-        public static OperationLock TryAcquire(string operation, TimeSpan timeout, string name = DefaultName)
+        /// <summary>Returns the held lock, or null when another operation still holds it after <paramref name="timeout"/>.</summary>
+        public static OperationLock TryAcquire(string operation, TimeSpan timeout) =>
+            TryAcquire(operation, timeout, () => OperationGate.EnterWindows());
+
+        /// <summary>Tests only: a unique Local gate with a current-user ACL; the production gate is never touched.</summary>
+        internal static OperationLock TryAcquireForTest(string operation, TimeSpan timeout, string testGateName)
         {
-            var candidate = new Mutex(false, name);
-            bool acquired;
-            try
+            using (var identity = WindowsIdentity.GetCurrent())
             {
-                acquired = candidate.WaitOne(timeout);
+                var sid = identity.User.Value;
+                return TryAcquire(operation, timeout, () => new OperationGate.TestEndpoint(testGateName, sid).EnterWindows());
             }
-            catch (AbandonedMutexException)
-            {
-                // The previous holder crashed. The lock is ours now.
-                acquired = true;
-            }
+        }
 
-            if (!acquired)
+        private static OperationLock TryAcquire(string operation, TimeSpan timeout, Func<OperationLease> enter)
+        {
+            var deadline = DateTime.UtcNow + timeout;
+            while (true)
             {
-                candidate.Dispose();
-                return null;
+                try
+                {
+                    return new OperationLock(enter(), operation);
+                }
+                catch (InvalidOperationException) when (DateTime.UtcNow < deadline)
+                {
+                    Thread.Sleep(100);
+                }
+                catch (InvalidOperationException)
+                {
+                    return null;
+                }
             }
-
-            return new OperationLock(candidate, operation);
         }
 
         public void Dispose()
         {
-            var held = Interlocked.Exchange(ref mutex, null);
-            if (held == null) return;
-            try
-            {
-                held.ReleaseMutex();
-            }
-            finally
-            {
-                held.Dispose();
-            }
+            Interlocked.Exchange(ref lease, null)?.Dispose();
         }
     }
 }

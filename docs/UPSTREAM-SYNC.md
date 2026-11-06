@@ -32,6 +32,22 @@ A CI job (planned) lists commits newer than **Reviewed up to**.
 - Baseline: 1.3.0
 - Reviewed up to: `3f5d87d82f271efb0de9012366aba494b724edb7`
 
+Where the code lives here:
+
+- `src/PcNinja.Win11Upgrade.Core/*.cs` → `src/WinTool.Upgrade/` (same file
+  names, namespace `WinTool.Upgrade`). The logic is unchanged; only calls that
+  .NET Framework 4.8 lacks were swapped for `Fx`, `Compat` or the shared
+  polyfills, and `System.Text.Json` for `WinTool.Core.Json.JsonData`.
+- `AppLog`, `AppOperationGate` and `AppUpdateIdentity` → shims in
+  `UpgradeLog.cs` over WinTool Core. `AppUpdates/*` is not ported (WinTool has
+  its own self-update, phase 6).
+- `tests/PcNinja.Win11Upgrade.SmokeTests/*Checks.cs` →
+  `tests/WinTool.Upgrade.Tests/Checks/` (one xunit test per group in
+  `UpgradeChecksTests.cs`); `Program.cs` → `Checks/EngineChecks.cs`. The
+  app-update, single-instance and operation-gate checks are covered by WinTool's
+  own tests.
+- The WinForms UI is not ported; WinTool has its own WPF screen.
+
 | Source commit | Summary | Status | WinTool change / reason |
 | --- | --- | --- | --- |
 

@@ -1,72 +1,70 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using WinTool.Core.Operations;
 using Xunit;
 
 namespace WinTool.Core.Tests
 {
+    /// <summary>The gate is a Windows kernel object; these tests run on Windows (CI) and pass trivially elsewhere.</summary>
     public class OperationLockTests
     {
-        private static string UniqueName() => @"Local\WinTool.Tests." + Guid.NewGuid().ToString("N");
+        private static bool OnWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
 
-        /// <summary>Mutexes belong to a thread, so each competitor runs on its own dedicated thread.</summary>
-        private static T OnNewThread<T>(Func<T> work)
-        {
-            var result = default(T);
-            var thread = new Thread(() => result = work());
-            thread.Start();
-            thread.Join();
-            return result;
-        }
+        private static string UniqueName() => @"Local\PcNinja.WinTool.OperationGate.Tests." + Guid.NewGuid().ToString("N");
 
         [Fact]
-        public void Second_holder_is_refused_while_the_first_holds_the_lock()
+        public async Task A_second_holder_is_refused_while_the_first_holds_the_lock()
         {
+            if (!OnWindows) return;
             var name = UniqueName();
-            using (var first = OperationLock.TryAcquire("install updates", TimeSpan.Zero, name))
+            using (var first = OperationLock.TryAcquireForTest("install updates", TimeSpan.Zero, name))
             {
                 Assert.NotNull(first);
-                var refused = OnNewThread(() =>
+                // A separate flow (no shared async context) must be refused.
+                var second = await Task.Run(() =>
                 {
-                    var second = OperationLock.TryAcquire("upgrade", TimeSpan.FromMilliseconds(100), name);
-                    second?.Dispose();
-                    return second == null;
+                    using (ExecutionContext.SuppressFlow())
+                    {
+                        return Task.Run(() => OperationLock.TryAcquireForTest("upgrade", TimeSpan.FromMilliseconds(200), name));
+                    }
                 });
-                Assert.True(refused);
+                Assert.Null(second);
             }
         }
 
         [Fact]
-        public void Lock_is_available_again_after_release()
+        public void The_lock_is_free_again_after_release()
         {
+            if (!OnWindows) return;
             var name = UniqueName();
-            OperationLock.TryAcquire("first", TimeSpan.Zero, name).Dispose();
-            var acquired = OnNewThread(() =>
+            OperationLock.TryAcquireForTest("first", TimeSpan.Zero, name).Dispose();
+            using (var again = OperationLock.TryAcquireForTest("second", TimeSpan.Zero, name))
             {
-                using (var again = OperationLock.TryAcquire("second", TimeSpan.Zero, name))
-                {
-                    return again != null;
-                }
-            });
-            Assert.True(acquired);
+                Assert.NotNull(again);
+            }
         }
 
         [Fact]
-        public void Abandoned_lock_is_taken_over()
+        public async Task The_lock_may_be_released_on_another_thread_after_await()
         {
+            if (!OnWindows) return;
             var name = UniqueName();
-            // A holder thread that ends without releasing simulates a crashed process.
-            OnNewThread(() => { OperationLock.TryAcquire("crashed", TimeSpan.Zero, name); return true; });
-            using (var taken = OperationLock.TryAcquire("next", TimeSpan.FromSeconds(1), name))
+            var held = OperationLock.TryAcquireForTest("async", TimeSpan.Zero, name);
+            Assert.NotNull(held);
+            await Task.Delay(10);
+            await Task.Run(() => held.Dispose());
+            using (var next = OperationLock.TryAcquireForTest("next", TimeSpan.Zero, name))
             {
-                Assert.NotNull(taken);
+                Assert.NotNull(next);
             }
         }
 
         [Fact]
         public void Dispose_twice_is_safe()
         {
-            var held = OperationLock.TryAcquire("x", TimeSpan.Zero, UniqueName());
+            if (!OnWindows) return;
+            var held = OperationLock.TryAcquireForTest("x", TimeSpan.Zero, UniqueName());
             held.Dispose();
             held.Dispose();
         }

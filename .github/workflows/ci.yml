@@ -45,12 +45,22 @@ jobs:
           Invoke-Reported "build" @("build", "WinTool.sln", "-c", "${{ matrix.configuration }}", "--no-restore", "-v", "minimal")
 
       - name: Unit tests
-        run: dotnet test tests/WinTool.Core.Tests/WinTool.Core.Tests.csproj -c ${{ matrix.configuration }} --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
+        shell: pwsh
+        run: |
+          $output = & dotnet test tests/WinTool.Core.Tests/WinTool.Core.Tests.csproj -c ${{ matrix.configuration }} --no-build --logger "trx;LogFileName=results.trx" --logger "console;verbosity=normal" --results-directory TestResults 2>&1 | ForEach-Object { "$_" }
+          $output | Write-Output
+          if ($LASTEXITCODE -ne 0) {
+            $lines = $output | Where-Object { $_ -match 'Failed |Error Message|Assert|Exception|error' } | Select-Object -Unique -First 40
+            if (-not $lines) { $lines = $output | Select-Object -Last 25 }
+            foreach ($line in $lines) { Write-Output ("::error title=tests::" + ($line -replace '%', '%25')) }
+            exit $LASTEXITCODE
+          }
 
       - name: Portable EXE self-test (WinTool.exe alone in an empty folder)
         shell: pwsh
         run: |
           $source = "src/WinTool.App/bin/x64/${{ matrix.configuration }}/net48/WinTool.exe"
+          if (-not (Test-Path $source)) { Write-Output "::warning title=self-test::$source not found, searching" }
           if (-not (Test-Path $source)) { $source = Get-ChildItem -Recurse -Filter WinTool.exe src/WinTool.App/bin | Where-Object FullName -like "*${{ matrix.configuration }}*" | Select-Object -First 1 -ExpandProperty FullName }
           $portable = Join-Path $env:RUNNER_TEMP "portable"
           New-Item -ItemType Directory -Force $portable | Out-Null
@@ -60,23 +70,23 @@ jobs:
           $out = Join-Path $env:RUNNER_TEMP "selftest.txt"
           $p = Start-Process -FilePath $exe -ArgumentList "--self-test" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out
           Get-Content $out
-          if ($p.ExitCode -ne 0) { throw "Self-test failed with exit code $($p.ExitCode)" }
+          if ($p.ExitCode -ne 0) { Get-Content $out | ForEach-Object { Write-Output "::error title=self-test::$_" }; throw "Self-test failed with exit code $($p.ExitCode)" }
           $p = Start-Process -FilePath $exe -ArgumentList "--version" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out
           Get-Content $out
-          if ($p.ExitCode -ne 0) { throw "--version failed with exit code $($p.ExitCode)" }
+          if ($p.ExitCode -ne 0) { Write-Output "::error title=self-test::--version exit $($p.ExitCode)"; throw "--version failed with exit code $($p.ExitCode)" }
           $p = Start-Process -FilePath $exe -ArgumentList "no-such-command" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out -RedirectStandardError "$out.err"
-          if ($p.ExitCode -ne 2) { throw "Unknown command should exit with 2, got $($p.ExitCode)" }
+          if ($p.ExitCode -ne 2) { Write-Output "::error title=self-test::unknown command exit $($p.ExitCode)"; throw "Unknown command should exit with 2, got $($p.ExitCode)" }
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ matrix.configuration }}
           path: TestResults
 
       - name: Upload portable EXE
         if: matrix.configuration == 'Release'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: WinTool-portable-unsigned
           path: src/WinTool.App/bin/**/Release/net48/WinTool.exe

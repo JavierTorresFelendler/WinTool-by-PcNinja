@@ -27,6 +27,7 @@ namespace WinTool.Core.Tests
             Assert.Equal("WindowsUpdate", entry.Area);
             Assert.Equal("Reboot pending", entry.Message);
             Assert.True(entry.IsWarning);
+            Assert.Equal("10:30:02", entry.ShortTime);
 
             var shortArea = LogReader.Parse(AppLog.FormatLine(DateTime.Now, "INFO", "UI", "  indented text"));
             Assert.Equal("UI", shortArea.Area);

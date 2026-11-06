@@ -116,6 +116,8 @@ jobs:
         run: |
           $exe = Join-Path $env:RUNNER_TEMP "portable\WinTool-by-PcNinja.exe"
           $out = Join-Path $env:RUNNER_TEMP "ui-smoke.txt"
+          # Release builds also save screenshots of every page for review (artifact ui-screenshots).
+          if ("${{ matrix.configuration }}" -eq "Release") { $env:WINTOOL_SMOKE_SCREENSHOTS = Join-Path $env:RUNNER_TEMP "ui-screenshots" }
           $p = Start-Process -FilePath $exe -ArgumentList "--ui-smoke" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out
           $lines = Get-Content $out
           $lines | Where-Object { $_ -notmatch '^  OK ' } | ForEach-Object { Write-Host $_ }
@@ -281,6 +283,14 @@ jobs:
           name: WinTool-by-PcNinja-msi-unsigned
           path: ${{ runner.temp }}/msi/WinTool-by-PcNinja.msi
           if-no-files-found: error
+
+      - name: Upload UI screenshots
+        if: matrix.configuration == 'Release' && always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ui-screenshots
+          path: ${{ runner.temp }}/ui-screenshots
+          if-no-files-found: warn
 
       - name: Upload test results
         if: always()

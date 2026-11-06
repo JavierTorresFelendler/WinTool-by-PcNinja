@@ -13,6 +13,12 @@ namespace WinTool.App.ViewModels
         public string Title => T[TitleKey];
         public string Subtitle => SubtitleKey == null ? string.Empty : T[SubtitleKey];
 
+        /// <summary>
+        /// True for a page that fills the window height and scrolls inside itself (Logs);
+        /// the window then gives it a fixed viewport instead of scrolling the whole page.
+        /// </summary>
+        public virtual bool FillsWindow => false;
+
         /// <summary>Called each time the page is shown.</summary>
         public virtual void OnActivated()
         {

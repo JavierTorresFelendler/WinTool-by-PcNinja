@@ -19,6 +19,9 @@ namespace WinTool.Core.Diagnostics
         }
 
         public string Time { get; }
+
+        /// <summary>HH:mm:ss; the day is chosen on the page.</summary>
+        public string ShortTime => Time.Length >= 19 ? Time.Substring(11) : Time;
         public string Level { get; }
         public string Area { get; }
         public string Message { get; }

@@ -81,6 +81,8 @@ namespace WinTool.App.ViewModels
         public bool HasMessage => !string.IsNullOrEmpty(message);
         public bool MessageIsError { get => messageIsError; private set => Set(ref messageIsError, value); }
 
+        public override bool FillsWindow => true;
+
         public override void OnActivated()
         {
             active = true;

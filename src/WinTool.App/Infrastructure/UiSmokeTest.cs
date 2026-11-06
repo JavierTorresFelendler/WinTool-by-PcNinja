@@ -83,6 +83,36 @@ namespace WinTool.App.Infrastructure
                 // Let the pages' background loads finish and report their binding errors too.
                 var until = DateTime.UtcNow.AddSeconds(15);
                 while (DateTime.UtcNow < until) Pump();
+
+                // Screenshots for review (CI uploads them): every page, loaded, in the main combinations.
+                var shots = Environment.GetEnvironmentVariable("WINTOOL_SMOKE_SCREENSHOTS");
+                if (!string.IsNullOrEmpty(shots))
+                {
+                    System.IO.Directory.CreateDirectory(shots);
+                    foreach (var theme in new[] { VisualTheme.Dark, VisualTheme.Light })
+                    {
+                        ThemeManager.Apply(theme);
+                        foreach (var language in new[] { "en", "he", "es" })
+                        {
+                            Loc.Instance.SetLanguage(language);
+                            foreach (var size in new[] { new Size(1280, 800), new Size(1024, 728) })
+                            {
+                                window.Width = size.Width;
+                                window.Height = size.Height;
+                                foreach (var item in model.NavItems)
+                                {
+                                    item.IsSelected = true;
+                                    for (var i = 0; i < 5; i++) Pump();
+                                    window.UpdateLayout();
+                                    Capture(window, System.IO.Path.Combine(shots,
+                                        theme + "-" + language + "-" + (int)size.Width + "-" + item.Key + ".png"));
+                                }
+                            }
+                        }
+                    }
+
+                    output.WriteLine("  Screenshots saved to " + shots);
+                }
             }
             catch (Exception ex)
             {
@@ -98,6 +128,17 @@ namespace WinTool.App.Infrastructure
             output.WriteLine(failures.Count == 0 ? "UI smoke test passed." : "UI smoke test failed: " + failures.Count + " problem(s).");
             AppLog.Current.Info("UiSmoke", failures.Count == 0 ? "Passed" : "Failed: " + failures.Count);
             return failures.Count == 0 ? Program.ExitOk : 1;
+        }
+
+        private static void Capture(Window window, string path)
+        {
+            var root = (FrameworkElement)window.Content;
+            var bitmap = new System.Windows.Media.Imaging.RenderTargetBitmap(
+                (int)Math.Ceiling(root.ActualWidth), (int)Math.Ceiling(root.ActualHeight), 96, 96, System.Windows.Media.PixelFormats.Pbgra32);
+            bitmap.Render(root);
+            var encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
+            encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bitmap));
+            using (var file = System.IO.File.Create(path)) encoder.Save(file);
         }
 
         private static void Pump()

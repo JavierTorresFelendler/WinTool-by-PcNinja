@@ -159,7 +159,18 @@
                 </Border>
 
                 <!-- Content -->
-                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                    <ScrollViewer.Style>
+                        <Style TargetType="ScrollViewer">
+                            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                            <Style.Triggers>
+                                <!-- Logs fills the height and scrolls its own list (owner VM feedback). -->
+                                <DataTrigger Binding="{Binding CurrentPage.FillsWindow}" Value="True">
+                                    <Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ScrollViewer.Style>
                     <ContentControl Content="{Binding CurrentPage}" Focusable="False">
                         <ContentControl.Style>
                             <Style TargetType="ContentControl">

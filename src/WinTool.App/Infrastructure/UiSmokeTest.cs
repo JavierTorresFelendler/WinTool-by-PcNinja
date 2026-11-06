@@ -51,6 +51,9 @@ namespace WinTool.App.Infrastructure
                 ShowInTaskbar = false
             };
 
+            // The opening-size rule maximizes on small screens (D-019); an off-screen test window must be normal.
+            window.WindowState = WindowState.Normal;
+
             try
             {
                 ThemeManager.Apply(VisualTheme.Dark);

@@ -154,7 +154,7 @@ namespace WinTool.WindowsUpdate.Logic
 
         private void StartAll(ResetResult result)
         {
-            foreach (var service in Services.Reverse())
+            foreach (var service in Enumerable.Reverse(Services))
             {
                 try { services.Start(service); }
                 catch (Exception ex) when (!(ex is OutOfMemoryException)) { log.Write(EventIds.ResetFailed, EventLevel.Warning, "Could not start " + service + ": " + ex.Message); }

@@ -49,19 +49,21 @@ WinTool.App ──► WinTool.WindowsUpdate ─┐
 
 ## Navigation
 
-The sidebar follows the approved PcNinja Dashboard design, grouped by area.
-The Drivers page from WinUpdate V2 is not included.
+There is no separate home page. Each tool is one screen that holds
+everything needed to operate it, so the user never switches tabs to work with
+one tool (owner decision, 2026-11-06). The Drivers page from WinUpdate V2 is
+not included.
 
 ```text
-Home                 Whole-system overview: update status, restart pending,
-                     upgrade readiness, Office status, tool version
-Windows Update
-  Updates            Scan, preview, install; categories; restart state
-  Schedule           Frequency, time, retry, wake-to-run, run-if-missed
-Windows Upgrade      Readiness, image source, validation, upgrade
-Office               Product, channel, languages, install / remove
-Logs                 Lazy-loaded, per module, search later
-Settings             Language, app update channel, about
+Windows Update     Status and restart state, available updates, health and
+                   maintenance actions, and the schedule (edited in place)
+Windows Upgrade    This computer, installation source, Windows image,
+                   options, validate and start
+Office             Product family, mode (install / offline package /
+                   remove), channel, apps, languages, summary
+──────────
+Logs               Lazy-loaded, filtered by tool
+Settings           Theme, language, application updates, about
 ```
 
 Footer: installed version, latest version, **Check Tool Update**.

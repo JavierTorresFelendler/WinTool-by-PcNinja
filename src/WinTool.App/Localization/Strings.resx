@@ -401,4 +401,5 @@ Yes: install WinTool now; the installer creates this schedule, and this window c
 No: schedule this portable copy anyway (do not move or delete the file).
 Cancel: do nothing.</value></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>The installer for WinTool {0} could not be downloaded. Download WinTool-by-PcNinja.msi from {1}.</value></data>
+  <data name="Settings_Spanish_Review" xml:space="preserve"><value>Spanish is a first translation, waiting for review by a native speaker.</value></data>
 </root>

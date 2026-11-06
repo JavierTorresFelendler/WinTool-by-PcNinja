@@ -62,7 +62,7 @@ namespace WinTool.App.Infrastructure
                 foreach (var theme in new[] { VisualTheme.Dark, VisualTheme.Light, VisualTheme.HighContrast })
                 {
                     ThemeManager.Apply(theme);
-                    foreach (var language in new[] { "en", "he" })
+                    foreach (var language in new[] { "en", "he", "es" })
                     {
                         Loc.Instance.SetLanguage(language);
                         foreach (var width in new[] { 1280.0, 1024.0 })

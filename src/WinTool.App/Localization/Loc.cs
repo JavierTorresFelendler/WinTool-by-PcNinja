@@ -19,6 +19,7 @@ namespace WinTool.App.Localization
 
         private readonly ResourceManager english = new ResourceManager(BaseName, typeof(Loc).Assembly);
         private readonly ResourceManager hebrew = new ResourceManager(BaseName + ".he", typeof(Loc).Assembly);
+        private readonly ResourceManager spanish = new ResourceManager(BaseName + ".es", typeof(Loc).Assembly);
         private string language = LanguageResolver.English;
 
         private Loc()
@@ -46,6 +47,7 @@ namespace WinTool.App.Localization
             get
             {
                 if (language == LanguageResolver.Hebrew) return CultureInfo.GetCultureInfo("he-IL");
+                if (language == LanguageResolver.Spanish) return CultureInfo.GetCultureInfo("es-ES");
                 return CultureInfo.GetCultureInfo("en-US");
             }
         }
@@ -59,10 +61,11 @@ namespace WinTool.App.Localization
                 if (englishText == null) return "!" + key + "!";
 
                 if (language == LanguageResolver.Pseudo) return PseudoLocalizer.Transform(englishText);
-                if (language == LanguageResolver.Hebrew)
+                var translated = Manager(language);
+                if (translated != null)
                 {
-                    var hebrewText = hebrew.GetString(key, CultureInfo.InvariantCulture);
-                    if (!string.IsNullOrEmpty(hebrewText)) return hebrewText;
+                    var text = translated.GetString(key, CultureInfo.InvariantCulture);
+                    if (!string.IsNullOrEmpty(text)) return text;
                 }
 
                 return englishText;
@@ -86,10 +89,13 @@ namespace WinTool.App.Localization
             LanguageChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        private ResourceManager Manager(string lang) =>
+            lang == LanguageResolver.Hebrew ? hebrew : lang == LanguageResolver.Spanish ? spanish : null;
+
         /// <summary>The keys a language defines, for the self-test and tests.</summary>
         public HashSet<string> KeysFor(string lang)
         {
-            var manager = lang == LanguageResolver.Hebrew ? hebrew : english;
+            var manager = Manager(lang) ?? english;
             var keys = new HashSet<string>(StringComparer.Ordinal);
             // The ResourceManager caches and shares this set; disposing it would break later lookups.
             var set = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false);

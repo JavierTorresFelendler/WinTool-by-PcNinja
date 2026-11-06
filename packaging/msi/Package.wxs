@@ -126,6 +126,7 @@
             <ListItem Text="Same as Windows" Value="auto" />
             <ListItem Text="English" Value="en" />
             <ListItem Text="Hebrew" Value="he" />
+            <ListItem Text="Spanish" Value="es" />
           </ComboBox>
         </Control>
         <Control Id="Updates" Type="CheckBox" X="25" Y="144" Width="320" Height="17" Property="WINTOOL_APP_UPDATE_CHECK" CheckBoxValue="1" Text="Check for WinTool updates at startup" />

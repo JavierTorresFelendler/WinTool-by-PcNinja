@@ -45,12 +45,12 @@
                             <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Language" Margin="0,0,6,6"
                                          IsChecked="{Binding IsHebrew, Mode=TwoWay}" Content="עברית" />
                             <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Language" Margin="0,0,6,6"
-                                         IsEnabled="False" Content="Español" />
+                                         IsChecked="{Binding IsSpanish, Mode=TwoWay}" Content="Español" />
                             <RadioButton Style="{StaticResource RadioButton.Segment}" GroupName="Language" Margin="0,0,6,6"
                                          IsChecked="{Binding IsPseudo, Mode=TwoWay}" Content="Pseudo (test)"
                                          Visibility="{Binding ShowPseudo, Converter={StaticResource BoolToVisibility}}" />
                         </WrapPanel>
-                        <TextBlock Text="{loc:Loc Settings_Spanish_Soon}" Style="{StaticResource Text.Subtitle}" FontSize="12" />
+                        <TextBlock Text="{loc:Loc Settings_Spanish_Review}" Style="{StaticResource Text.Subtitle}" FontSize="12" TextWrapping="Wrap" />
                     </StackPanel>
                 </Grid>
             </StackPanel>

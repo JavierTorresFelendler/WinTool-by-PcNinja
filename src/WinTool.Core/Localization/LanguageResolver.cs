@@ -9,11 +9,12 @@ namespace WinTool.Core.Localization
         public const string Auto = "auto";
         public const string English = "en";
         public const string Hebrew = "he";
+        public const string Spanish = "es";
 
         /// <summary>Pseudo-language for layout testing. Offered in debug builds only.</summary>
         public const string Pseudo = "qps";
 
-        public static readonly IReadOnlyList<string> Shipped = new[] { English, Hebrew };
+        public static readonly IReadOnlyList<string> Shipped = new[] { English, Hebrew, Spanish };
 
         public static string Resolve(string saved, string installDefault, string windowsUiCulture, bool allowPseudo)
         {

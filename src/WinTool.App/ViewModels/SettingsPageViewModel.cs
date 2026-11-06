@@ -32,6 +32,7 @@ namespace WinTool.App.ViewModels
 
         public bool IsEnglish { get => Loc.Instance.Language == LanguageResolver.English; set => SetLanguage(value, LanguageResolver.English); }
         public bool IsHebrew { get => Loc.Instance.Language == LanguageResolver.Hebrew; set => SetLanguage(value, LanguageResolver.Hebrew); }
+        public bool IsSpanish { get => Loc.Instance.Language == LanguageResolver.Spanish; set => SetLanguage(value, LanguageResolver.Spanish); }
         public bool IsPseudo { get => Loc.Instance.Language == LanguageResolver.Pseudo; set => SetLanguage(value, LanguageResolver.Pseudo); }
         public bool ShowPseudo => Loc.PseudoAllowed;
 

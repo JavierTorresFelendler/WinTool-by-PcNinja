@@ -10,8 +10,10 @@ namespace WinTool.Core.Tests
         [InlineData("auto", "he", "en-US", "he")]        // then the MSI default
         [InlineData(null, "auto", "he-IL", "he")]        // then the Windows language
         [InlineData(null, null, "fr-FR", "en")]          // unsupported falls back to English
-        [InlineData("es", null, "en-US", "en")]          // Spanish is not shipped yet
+        [InlineData("es", null, "en-US", "es")]          // Spanish ships (D-023)
         [InlineData("iw", null, "en-US", "he")]          // legacy Hebrew code
+        [InlineData(null, null, "es-MX", "es")]          // Spanish from Windows
+        [InlineData("es", null, "he-IL", "es")]
         [InlineData(" HE ", null, "en-US", "he")]
         public void Resolves_in_documented_order(string saved, string install, string windows, string expected)
         {

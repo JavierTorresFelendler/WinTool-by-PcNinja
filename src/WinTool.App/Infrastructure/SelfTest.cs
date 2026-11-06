@@ -23,6 +23,12 @@ namespace WinTool.App.Infrastructure
             failures += Check(output, "Office module loads", () => WinTool.Office.OfficeCatalog.Languages.Count > 0);
             failures += Check(output, "English text is present", () => Loc.Instance.KeysFor("en").Count > 0);
 
+            failures += Check(output, "Spanish has every English key", () =>
+            {
+                var missing = Loc.Instance.KeysFor("en").Except(Loc.Instance.KeysFor("es")).ToList();
+                foreach (var key in missing) output.WriteLine("    missing in Spanish: " + key);
+                return missing.Count == 0;
+            });
             failures += Check(output, "Hebrew has every English key", () =>
             {
                 var english = Loc.Instance.KeysFor("en");

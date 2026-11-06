@@ -34,6 +34,7 @@
   <!-- Every language is a neutral resource inside WinTool-by-PcNinja.exe (no satellite folders), so the portable EXE is one file. -->
   <ItemGroup>
     <EmbeddedResource Update="Localization\Strings.he.resx" WithCulture="false" LogicalName="WinTool.App.Localization.Strings.he.resources" />
+    <EmbeddedResource Update="Localization\Strings.es.resx" WithCulture="false" LogicalName="WinTool.App.Localization.Strings.es.resources" />
     <EmbeddedResource Update="Localization\Strings.resx" LogicalName="WinTool.App.Localization.Strings.resources" />
   </ItemGroup>
 

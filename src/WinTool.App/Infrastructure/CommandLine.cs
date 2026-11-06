@@ -90,6 +90,16 @@ namespace WinTool.App.Infrastructure
             writer.WriteLine("  upgrade run      --iso <file> | --mounted <drive-or-folder> | --download [--destination folder]");
             writer.WriteLine("                   [--sha256 HASH] [--image-index N] [--no-restart] [--quiet] --yes | --dry-run       (admin)");
             writer.WriteLine();
+            writer.WriteLine("Office (Microsoft Office Deployment Tool, downloaded from Microsoft and signature-checked)");
+            writer.WriteLine("  office status    Installed Office");
+            writer.WriteLine("  office config    Print the configuration file for the options; changes nothing");
+            writer.WriteLine("  office install   [options] [--quiet] [--remove-existing --confirm]                       (admin)");
+            writer.WriteLine("  office package   --output <folder> [options]   Offline package in <folder>\\OFFICE-OFFLINE (admin)");
+            writer.WriteLine("  office remove    --confirm [--quiet]   Removes every Click-to-Run Office                  (admin)");
+            writer.WriteLine("  office tool-check  Download and signature-check the Office Deployment Tool; runs nothing");
+            writer.WriteLine("  options: --family m365|ltsc  --channel Current|MonthlyEnterprise|SemiAnnual");
+            writer.WriteLine("           --apps Word,Excel,...  --languages en-us,he-il,...  --visio  --project  --x86  --no-activate");
+            writer.WriteLine();
             writer.WriteLine("Other");
             writer.WriteLine("  status           Version, last update run, schedule, pending restart");
             writer.WriteLine("  logs collect     [--output folder-or-file.zip]");

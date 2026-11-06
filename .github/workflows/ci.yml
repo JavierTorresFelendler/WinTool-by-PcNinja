@@ -130,6 +130,17 @@ jobs:
           $after = Invoke-WinTool @('schedule', 'show', '--json') @(0)
           if ($after -notmatch '"task": null') { Write-Output "::error title=cli::task still present after remove"; exit 1 }
           Invoke-WinTool @('logs', 'collect', '--output', (Join-Path $env:RUNNER_TEMP 'logs.zip')) @(0) | Out-Null
+          # Office: read-only commands and refusals only. Nothing is installed or removed here.
+          Invoke-WinTool @('office', 'status', '--json') @(0) | Out-Null
+          $config = Invoke-WinTool @('office', 'config', '--family', 'ltsc', '--languages', 'he-il,en-us', '--visio') @(0)
+          if ($config -notmatch 'ProPlus2024Volume' -or $config -notmatch 'VisioPro2024Volume') {
+            Write-Host "::error title=cli::office config did not produce the LTSC configuration"
+            exit 1
+          }
+          Invoke-WinTool @('office', 'remove') @(2) | Out-Null
+          # The real Office Deployment Tool: found on Microsoft's page, downloaded, Microsoft-signed. Runs nothing.
+          $tool = Invoke-WinTool @('office', 'tool-check', '--json') @(0, 11)
+          if ($tool -match '"latest": false') { Write-Host "::warning title=office::Microsoft's page gave no ODT link; the fixed address was used" }
           # Windows Upgrade: read-only commands and refusals only. Never --yes here: Setup must not run on a build machine.
           $upgrade = Invoke-WinTool @('upgrade', 'status', '--json') @(0)
           if ($upgrade -notmatch '"resultCode": "STATUS_REPORTED"' -or $upgrade -notmatch '"readyForRestart": false') {

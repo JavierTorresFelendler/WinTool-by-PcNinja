@@ -60,6 +60,26 @@ public sealed class OfficeDeploymentException : Exception
     public int? SetupExitCode { get; }
 }
 
+public sealed class OdtCheck
+{
+    public OdtCheck(OdtLink link, bool signedByMicrosoft, string signer, long bytes, IReadOnlyList<string> warnings)
+    {
+        Url = link.Url;
+        Latest = link.Latest;
+        SignedByMicrosoft = signedByMicrosoft;
+        Signer = signer;
+        Bytes = bytes;
+        Warnings = warnings;
+    }
+
+    public string Url { get; }
+    public bool Latest { get; }
+    public bool SignedByMicrosoft { get; }
+    public string Signer { get; }
+    public long Bytes { get; }
+    public IReadOnlyList<string> Warnings { get; }
+}
+
 public sealed class OfficeOutcome
 {
     public OfficeOutcome(string message, string? packageFolder = null, string? toolUrl = null)
@@ -151,6 +171,29 @@ public sealed class OfficeDeployment
             return new OfficeOutcome("Copy the whole \"" + package + "\" folder to the target computer and run Install-Office.bat as administrator.",
                 package, work.ToolUrl);
         });
+
+    /// <summary>
+    /// Finds the ODT, downloads it and checks the Microsoft signature, then deletes it.
+    /// Runs nothing and changes nothing (diagnostics, CI).
+    /// </summary>
+    public async Task<OdtCheck> CheckToolAsync(CancellationToken token)
+    {
+        var folder = Path.Combine(workRoot, "WinTool-Office-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        try
+        {
+            var warnings = new List<string>();
+            var link = await OdtSource.ResolveAsync(tools, warnings.Add, token).ConfigureAwait(false);
+            var file = Path.Combine(folder, "officedeploymenttool.exe");
+            await tools.DownloadFileAsync(link.Url, file, token).ConfigureAwait(false);
+            var signed = tools.IsMicrosoftSigned(file, out var signer);
+            return new OdtCheck(link, signed, signer, new FileInfo(file).Length, warnings);
+        }
+        finally
+        {
+            TryDeleteFolder(folder);
+        }
+    }
 
     internal static string ResolvePackageFolder(string selected)
     {

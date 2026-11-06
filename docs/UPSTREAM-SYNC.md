@@ -57,5 +57,10 @@ Where the code lives here:
 - Baseline: v3.3.15
 - Reviewed up to: `381a08ef89a3392b84d0049fe1c58a4d150c200f`
 
+Where the behavior lives here: rewritten as `src/WinTool.Office` against
+`docs/specs/OFFICE-BEHAVIOR.md` (ids OF-xx). A change there is ported by
+finding its OF item, changing the WinTool code and its test, and updating the
+item. The configuration XML must stay byte-compatible (`ConfigurationTests`).
+
 | Source commit | Summary | Status | WinTool change / reason |
 | --- | --- | --- | --- |

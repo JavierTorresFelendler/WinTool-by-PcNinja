@@ -142,6 +142,17 @@ public sealed class DeploymentTests : IDisposable
     }
 
     [Fact]
+    public async Task The_tool_check_downloads_and_verifies_but_runs_nothing()
+    {
+        var check = await Create().CheckToolAsync(CancellationToken.None);
+        Assert.True(check.Latest);
+        Assert.True(check.SignedByMicrosoft);
+        Assert.Equal(tools.Page, check.Url);
+        Assert.DoesNotContain(tools.Calls, call => call.StartsWith("run ", StringComparison.Ordinal));
+        Assert.Empty(Directory.GetFileSystemEntries(Work));
+    }
+
+    [Fact]
     public async Task Cancelling_before_setup_stops_without_running_it()
     {
         using var cancel = new CancellationTokenSource();

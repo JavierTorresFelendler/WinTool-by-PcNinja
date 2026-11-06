@@ -97,6 +97,36 @@ Moving from the Windows Upgrade Tool: commands gain the `upgrade` prefix,
 the exit codes are WinTool's (D-021). The JSON fields and `resultCode` values
 are unchanged, so scripts that read them keep working.
 
+## Office
+
+Install, package or remove Office with Microsoft's Office Deployment Tool
+(ODT). WinTool downloads the newest ODT from Microsoft each time and runs it
+only when it is signed by Microsoft (D-022). Once the Office installer has
+started it is never interrupted; Ctrl+C before that, or during a package
+download, cancels.
+
+| Command | Admin | What it does |
+| --- | --- | --- |
+| `office status` | No | The installed Click-to-Run Office: product, version, platform, channel, apps. |
+| `office config [options] [--quiet]` | No | Prints the configuration file the options produce. Changes nothing. |
+| `office install [options] [--quiet] [--remove-existing --confirm]` | Yes | Installs Office. `--remove-existing` first removes every installed Office and needs `--confirm`. |
+| `office package --output <folder> [options]` | Yes | Downloads Office into `<folder>\OFFICE-OFFLINE` with `setup.exe`, `Office_Config.xml` and `Install-Office.bat`. Copy that folder to the target computer and run `Install-Office.bat` as administrator. |
+| `office remove --confirm [--quiet]` | Yes | Removes every Click-to-Run Office product. |
+| `office tool-check` | No | Finds the newest Office Deployment Tool, downloads it and checks the Microsoft signature, then deletes it. Runs nothing. Exit 0: found on Microsoft's page and signed; 11: signed, but from WinTool's fixed address; 40/41: not downloaded / not signed. |
+
+Options: `--family m365|ltsc` (default `m365`: Microsoft 365 Apps for
+Enterprise; `ltsc`: Office LTSC Professional Plus 2024),
+`--channel Current|MonthlyEnterprise|SemiAnnual` (Microsoft 365 only),
+`--apps Word,Excel,PowerPoint,Outlook,OneNote,Access,Publisher,Teams,OneDrive`
+(default the first five), `--languages en-us,he-il,...` (the first is the
+primary language; default `en-us,he-il`), `--visio`, `--project`, `--x86`
+(32-bit), `--no-activate` (LTSC: do not activate the volume license during
+installation). `--quiet` hides the Office installer window.
+
+```bat
+start /wait WinTool-by-PcNinja.exe office install --family ltsc --languages he-il,en-us --visio --quiet
+```
+
 ## Other
 
 | Command | What it does |
@@ -120,6 +150,9 @@ are unchanged, so scripts that read them keep working.
 | 21 | Skipped: Windows busy, cooldown, or another WinTool operation running | Another WinTool operation is running |
 | 22 | Needs attention: retry limit reached or automatic retry off | — |
 | 30–33 | — | Windows Upgrade results, see above |
+| 40 | — | Office: the Office Deployment Tool could not be downloaded or extracted |
+| 41 | — | Office: the Office Deployment Tool is not signed by Microsoft; nothing ran |
+| 42 | — | Office: the Office installer failed (`setupExitCode` holds its code) |
 
 ## Examples
 

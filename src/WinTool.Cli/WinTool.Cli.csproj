@@ -8,6 +8,7 @@
     <ProjectReference Include="..\WinTool.Core\WinTool.Core.csproj" />
     <ProjectReference Include="..\WinTool.WindowsUpdate\WinTool.WindowsUpdate.csproj" />
     <ProjectReference Include="..\WinTool.Upgrade\WinTool.Upgrade.csproj" />
+    <ProjectReference Include="..\WinTool.Office\WinTool.Office.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="WinTool.WindowsUpdate.Tests" />

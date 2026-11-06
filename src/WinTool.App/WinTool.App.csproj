@@ -16,6 +16,7 @@
     <ProjectReference Include="..\WinTool.WindowsUpdate\WinTool.WindowsUpdate.csproj" />
     <ProjectReference Include="..\WinTool.Cli\WinTool.Cli.csproj" />
     <ProjectReference Include="..\WinTool.Upgrade\WinTool.Upgrade.csproj" />
+    <ProjectReference Include="..\WinTool.Office\WinTool.Office.csproj" />
     <Compile Include="..\..\shared\PcNinjaSingleInstance.cs" Link="Shared\PcNinjaSingleInstance.cs" />
   </ItemGroup>
 

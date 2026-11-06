@@ -19,5 +19,10 @@ namespace WinTool.Cli
         public const int DownloadFailed = 31;
         public const int SetupFailed = 32;
         public const int SetupOutcomeUnconfirmed = 33;
+
+        // Office (decision D-022).
+        public const int OfficeToolUnavailable = 40;
+        public const int OfficeToolNotTrusted = 41;
+        public const int OfficeSetupFailed = 42;
     }
 }

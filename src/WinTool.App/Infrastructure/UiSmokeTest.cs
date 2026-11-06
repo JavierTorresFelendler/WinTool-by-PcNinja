@@ -29,6 +29,9 @@ namespace WinTool.App.Infrastructure
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Warning;
 
             var failures = new List<string>();
+            // The real app gets this from Application.Run; without it, "await" resumes on a thread-pool
+            // thread and pages change their lists off the UI thread (found by the Logs capture checks).
+            System.Threading.SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WINTOOL_SMOKE_SCREENSHOTS"))) UseSampleLog();
             var app = new App();
             app.InitializeComponent();

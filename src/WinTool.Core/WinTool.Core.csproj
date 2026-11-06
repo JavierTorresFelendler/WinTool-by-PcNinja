@@ -1,9 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <!-- net48 is the product. net8.0-windows exists only so the unit tests also run on Linux during development. -->
+    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
     <RootNamespace>WinTool.Core</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization" Condition="'$(TargetFramework)' == 'net48'" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="WinTool.Core.Tests" />

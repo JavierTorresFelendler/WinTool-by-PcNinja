@@ -47,7 +47,7 @@ jobs:
       - name: Unit tests
         shell: pwsh
         run: |
-          $output = & dotnet test tests/WinTool.Core.Tests/WinTool.Core.Tests.csproj -c ${{ matrix.configuration }} --no-build --logger "trx;LogFileName=results.trx" --logger "console;verbosity=normal" --results-directory TestResults 2>&1 | ForEach-Object { "$_" }
+          $output = & dotnet test WinTool.sln -c ${{ matrix.configuration }} --no-build --logger trx --logger "console;verbosity=normal" --results-directory TestResults 2>&1 | ForEach-Object { "$_" }
           $output | Write-Output
           if ($LASTEXITCODE -ne 0) {
             $lines = $output | Where-Object { $_ -match 'Failed |Error Message|Assert|Exception|error' } | Select-Object -Unique -First 40

@@ -49,9 +49,9 @@ Line numbers refer to that commit.
 
 | Id | V2 behavior | Source | WinTool |
 | --- | --- | --- | --- |
-| WU-30 | Detects Windows Update activity. Installing: `TrustedInstaller`, `TiWorker`, `WindowsUpdateBox`, `SetupHost` processes or a running TrustedInstaller service. Background: `MoUsoCoreWorker`, `UsoClient`, `wuauclt`, `MusNotification(Ux)` or active Windows/Microsoft BITS jobs. | Core 761 | **Keep**. |
+| WU-30 | Detects Windows Update activity. Installing: `TrustedInstaller`, `TiWorker`, `WindowsUpdateBox`, `SetupHost` processes or a running TrustedInstaller service. Background: `MoUsoCoreWorker`, `UsoClient`, `wuauclt`, `MusNotification(Ux)` or active Windows/Microsoft BITS jobs. | Core 761 | **Change**: processes and the TrustedInstaller service are kept; the BITS job list is dropped, because update downloads already show up as the orchestrator processes and reading BITS jobs needs a large native interface. |
 | WU-31 | When Windows is busy: scheduled and automatic runs do not start and schedule a retry. A manual run asks the user: retry later, "snooze" (stop the update services, restart them, then run) or cancel. | Core 3504; Script 3921 | **Keep**. "Snooze" stays manual-only. |
-| WU-32 | Network check: DNS lookup of `download.windowsupdate.com` and an HTTPS HEAD to `www.microsoft.com` (5 s). Scheduled runs schedule a retry when it fails; manual runs only warn. | Core 707, 3491 | **Keep**. |
+| WU-32 | Network check: DNS lookup of `download.windowsupdate.com` and an HTTPS HEAD to `www.microsoft.com` (5 s). When it fails, every run type (manual included) schedules a retry task. | Core 707, 3491 | **Change**: same check. Scheduled and command-line runs schedule a retry as in V2. A run started from the window reports the problem instead, because the user is watching and a hidden background retry would surprise them. |
 | WU-33 | Starts the services `wuauserv`, `bits`, `UsoSvc`, `dosvc`, `cryptsvc` when they are stopped. | Core 743 | **Keep**. |
 | WU-34 | Logs the .NET Framework version. | Core 1148 | **Drop**. WinTool itself requires .NET Framework 4.8, so the value is always known. |
 
@@ -80,10 +80,11 @@ Line numbers refer to that commit.
 
 | Id | V2 behavior | Source | WinTool |
 | --- | --- | --- | --- |
-| WU-60 | Retry when: the network is not ready, Windows is busy, or the error is one of `0x8024402C`, `0x8024401C`, `0x80244022`, `0x80072EE2`, `0x80072EFD`, `0x80072EFE`. | Core 3337 | **Keep**. |
+| WU-60 | Retry when: the network is not ready, Windows is busy, or the error is one of `0x8024402C`, `0x8024401C`, `0x80244022`, `0x80072EE2`, `0x80072EFD`, `0x80072EFE`. | Core 3337 | **Keep** for scheduled and command-line runs. Runs started from the window report instead (see WU-32). |
 | WU-61 | Delay = first delay × multiplier^(n-1), at most 360 minutes. Defaults: 5 min, ×2, 3 attempts. | Core 1457 | **Keep**. |
 | WU-62 | A retry is a separate one-time task `... Retry`. A new non-retry run or a successful run removes it and resets the counter. | Core 1527, 3466 | **Keep**. |
 | WU-63 | A failed download (result Failed or Aborted) ends the run as failed without a retry. | Core 3212 | **Change**. A failed download caused by a retryable error is retried like WU-60. |
+| WU-64 | An update that keeps failing is downloaded and installed again in every pass. | Core 3093 | **Change**. An update that failed once is not tried again in the same run, and the run ends as completed with errors instead of failing on the repeat. |
 
 ## 7. Reset Windows Update
 

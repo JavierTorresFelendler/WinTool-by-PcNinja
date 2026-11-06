@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
@@ -9,7 +10,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml.Linq" Condition="'$(TargetFramework)' == 'net48'" />
     <ProjectReference Include="..\..\src\WinTool.Core\WinTool.Core.csproj" />
   </ItemGroup>
 </Project>

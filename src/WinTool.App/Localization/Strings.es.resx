@@ -237,7 +237,7 @@ Si el archivo se mueve o se elimina, la programación deja de funcionar. ¿Conti
   <data name="UP_Status_Finding" xml:space="preserve"><value>Buscando una descarga de Windows adecuada…</value><comment>needs review (D-023)</comment></data>
   <data name="UP_Status_Cancelling" xml:space="preserve"><value>Cancelando…</value><comment>needs review (D-023)</comment></data>
   <data name="UP_Status_Cancelled" xml:space="preserve"><value>Cancelado. El programa de instalación de Windows no se inició.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Validated" xml:space="preserve"><value>Medio comprobado: {0} imagen(es).</value><comment>needs review (D-023)</comment></data>
+  <data name="UP_Status_Validated" xml:space="preserve"><value>Medio comprobado: {0} imágenes.</value><comment>needs review (D-023)</comment></data>
   <data name="UP_Status_ImageSelected" xml:space="preserve"><value>Imagen {0} seleccionada. Inicia la actualización cuando quieras.</value><comment>needs review (D-023)</comment></data>
   <data name="UP_Status_ChooseImage" xml:space="preserve"><value>Elige una imagen de Windows y luego inicia la actualización.</value><comment>needs review (D-023)</comment></data>
   <data name="UP_Status_NoImage" xml:space="preserve"><value>Ninguna imagen coincide con este equipo ({0}, {1}). Elige un medio de Windows adecuado.</value><comment>needs review (D-023)</comment></data>
@@ -272,7 +272,7 @@ Guarda tu trabajo. ¿Iniciar la actualización?</value><comment>needs review (D-
   <data name="UP_Confirm_Silent" xml:space="preserve"><value>
 El programa de instalación de Windows se ejecutará en silencio.</value><comment>needs review (D-023)</comment></data>
   <data name="UP_ChooseIsoTitle" xml:space="preserve"><value>Elige un archivo ISO de Windows</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ChooseFolderTitle" xml:space="preserve"><value>Elige una unidad o una carpeta de instalación de Windows extraída</value><comment>needs review (D-023)</comment></data>
+  <data name="UP_ChooseFolderTitle" xml:space="preserve"><value>Elige una unidad o una carpeta con los archivos extraídos del instalador de Windows</value><comment>needs review (D-023)</comment></data>
   <data name="UP_ChooseDownloadFolderTitle" xml:space="preserve"><value>Elige la carpeta de descarga</value><comment>needs review (D-023)</comment></data>
   <data name="UP_SelectedFolder" xml:space="preserve"><value>Carpeta seleccionada</value><comment>needs review (D-023)</comment></data>
   <data name="UP_IsoFilter" xml:space="preserve"><value>Archivos ISO</value><comment>needs review (D-023)</comment></data>
@@ -337,7 +337,7 @@ El programa de instalación de Windows se ejecutará en silencio.</value><commen
   <data name="OF_Confirm_Remove" xml:space="preserve"><value>¿Quitar todos los productos Office Hacer clic y ejecutar de este equipo?
 
 No se puede deshacer desde WinTool.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>Se quitarán todos los Office Hacer clic y ejecutar instalados antes de la nueva instalación. ¿Continuar?</value><comment>needs review (D-023)</comment></data>
+  <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>Se quitarán todos los productos de Office instalados con Hacer clic y ejecutar antes de la nueva instalación. ¿Continuar?</value><comment>needs review (D-023)</comment></data>
   <data name="OF_NeedApp" xml:space="preserve"><value>Elige al menos una aplicación.</value><comment>needs review (D-023)</comment></data>
   <data name="OF_NeedLanguage" xml:space="preserve"><value>Elige al menos un idioma.</value><comment>needs review (D-023)</comment></data>
   <data name="OF_NeedFolder" xml:space="preserve"><value>Elige la carpeta del paquete.</value><comment>needs review (D-023)</comment></data>

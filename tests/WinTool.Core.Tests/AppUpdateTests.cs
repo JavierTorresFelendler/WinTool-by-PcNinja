@@ -214,3 +214,41 @@ namespace WinTool.Core.Tests
         }
     }
 }
+
+namespace WinTool.Core.Tests
+{
+    public class UpdateGateTests
+    {
+        private sealed class Lease : System.IDisposable
+        {
+            public bool Disposed { get; private set; }
+            public void Dispose() => Disposed = true;
+        }
+
+        [Xunit.Fact]
+        public void The_update_proceeds_only_with_the_lock_and_nothing_else_running()
+        {
+            var lease = new Lease();
+            Xunit.Assert.Same(lease, WinTool.Core.Updates.UpdateGate.TryEnter(() => lease, () => false));
+            Xunit.Assert.False(lease.Disposed);
+        }
+
+        [Xunit.Fact]
+        public void Another_process_holding_the_lock_stops_the_update()
+        {
+            Xunit.Assert.Null(WinTool.Core.Updates.UpdateGate.TryEnter(() => null, () => false));
+        }
+
+        [Xunit.Fact]
+        public void An_operation_that_started_during_the_download_stops_the_update_and_releases_the_lock()
+        {
+            // Codex's scenario: Office starts while the update downloads.
+            var lease = new Lease();
+            var running = false;
+            System.Action downloadFinishesWhileOfficeStarts = () => running = true;
+            downloadFinishesWhileOfficeStarts();
+            Xunit.Assert.Null(WinTool.Core.Updates.UpdateGate.TryEnter(() => lease, () => running));
+            Xunit.Assert.True(lease.Disposed);
+        }
+    }
+}

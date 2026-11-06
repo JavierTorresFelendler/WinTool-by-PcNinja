@@ -30,6 +30,7 @@ namespace WinTool.App.ViewModels
         private readonly string exePath;
         private readonly AppUpdater updater = new AppUpdater();
         private bool busy;
+        private IDisposable updateLease;
         private string status;
 
         public AppUpdateViewModel(AppSettings settings, string exePath)
@@ -117,6 +118,7 @@ namespace WinTool.App.ViewModels
                 Status = T["UPD_Checking"];
                 var file = await updater.DownloadVerifiedAsync(release, asset, progress, CancellationToken.None);
                 AppLog.Current.Info("Update", "Downloaded and verified " + file);
+                if (!EnterUpdateGate()) return;
                 if (IsInstalled) RunInstaller(file);
                 else ReplacePortable(file, release);
             }
@@ -152,6 +154,7 @@ namespace WinTool.App.ViewModels
 
                 var progress = new Progress<long>(bytes => Status = T.Format("UPD_Downloading", (bytes / 1048576.0).ToString("N1", T.Culture)));
                 var msi = await updater.DownloadVerifiedAsync(release, ReleaseFiles.Installer, progress, CancellationToken.None);
+                if (!EnterUpdateGate()) return true;
                 AppLog.Current.Info("Update", "Installing " + msi + " with the schedule from the portable copy.");
                 Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\" " + msiProperties) { UseShellExecute = true });
                 CloseForUpdate();
@@ -168,6 +171,19 @@ namespace WinTool.App.ViewModels
                 IsBusy = false;
                 Status = null;
             }
+        }
+
+        /// <summary>
+        /// Holds WinTool's operation lock from here until the process exits, and only when no page
+        /// is busy; otherwise tells the user and keeps the downloaded file (Codex review, PR #2).
+        /// </summary>
+        private bool EnterUpdateGate()
+        {
+            updateLease = UpdateGate.TryEnter(() => WinTool.Core.Operations.OperationLock.TryAcquire("WinTool update", TimeSpan.Zero), OperationRunning);
+            if (updateLease != null) return true;
+            AppLog.Current.Warn("Update", "Another operation is running; the update waits.");
+            Dialogs.Info(T["UPD_WaitForOperation"]);
+            return false;
         }
 
         /// <summary>Closes WinTool for an update; not busy any more, so the close guard (F1) lets it go.</summary>

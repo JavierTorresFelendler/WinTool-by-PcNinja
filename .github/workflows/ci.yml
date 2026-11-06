@@ -78,6 +78,37 @@ jobs:
           $p = Start-Process -FilePath $exe -ArgumentList "no-such-command" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out -RedirectStandardError "$out.err"
           if ($p.ExitCode -ne 2) { Write-Output "::error title=self-test::unknown command exit $($p.ExitCode)"; throw "Unknown command should exit with 2, got $($p.ExitCode)" }
 
+      - name: Windows integration smoke test (real Task Scheduler, services, COM)
+        shell: pwsh
+        run: |
+          $exe = Join-Path $env:RUNNER_TEMP "portable\WinTool-by-PcNinja.exe"
+          function Invoke-WinTool([string[]]$arguments, [int[]]$allowed) {
+            $out = Join-Path $env:RUNNER_TEMP "cli-out.txt"
+            $err = Join-Path $env:RUNNER_TEMP "cli-err.txt"
+            $p = Start-Process -FilePath $exe -ArgumentList $arguments -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out -RedirectStandardError $err
+            $text = (Get-Content $out -Raw) + (Get-Content $err -Raw)
+            Write-Output "> $($arguments -join ' ')  (exit $($p.ExitCode))"
+            Write-Output $text
+            if ($allowed -notcontains $p.ExitCode) {
+              Write-Output "::error title=cli::'$($arguments -join ' ')' exited with $($p.ExitCode)"
+              exit 1
+            }
+            return $text
+          }
+          Invoke-WinTool @('status', '--json') @(0) | Out-Null
+          Invoke-WinTool @('schedule', 'set', '--enable', '--frequency', 'Weekly', '--day', 'Sunday', '--time', '03:00', '--wake') @(0) | Out-Null
+          $show = Invoke-WinTool @('schedule', 'show', '--json') @(0)
+          if ($show -notmatch '"matchesSettings": true') { Write-Output "::error title=cli::registered task does not match the settings"; exit 1 }
+          Invoke-WinTool @('update', 'health', '--no-network') @(0, 1, 11) | Out-Null
+          Invoke-WinTool @('schedule', 'remove') @(0) | Out-Null
+          $after = Invoke-WinTool @('schedule', 'show', '--json') @(0)
+          if ($after -notmatch '"task": null') { Write-Output "::error title=cli::task still present after remove"; exit 1 }
+          Invoke-WinTool @('logs', 'collect', '--output', (Join-Path $env:RUNNER_TEMP 'logs.zip')) @(0) | Out-Null
+          # A real Windows Update search. Build machines may have the service restricted, so a failure is reported, not fatal.
+          $scan = Start-Process -FilePath $exe -ArgumentList @('update', 'scan', '--json') -Wait -PassThru -NoNewWindow -RedirectStandardOutput (Join-Path $env:RUNNER_TEMP 'scan.json')
+          Get-Content (Join-Path $env:RUNNER_TEMP 'scan.json')
+          if ($scan.ExitCode -ne 0) { Write-Output "::warning title=scan::update scan exited with $($scan.ExitCode) on the build machine" }
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v6

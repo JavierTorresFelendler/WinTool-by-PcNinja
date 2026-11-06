@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- net48 is the product. net8.0-windows exists only so the unit tests also run on Linux during development. -->
+    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
+    <RootNamespace>WinTool.Cli</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WinTool.Core\WinTool.Core.csproj" />
+    <ProjectReference Include="..\WinTool.WindowsUpdate\WinTool.WindowsUpdate.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+  </ItemGroup>
+</Project>

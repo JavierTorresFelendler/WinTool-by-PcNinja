@@ -17,6 +17,8 @@ namespace WinTool.App.Infrastructure
         {
             var failures = 0;
             failures += Check(output, "Core library loads", () => !string.IsNullOrEmpty(ProductInfo.Version));
+            failures += Check(output, "Windows Update module loads", () => typeof(WinTool.WindowsUpdate.Engine.UpdateRunner).Assembly != null
+                && typeof(WinTool.Cli.CommandRunner).Assembly != null);
             failures += Check(output, "English text is present", () => Loc.Instance.KeysFor("en").Count > 0);
 
             failures += Check(output, "Hebrew has every English key", () =>

@@ -284,3 +284,17 @@ namespace WinTool.WindowsUpdate.Tests
         }
     }
 }
+
+namespace WinTool.WindowsUpdate.Tests
+{
+    public class ActivityMessageTests
+    {
+        [Fact]
+        public void The_message_names_what_windows_is_doing()
+        {
+            Assert.Contains("(TiWorker)", ActivityEvaluator.Evaluate(new[] { "TiWorker" }, false).Message);
+            Assert.Contains("(TrustedInstaller service)", ActivityEvaluator.Evaluate(new string[0], true).Message);
+            Assert.Contains("(MoUsoCoreWorker)", ActivityEvaluator.Evaluate(new[] { "MoUsoCoreWorker" }, false).Message);
+        }
+    }
+}

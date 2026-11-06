@@ -159,7 +159,7 @@ namespace WinTool.Cli
             {
                 var label = u.IsFirmware ? "Firmware" : u.Kind == UpdateKind.Windows ? "Important" : u.Kind.ToString();
                 output.WriteLine("  [" + label + "] " + u.Update.Title
-                    + (u.Update.KbText.Length > 0 ? " (" + u.Update.KbText + ")" : string.Empty)
+                    + (u.Update.KbText.Length > 0 && u.Update.Title.IndexOf(u.Update.KbText, StringComparison.OrdinalIgnoreCase) < 0 ? " (" + u.Update.KbText + ")" : string.Empty)
                     + (u.Included ? string.Empty : "  - skipped: " + u.Excluded.ToString().ToLowerInvariant()));
             }
 

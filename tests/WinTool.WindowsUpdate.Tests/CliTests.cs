@@ -117,6 +117,21 @@ namespace WinTool.WindowsUpdate.Tests
         }
 
         [Fact]
+        public void Scan_does_not_repeat_a_kb_number_that_is_already_in_the_title()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                var update = U.Windows("2025-10 Cumulative Update for .NET Framework (KB5066133)");
+                update.KbArticles.Add("KB5066133");
+                env.Agent.Available.Add(update);
+                env.Agent.KbFor[update.Title] = "KB5066133";
+                var result = Run(env, "update", "scan");
+                Assert.Contains("(KB5066133)" + Environment.NewLine, result.output);
+                Assert.DoesNotContain("(KB5066133) (KB5066133)", result.output);
+            }
+        }
+
+        [Fact]
         public void Scan_json_is_machine_readable()
         {
             using (var env = new FakeEnvironment())

@@ -40,6 +40,7 @@ namespace WinTool.WindowsUpdate.Tests
         public List<string> Installed { get; } = new List<string>();
         public List<string> EulasAccepted { get; } = new List<string>();
         public Action OnDownload { get; set; }
+        public Dictionary<string, string> KbFor { get; } = new Dictionary<string, string>();
 
         public bool EnsureMicrosoftUpdateRegistered() => true;
 
@@ -56,12 +57,18 @@ namespace WinTool.WindowsUpdate.Tests
             if (criteria == ScanService.OptionalCriteria) found = found.Where(u => u.BrowseOnly);
 
             // A fresh object per search, like COM, so merging is really tested.
-            return found.Select(u => new UpdateItem(u.UpdateId, u.Revision, u.Title)
+            return found.Select(u =>
             {
-                IsDriverType = u.IsDriverType,
-                BrowseOnly = u.BrowseOnly,
-                DriverClass = u.DriverClass,
-                EulaAccepted = u.EulaAccepted
+                var copy = new UpdateItem(u.UpdateId, u.Revision, u.Title)
+                {
+                    IsDriverType = u.IsDriverType,
+                    BrowseOnly = u.BrowseOnly,
+                    DriverClass = u.DriverClass,
+                    EulaAccepted = u.EulaAccepted
+                };
+                string kb;
+                if (KbFor.TryGetValue(u.Title, out kb)) copy.KbArticles.Add(kb);
+                return copy;
             }).ToList();
         }
 

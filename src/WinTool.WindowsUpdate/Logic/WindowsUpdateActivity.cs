@@ -32,12 +32,18 @@ namespace WinTool.WindowsUpdate.Logic
             {
                 switch (Status)
                 {
-                    case ActivityStatus.Installing: return "Windows Update or Windows servicing is installing. WinTool will not interrupt it.";
-                    case ActivityStatus.BackgroundActivity: return "Windows Update is scanning or downloading in the background.";
-                    default: return "No active Windows Update operation was detected.";
+                    case ActivityStatus.Installing:
+                        return "Windows Update or Windows servicing is installing (" + Describe(InstallProcesses, "TrustedInstaller service") + "). WinTool will not interrupt it.";
+                    case ActivityStatus.BackgroundActivity:
+                        return "Windows Update is scanning or downloading in the background (" + Describe(BackgroundProcesses, "update service") + ").";
+                    default:
+                        return "No active Windows Update operation was detected.";
                 }
             }
         }
+
+        private static string Describe(IReadOnlyList<string> processes, string fallback) =>
+            processes.Count == 0 ? fallback : string.Join(", ", processes);
 
         public static WindowsUpdateActivity Idle { get; } = new WindowsUpdateActivity(ActivityStatus.Idle, new string[0], new string[0]);
     }

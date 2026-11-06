@@ -49,16 +49,22 @@ WinTool.App ──► WinTool.WindowsUpdate ─┐
 
 ## Navigation
 
-There is no separate home page. Each tool is one screen that holds
-everything needed to operate it, so the user never switches tabs to work with
-one tool (owner decision, 2026-11-06). The Drivers page from WinUpdate V2 is
-not included.
+Each tool is one screen that holds everything needed to operate it, so the
+user never switches tabs to work with one tool. The Dashboard is read-only:
+it summarizes what each tool sees on this computer and links to the tool
+(owner decisions, 2026-11-06). The Drivers page from WinUpdate V2 is not
+included.
 
 ```text
+Dashboard          Summary only: pending updates and restart, Windows
+                   version and upgrade path, installed Office edition and
+                   its apps, computer facts, WinTool status
+──────────
 Windows Update     Status and restart state, available updates, health and
                    maintenance actions, and the schedule (edited in place)
 Windows Upgrade    This computer, installation source, Windows image,
-                   options, validate and start
+                   options, validate and start. ISO help: find a
+                   matching ISO, PcNinja ISO downloads, Microsoft page
 Office             Product family, mode (install / offline package /
                    remove), channel, apps, languages, summary
 ──────────

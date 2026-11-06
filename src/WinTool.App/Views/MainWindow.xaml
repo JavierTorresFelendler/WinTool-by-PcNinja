@@ -48,17 +48,9 @@
         </DataTemplate>
     </Window.Resources>
 
+    <!-- Margin 7 when maximized is set in code (OnStateChanged): a maximized custom-chrome window
+         overhangs the screen by the resize border. In code, so the content needs no Window ancestor. -->
     <Border x:Name="Root">
-        <Border.Style>
-            <Style TargetType="Border">
-                <Style.Triggers>
-                    <!-- A maximized custom-chrome window overhangs the screen by the resize border. -->
-                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" Value="Maximized">
-                        <Setter Property="Margin" Value="7" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
 
         <Grid>
             <Grid.RowDefinitions>

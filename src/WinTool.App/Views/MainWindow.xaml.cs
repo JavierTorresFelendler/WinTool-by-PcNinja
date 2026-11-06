@@ -13,6 +13,7 @@ namespace WinTool.App.Views
             InitializeComponent();
             ApplyOpeningSize();
             StateChanged += OnStateChanged;
+            Loaded += (sender, e) => ApplyStateMargin();
             SizeChanged += (sender, e) => UpdateCompactLayout();
             DataContextChanged += (sender, e) => UpdateCompactLayout();
             Loc.Instance.LanguageChanged += (sender, e) => UpdateMaximizeButton();
@@ -68,8 +69,15 @@ namespace WinTool.App.Views
             base.OnClosing(e);
         }
 
+        /// <summary>A maximized custom-chrome window overhangs the screen by the resize border.</summary>
+        private void ApplyStateMargin()
+        {
+            Root.Margin = WindowState == WindowState.Maximized ? new Thickness(7) : new Thickness(0);
+        }
+
         private void OnStateChanged(object sender, EventArgs e)
         {
+            ApplyStateMargin();
             UpdateMaximizeButton();
         }
 

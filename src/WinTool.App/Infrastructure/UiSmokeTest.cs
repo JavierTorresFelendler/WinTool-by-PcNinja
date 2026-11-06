@@ -92,7 +92,18 @@ namespace WinTool.App.Infrastructure
                 if (!string.IsNullOrEmpty(shots))
                 {
                     System.IO.Directory.CreateDirectory(shots);
+                    // Render outside the window: the runner's small screen clamps the window, which clipped
+                    // larger captures, and a right-to-left root renders mirrored unless a left-to-right parent
+                    // holds it, as the window does (Codex T-002). The window's resources (page templates) move along.
                     var root = (FrameworkElement)window.Content;
+                    var windowResources = window.Resources;
+                    window.Content = null;
+                    window.Resources = new ResourceDictionary();
+                    root.Resources.MergedDictionaries.Add(windowResources);
+                    root.DataContext = model;
+                    root.SetBinding(FrameworkElement.FlowDirectionProperty, new System.Windows.Data.Binding("FlowDirection") { Source = Loc.Instance });
+                    var host = new System.Windows.Controls.Border { Child = root, FlowDirection = FlowDirection.LeftToRight };
+                    host.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "Brush.Bg");
                     var sizes = new[]
                     {
                         new ShotSize("1280", 1280, 800, 96),
@@ -112,24 +123,31 @@ namespace WinTool.App.Infrastructure
                                 foreach (var item in model.NavItems)
                                 {
                                     item.IsSelected = true;
-                                    WaitUntilReady(item.Page as LogsPageViewModel);
                                     var name = theme + "-" + language + "-" + size.Name + "-" + item.Key;
-                                    failures.AddRange(Capture(window, root, size, System.IO.Path.Combine(shots, name + ".png")));
                                     if (item.Page is LogsPageViewModel page)
                                     {
-                                        // The empty state too: the sample log has no Windows Upgrade lines.
-                                        page.IsUpgrade = true;
-                                        PumpFor(TimeSpan.FromMilliseconds(600));
-                                        failures.AddRange(Capture(window, root, size, System.IO.Path.Combine(shots, name + "-empty.png")));
+                                        // Populated: wait for the real reload, and fail rather than save an empty list.
                                         page.IsAll = true;
+                                        if (!WaitFor(page.ReloadForCaptureAsync()) || page.IsEmpty)
+                                            failures.Add("Logs screenshot " + name + " has no entries");
+                                        failures.AddRange(Capture(host, size, System.IO.Path.Combine(shots, name + ".png")));
+                                        // Empty state: the sample log has no Windows Upgrade lines.
+                                        page.IsUpgrade = true;
+                                        if (!WaitFor(page.ReloadForCaptureAsync()) || !page.IsEmpty)
+                                            failures.Add("Logs empty-state screenshot " + name + " has entries");
+                                        failures.AddRange(Capture(host, size, System.IO.Path.Combine(shots, name + "-empty.png")));
+                                        page.IsAll = true;
+                                    }
+                                    else
+                                    {
+                                        PumpFor(TimeSpan.FromMilliseconds(700));
+                                        failures.AddRange(Capture(host, size, System.IO.Path.Combine(shots, name + ".png")));
                                     }
                                 }
                             }
                         }
                     }
 
-                    root.Width = double.NaN;
-                    root.Height = double.NaN;
                     output.WriteLine("  Screenshots saved to " + shots);
                 }
             }
@@ -170,59 +188,38 @@ namespace WinTool.App.Infrastructure
         /// background through a VisualBrush, which keeps right-to-left text as the screen shows it.
         /// Returns a failure when the result does not have the requested size.
         /// </summary>
-        private static IEnumerable<string> Capture(Window window, FrameworkElement root, ShotSize size, string path)
+        private static IEnumerable<string> Capture(FrameworkElement host, ShotSize size, string path)
         {
-            root.Width = size.Width;
-            root.Height = size.Height;
-            root.Measure(new Size(size.Width, size.Height));
-            root.Arrange(new Rect(0, 0, size.Width, size.Height));
-            root.UpdateLayout();
+            host.Width = size.Width;
+            host.Height = size.Height;
+            host.Measure(new Size(size.Width, size.Height));
+            host.Arrange(new Rect(0, 0, size.Width, size.Height));
+            host.UpdateLayout();
             PumpFor(TimeSpan.FromMilliseconds(150));
-            if (Math.Abs(root.ActualWidth - size.Width) > 0.5 || Math.Abs(root.ActualHeight - size.Height) > 0.5)
+            host.UpdateLayout();
+            if (Math.Abs(host.ActualWidth - size.Width) > 0.5 || Math.Abs(host.ActualHeight - size.Height) > 0.5)
             {
-                yield return "Screenshot " + System.IO.Path.GetFileName(path) + " laid out at " + root.ActualWidth + "x" + root.ActualHeight +
+                yield return "Screenshot " + System.IO.Path.GetFileName(path) + " laid out at " + host.ActualWidth + "x" + host.ActualHeight +
                              ", expected " + size.Width + "x" + size.Height;
                 yield break;
             }
 
             var scale = size.Dpi / 96.0;
-            var pixelWidth = (int)Math.Round(size.Width * scale);
-            var pixelHeight = (int)Math.Round(size.Height * scale);
-            var drawing = new System.Windows.Media.DrawingVisual();
-            using (var context = drawing.RenderOpen())
-            {
-                var bounds = new Rect(0, 0, size.Width, size.Height);
-                var background = window.TryFindResource("Brush.Bg") as System.Windows.Media.Brush ?? System.Windows.Media.Brushes.White;
-                context.DrawRectangle(background, null, bounds);
-                context.DrawRectangle(new System.Windows.Media.VisualBrush(root)
-                {
-                    Stretch = System.Windows.Media.Stretch.None,
-                    AlignmentX = System.Windows.Media.AlignmentX.Left,
-                    AlignmentY = System.Windows.Media.AlignmentY.Top,
-                    ViewboxUnits = System.Windows.Media.BrushMappingMode.Absolute,
-                    Viewbox = bounds
-                }, null, bounds);
-            }
-
-            var bitmap = new System.Windows.Media.Imaging.RenderTargetBitmap(pixelWidth, pixelHeight, size.Dpi, size.Dpi, System.Windows.Media.PixelFormats.Pbgra32);
-            bitmap.Render(drawing);
+            var bitmap = new System.Windows.Media.Imaging.RenderTargetBitmap(
+                (int)Math.Round(size.Width * scale), (int)Math.Round(size.Height * scale), size.Dpi, size.Dpi, System.Windows.Media.PixelFormats.Pbgra32);
+            bitmap.Render(host);
             var encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
             encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bitmap));
             using (var file = System.IO.File.Create(path)) encoder.Save(file);
         }
 
-        /// <summary>Waits for a page's background load; for Logs, until its entries are shown (at most 5 s).</summary>
-        private static void WaitUntilReady(LogsPageViewModel logs)
+        /// <summary>Pumps until the task finishes (at most 5 s); false on timeout or failure.</summary>
+        private static bool WaitFor(System.Threading.Tasks.Task task)
         {
-            if (logs == null)
-            {
-                PumpFor(TimeSpan.FromMilliseconds(700));
-                return;
-            }
-
             var until = DateTime.UtcNow.AddSeconds(5);
-            while (logs.IsEmpty && DateTime.UtcNow < until) Pump();
-            PumpFor(TimeSpan.FromMilliseconds(300));
+            while (!task.IsCompleted && DateTime.UtcNow < until) Pump();
+            Pump();
+            return task.Status == System.Threading.Tasks.TaskStatus.RanToCompletion;
         }
 
         private static void PumpFor(TimeSpan time)

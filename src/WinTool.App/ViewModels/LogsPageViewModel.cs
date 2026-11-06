@@ -33,6 +33,7 @@ namespace WinTool.App.ViewModels
         private string message;
         private bool messageIsError;
         private bool collecting;
+        private int reloadVersion;
 
         public LogsPageViewModel(IWindowsUpdateEnvironment env)
             : base("Nav_Logs", "Page_Logs_Subtitle")
@@ -99,6 +100,9 @@ namespace WinTool.App.ViewModels
             Entries.Clear();
         }
 
+        /// <summary>Reloads now and completes when the list shows the result (UI smoke screenshots).</summary>
+        internal Task ReloadForCaptureAsync() => ReloadAsync();
+
         private void UpdateTimer()
         {
             if (active && follow) timer.Start();
@@ -130,6 +134,8 @@ namespace WinTool.App.ViewModels
         private async Task ReloadAsync()
         {
             if (!active || !day.HasValue) return;
+            // Only the newest reload may fill the list (filter, day and Follow can overlap).
+            var version = ++reloadVersion;
             var path = LogReader.PathFor(AppLog.Current.Directory, day.Value);
             var area = filter;
             IReadOnlyList<LogEntry> entries;
@@ -145,7 +151,7 @@ namespace WinTool.App.ViewModels
                 return;
             }
 
-            if (!active) return;
+            if (!active || version != reloadVersion) return;
             var grew = entries.Count != Entries.Count;
             total = entries.Count;
             Entries.Clear();

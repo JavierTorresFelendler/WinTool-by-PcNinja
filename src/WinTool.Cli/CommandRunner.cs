@@ -303,7 +303,7 @@ namespace WinTool.Cli
             var status = Schedule().GetStatus(settings);
             if (a.Has("json"))
             {
-                Json(new { Settings = settings, Description = ScheduleService.Describe(settings), status.MatchesSettings, Task = status.Main, RetryTask = status.Retry });
+                Json(new { Settings = settings, Description = ScheduleService.Describe(settings), status.MatchesSettings, status.Differences, Task = status.Main, RetryTask = status.Retry });
                 return CliExit.Ok;
             }
 
@@ -311,7 +311,11 @@ namespace WinTool.Cli
             if (settings.ScheduleEnabled)
             {
                 output.WriteLine("Task: " + (status.Main == null ? "missing" : status.Main.State + ", next run " + Format(status.Main.NextRunTime) + ", last run " + Format(status.Main.LastRunTime)));
-                if (status.MatchesSettings == false) output.WriteLine("Warning: the scheduled task does not match the settings. Run \"schedule set\" to repair it.");
+                if (status.MatchesSettings == false)
+                {
+                    output.WriteLine("Warning: the scheduled task does not match the settings. Run \"schedule set\" to repair it.");
+                    foreach (var difference in status.Differences) output.WriteLine("  " + difference);
+                }
             }
 
             output.WriteLine("Run if missed: " + YesNo(settings.RunIfMissed) + "   Wake computer: " + YesNo(settings.WakeToRun) + "   Firmware/BIOS: " + YesNo(settings.InstallFirmwareUpdates));

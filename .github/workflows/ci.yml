@@ -87,10 +87,10 @@ jobs:
             $err = Join-Path $env:RUNNER_TEMP "cli-err.txt"
             $p = Start-Process -FilePath $exe -ArgumentList $arguments -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out -RedirectStandardError $err
             $text = (Get-Content $out -Raw) + (Get-Content $err -Raw)
-            Write-Output "> $($arguments -join ' ')  (exit $($p.ExitCode))"
-            Write-Output $text
+            Write-Host "> $($arguments -join ' ')  (exit $($p.ExitCode))"
+            Write-Host $text
             if ($allowed -notcontains $p.ExitCode) {
-              Write-Output "::error title=cli::'$($arguments -join ' ')' exited with $($p.ExitCode)"
+              Write-Host "::error title=cli::'$($arguments -join ' ')' exited with $($p.ExitCode)"
               exit 1
             }
             return $text
@@ -98,7 +98,11 @@ jobs:
           Invoke-WinTool @('status', '--json') @(0) | Out-Null
           Invoke-WinTool @('schedule', 'set', '--enable', '--frequency', 'Weekly', '--day', 'Sunday', '--time', '03:00', '--wake') @(0) | Out-Null
           $show = Invoke-WinTool @('schedule', 'show', '--json') @(0)
-          if ($show -notmatch '"matchesSettings": true') { Write-Output "::error title=cli::registered task does not match the settings"; exit 1 }
+          if ($show -notmatch '"matchesSettings": true') {
+            Invoke-WinTool @('schedule', 'show') @(0) | Out-Null
+            Write-Host "::error title=cli::registered task does not match the settings"
+            exit 1
+          }
           Invoke-WinTool @('update', 'health', '--no-network') @(0, 1, 11) | Out-Null
           Invoke-WinTool @('schedule', 'remove') @(0) | Out-Null
           $after = Invoke-WinTool @('schedule', 'show', '--json') @(0)

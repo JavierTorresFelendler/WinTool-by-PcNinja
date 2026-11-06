@@ -14,6 +14,9 @@ namespace WinTool.WindowsUpdate.Schedule
         public TaskEntry Main { get; set; }
         public TaskEntry Retry { get; set; }
         public bool? MatchesSettings { get; set; }
+
+        /// <summary>When the task does not match: which parts differ, expected vs registered.</summary>
+        public IReadOnlyList<string> Differences { get; set; }
     }
 
     /// <summary>Saves, removes and checks the Windows Update schedule (WU-50 to WU-56, WU-62).</summary>
@@ -59,13 +62,15 @@ namespace WinTool.WindowsUpdate.Schedule
         public ScheduleStatus GetStatus(WindowsUpdateSettings settings)
         {
             var main = tasks.Get(TaskNames.Main);
-            return new ScheduleStatus
+            var status = new ScheduleStatus { Enabled = settings.ScheduleEnabled, Main = main, Retry = tasks.Get(TaskNames.Retry) };
+            if (settings.ScheduleEnabled)
             {
-                Enabled = settings.ScheduleEnabled,
-                Main = main,
-                Retry = tasks.Get(TaskNames.Retry),
-                MatchesSettings = settings.ScheduleEnabled ? main != null && Matches(main.Xml, settings) : (bool?)null
-            };
+                var differences = main == null ? new List<string> { "The task is missing." } : Compare(main.Xml, settings);
+                status.MatchesSettings = differences.Count == 0;
+                status.Differences = differences;
+            }
+
+            return status;
         }
 
         public void ScheduleRetry(DateTime runAt, string reason, int retryNumber)
@@ -106,21 +111,33 @@ namespace WinTool.WindowsUpdate.Schedule
         /// program, arguments, triggers (kind, time of day, days), run-if-missed
         /// and wake. Task Scheduler may reformat the XML, so dates and layout are ignored.
         /// </summary>
-        public bool Matches(string registeredXml, WindowsUpdateSettings settings)
+        public bool Matches(string registeredXml, WindowsUpdateSettings settings) => Compare(registeredXml, settings).Count == 0;
+
+        /// <summary>Empty when they match; otherwise "expected | registered" for each differing part.</summary>
+        public List<string> Compare(string registeredXml, WindowsUpdateSettings settings)
         {
-            if (string.IsNullOrWhiteSpace(registeredXml)) return false;
+            if (string.IsNullOrWhiteSpace(registeredXml)) return new List<string> { "The task has no definition." };
             try
             {
-                var expected = TaskXmlBuilder.BuildSchedule(settings, exePath, clock());
-                return Signature(registeredXml) == Signature(expected);
+                var expected = Signature(TaskXmlBuilder.BuildSchedule(settings, exePath, clock()));
+                var actual = Signature(registeredXml);
+                var differences = new List<string>();
+                for (var i = 0; i < Math.Max(expected.Count, actual.Count); i++)
+                {
+                    var e = i < expected.Count ? expected[i] : "(none)";
+                    var r = i < actual.Count ? actual[i] : "(none)";
+                    if (!string.Equals(e, r, StringComparison.Ordinal)) differences.Add("expected " + e + " | registered " + r);
+                }
+
+                return differences;
             }
             catch (Exception ex) when (ex is System.Xml.XmlException || ex is ArgumentException)
             {
-                return false;
+                return new List<string> { "The task definition could not be read: " + ex.Message };
             }
         }
 
-        internal static string Signature(string xml)
+        internal static List<string> Signature(string xml)
         {
             var doc = XDocument.Parse(xml);
             XNamespace ns = "http://schemas.microsoft.com/windows/2004/02/mit/task";
@@ -153,7 +170,7 @@ namespace WinTool.WindowsUpdate.Schedule
                 return text;
             }).OrderBy(t => t, StringComparer.Ordinal);
 
-            return string.Join(";", parts.Concat(triggers));
+            return parts.Concat(triggers).ToList();
         }
 
         private void RemoveOwnTasks(bool keepRetry)

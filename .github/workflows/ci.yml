@@ -208,6 +208,7 @@ jobs:
           schtasks.exe /Query /TN "\PcNinja\WinTool by PcNinja" 2>$null | Out-Null
           if ($LASTEXITCODE -eq 0) { Fail "scheduled task remained after uninstall" $r }
           Write-Host "MSI test passed."
+          exit 0
 
       - name: Upload MSI
         if: matrix.configuration == 'Release'

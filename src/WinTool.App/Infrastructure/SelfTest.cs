@@ -28,6 +28,9 @@ namespace WinTool.App.Infrastructure
                 return missing.Count == 0;
             });
 
+            failures += Check(output, "Text still resolves after the checks", () =>
+                Loc.Instance["Nav_Dashboard"] == "Dashboard");
+
             failures += Check(output, "Theme files are embedded", () =>
             {
                 var compiled = Theming.ThemeManager.CompiledResourceKeys();

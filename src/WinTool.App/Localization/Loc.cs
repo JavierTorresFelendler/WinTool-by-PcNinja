@@ -91,13 +91,12 @@ namespace WinTool.App.Localization
         {
             var manager = lang == LanguageResolver.Hebrew ? hebrew : english;
             var keys = new HashSet<string>(StringComparer.Ordinal);
-            using (var set = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false))
+            // The ResourceManager caches and shares this set; disposing it would break later lookups.
+            var set = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false);
+            if (set == null) return keys;
+            foreach (DictionaryEntry entry in set)
             {
-                if (set == null) return keys;
-                foreach (DictionaryEntry entry in set)
-                {
-                    if (entry.Value is string text && text.Length > 0) keys.Add((string)entry.Key);
-                }
+                if (entry.Value is string text && text.Length > 0) keys.Add((string)entry.Key);
             }
 
             return keys;

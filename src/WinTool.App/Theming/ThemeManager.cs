@@ -101,11 +101,9 @@ namespace WinTool.App.Theming
         {
             var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var manager = new ResourceManager("WinTool.g", typeof(ThemeManager).Assembly);
-            using (var set = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false))
-            {
-                if (set == null) return keys;
-                foreach (DictionaryEntry entry in set) keys.Add((string)entry.Key);
-            }
+            var set = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false);
+            if (set == null) return keys;
+            foreach (DictionaryEntry entry in set) keys.Add((string)entry.Key);
 
             return keys;
         }

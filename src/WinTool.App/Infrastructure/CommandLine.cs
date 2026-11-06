@@ -40,6 +40,8 @@ namespace WinTool.App.Infrastructure
                     return Program.ExitOk;
                 case "--self-test":
                     return SelfTest.Run(Console.Out);
+                case "--ui-smoke":
+                    return UiSmokeTest.Run(Console.Out);
                 case "--help":
                 case "-h":
                 case "/?":

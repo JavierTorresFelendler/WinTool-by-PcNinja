@@ -78,6 +78,20 @@ jobs:
           $p = Start-Process -FilePath $exe -ArgumentList "no-such-command" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out -RedirectStandardError "$out.err"
           if ($p.ExitCode -ne 2) { Write-Output "::error title=self-test::unknown command exit $($p.ExitCode)"; throw "Unknown command should exit with 2, got $($p.ExitCode)" }
 
+      - name: UI smoke test (every page, theme and language)
+        shell: pwsh
+        run: |
+          $exe = Join-Path $env:RUNNER_TEMP "portable\WinTool-by-PcNinja.exe"
+          $out = Join-Path $env:RUNNER_TEMP "ui-smoke.txt"
+          $p = Start-Process -FilePath $exe -ArgumentList "--ui-smoke" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $out
+          $lines = Get-Content $out
+          $lines | Where-Object { $_ -notmatch '^  OK ' } | ForEach-Object { Write-Host $_ }
+          Write-Host ("Pages checked: " + ($lines | Where-Object { $_ -match '^  OK ' }).Count)
+          if ($p.ExitCode -ne 0) {
+            $lines | Where-Object { $_ -match 'FAIL' } | Select-Object -First 30 | ForEach-Object { Write-Host ("::error title=ui::" + ($_ -replace '%', '%25')) }
+            exit 1
+          }
+
       - name: Windows integration smoke test (real Task Scheduler, services, COM)
         shell: pwsh
         run: |

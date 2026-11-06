@@ -341,4 +341,11 @@ This cannot be undone from WinTool.</value></data>
   <data name="OF_NeedApp" xml:space="preserve"><value>Choose at least one app.</value></data>
   <data name="OF_NeedLanguage" xml:space="preserve"><value>Choose at least one language.</value></data>
   <data name="OF_NeedFolder" xml:space="preserve"><value>Choose the package folder.</value></data>
+  <data name="Dash_UpgradeRunning" xml:space="preserve"><value>Upgrade running…</value></data>
+  <data name="Dash_UpgradeLast" xml:space="preserve"><value>Last upgrade: {0} ({1})</value></data>
+  <data name="Dash_Upgrade_SetupStarting" xml:space="preserve"><value>Windows Setup started</value></data>
+  <data name="Dash_Upgrade_PreparationCompleted" xml:space="preserve"><value>prepared, restart to continue</value></data>
+  <data name="Dash_Upgrade_OutcomeUnconfirmed" xml:space="preserve"><value>result not confirmed</value></data>
+  <data name="Dash_Upgrade_RollbackObserved" xml:space="preserve"><value>Windows rolled back</value></data>
+  <data name="Dash_Upgrade_TargetWindowsObserved" xml:space="preserve"><value>completed</value></data>
 </root>

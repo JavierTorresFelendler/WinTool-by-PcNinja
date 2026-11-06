@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using WinTool.Core;
 using WinTool.Core.Machine;
+using WinTool.Upgrade;
 using WinTool.WindowsUpdate.Engine;
 using WinTool.WindowsUpdate.Schedule;
 using WinTool.WindowsUpdate.Storage;
@@ -19,6 +20,9 @@ namespace WinTool.App.ViewModels
     {
         private readonly IWindowsUpdateEnvironment env;
         private readonly WindowsUpdatePageViewModel windowsUpdate;
+        private readonly WindowsUpgradePageViewModel upgrade;
+        private readonly OfficePageViewModel officePage;
+        private UpgradeAttempt lastUpgrade;
         private MachineInfo machine;
         private OfficeInfo office;
         private bool officeChecked;
@@ -27,12 +31,30 @@ namespace WinTool.App.ViewModels
         private WindowsUpdateSettings settings = new WindowsUpdateSettings();
         private bool loading;
 
-        public DashboardPageViewModel(IWindowsUpdateEnvironment env, WindowsUpdatePageViewModel windowsUpdate, Action<string> navigate)
+        public DashboardPageViewModel(IWindowsUpdateEnvironment env, WindowsUpdatePageViewModel windowsUpdate,
+            WindowsUpgradePageViewModel upgrade, OfficePageViewModel officePage, Action<string> navigate)
             : base("Nav_Dashboard", "Page_Dashboard_Subtitle")
         {
             this.env = env;
             this.windowsUpdate = windowsUpdate;
+            this.upgrade = upgrade;
+            this.officePage = officePage;
             windowsUpdate.SummaryChanged += (sender, e) => Refresh();
+            // Running operations and their results show here as soon as they change (owner test 2026-11-06).
+            upgrade.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName != nameof(WindowsUpgradePageViewModel.IsBusy)) return;
+                if (!upgrade.IsBusy) _ = ReloadUpgradeAsync();
+                OnPropertyChanged(nameof(RunningOperation));
+                OnPropertyChanged(nameof(UpgradeStatusText));
+                OnPropertyChanged(nameof(HasUpgradeStatus));
+            };
+            officePage.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName != nameof(OfficePageViewModel.IsBusy)) return;
+                if (!officePage.IsBusy) _ = ReloadOfficeAsync();
+                OnPropertyChanged(nameof(RunningOperation));
+            };
             RefreshCommand = new AsyncCommand(LoadAsync, () => !loading);
             OpenWindowsUpdateCommand = new RelayCommand(() => navigate("windows-update"));
             OpenUpgradeCommand = new RelayCommand(() => navigate("windows-upgrade"));
@@ -56,6 +78,36 @@ namespace WinTool.App.ViewModels
         public string WindowsName => machine?.Os?.FriendlyName ?? string.Empty;
         public string WindowsBuild => machine?.Os == null ? string.Empty : T.Format("Dash_Build", machine.Os.Build + "." + machine.Os.Revision);
         public bool IsWindows10 => machine?.Os != null && MachineInfo.IsWindows10(machine.Os.Build);
+
+        /// <summary>"Upgrade running", or the last upgrade attempt and when it started.</summary>
+        public string UpgradeStatusText
+        {
+            get
+            {
+                if (upgrade.IsBusy) return T["Dash_UpgradeRunning"];
+                if (lastUpgrade == null) return string.Empty;
+                string state;
+                switch (lastUpgrade.State)
+                {
+                    case "SetupStarting":
+                    case "PreparationCompleted":
+                    case "OutcomeUnconfirmed":
+                    case "RollbackObserved":
+                    case "TargetWindowsObserved":
+                        state = T["Dash_Upgrade_" + lastUpgrade.State];
+                        break;
+                    default:
+                        state = lastUpgrade.State;
+                        break;
+                }
+
+                return T.Format("Dash_UpgradeLast", state, lastUpgrade.StartedUtc.ToLocalTime().ToString("g", T.Culture));
+            }
+        }
+
+        public bool HasUpgradeStatus => upgrade.IsBusy || lastUpgrade != null;
+        public bool UpgradeStatusIsWarning => !upgrade.IsBusy && lastUpgrade != null &&
+            (lastUpgrade.State == "RollbackObserved" || lastUpgrade.State == "OutcomeUnconfirmed");
 
         // Office card
         public bool HasOffice => office != null;
@@ -85,7 +137,19 @@ namespace WinTool.App.ViewModels
         public string ToolVersion => ProductInfo.Version;
         public string InstallType => env.ExecutablePath.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase)
             ? T["Dash_Installed"] : T["Dash_Portable"];
-        public string RunningOperation => windowsUpdate.IsBusy ? T["Nav_WindowsUpdate"] : T["Dash_None"];
+        public string RunningOperation
+        {
+            get
+            {
+                var running = new[]
+                {
+                    windowsUpdate.IsBusy ? T["Nav_WindowsUpdate"] : null,
+                    upgrade.IsBusy ? T["Nav_WindowsUpgrade"] : null,
+                    officePage.IsBusy ? T["Nav_Office"] : null
+                }.Where(name => name != null).ToList();
+                return running.Count == 0 ? T["Dash_None"] : string.Join(", ", running);
+            }
+        }
 
         public override void OnActivated()
         {
@@ -107,6 +171,7 @@ namespace WinTool.App.ViewModels
                     catch (Exception ex) when (!(ex is OutOfMemoryException)) { return null; }
                 });
                 officeChecked = true;
+                lastUpgrade = await Task.Run(() => ReadUpgrade());
                 Refresh();
                 wan = await Task.Run(() => MachineInfo.ReadWanAddress()) ?? T["Dash_NotConnected"];
                 Refresh();
@@ -115,6 +180,29 @@ namespace WinTool.App.ViewModels
             {
                 loading = false;
             }
+        }
+
+        private static UpgradeAttempt ReadUpgrade()
+        {
+            try { return UpgradeHistory.ReadStatus(); }
+            catch (Exception ex) when (!(ex is OutOfMemoryException)) { return null; }
+        }
+
+        private async Task ReloadUpgradeAsync()
+        {
+            lastUpgrade = await Task.Run(() => ReadUpgrade());
+            Refresh();
+        }
+
+        private async Task ReloadOfficeAsync()
+        {
+            office = await Task.Run(() =>
+            {
+                try { return OfficeInfo.ReadCurrent(); }
+                catch (Exception ex) when (!(ex is OutOfMemoryException)) { return null; }
+            });
+            officeChecked = true;
+            Refresh();
         }
 
         private void Refresh()

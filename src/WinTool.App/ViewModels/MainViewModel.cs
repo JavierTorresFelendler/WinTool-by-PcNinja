@@ -24,13 +24,15 @@ namespace WinTool.App.ViewModels
         public MainViewModel(SettingsPageViewModel settingsPage, IWindowsUpdateEnvironment windowsUpdate)
         {
             var windowsUpdatePage = new WindowsUpdatePageViewModel(windowsUpdate);
-            var dashboardPage = new DashboardPageViewModel(windowsUpdate, windowsUpdatePage, Navigate);
+            var upgradePage = new WindowsUpgradePageViewModel();
+            var officePage = new OfficePageViewModel();
+            var dashboardPage = new DashboardPageViewModel(windowsUpdate, windowsUpdatePage, upgradePage, officePage, Navigate);
             NavItems = new List<NavItemViewModel>
             {
                 Item("dashboard", "Nav_Dashboard", IconDashboard, false, dashboardPage),
                 Item("windows-update", "Nav_WindowsUpdate", IconUpdate, true, windowsUpdatePage),
-                Item("windows-upgrade", "Nav_WindowsUpgrade", IconUpgrade, false, new WindowsUpgradePageViewModel()),
-                Item("office", "Nav_Office", IconOffice, false, new OfficePageViewModel()),
+                Item("windows-upgrade", "Nav_WindowsUpgrade", IconUpgrade, false, upgradePage),
+                Item("office", "Nav_Office", IconOffice, false, officePage),
                 Item("logs", "Nav_Logs", IconLogs, true, new PlaceholderPageViewModel("Nav_Logs", "Page_Logs_Subtitle", 2)),
                 Item("settings", "Nav_Settings", IconSettings, false, settingsPage),
                 Item("links", "Nav_Links", IconLinks, false, new PlaceholderPageViewModel("Nav_Links", "Page_Links_Subtitle", 2))

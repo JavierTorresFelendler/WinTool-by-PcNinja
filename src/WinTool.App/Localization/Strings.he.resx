@@ -341,4 +341,11 @@
   <data name="OF_NeedApp" xml:space="preserve"><value>בחר לפחות יישום אחד.</value></data>
   <data name="OF_NeedLanguage" xml:space="preserve"><value>בחר לפחות שפה אחת.</value></data>
   <data name="OF_NeedFolder" xml:space="preserve"><value>בחר את תיקיית החבילה.</value></data>
+  <data name="Dash_UpgradeRunning" xml:space="preserve"><value>שדרוג פועל…</value></data>
+  <data name="Dash_UpgradeLast" xml:space="preserve"><value>שדרוג אחרון: {0} ({1})</value></data>
+  <data name="Dash_Upgrade_SetupStarting" xml:space="preserve"><value>התקנת Windows הופעלה</value></data>
+  <data name="Dash_Upgrade_PreparationCompleted" xml:space="preserve"><value>הוכן, יש להפעיל מחדש כדי להמשיך</value></data>
+  <data name="Dash_Upgrade_OutcomeUnconfirmed" xml:space="preserve"><value>התוצאה לא אושרה</value></data>
+  <data name="Dash_Upgrade_RollbackObserved" xml:space="preserve"><value>Windows חזר לגרסה הקודמת</value></data>
+  <data name="Dash_Upgrade_TargetWindowsObserved" xml:space="preserve"><value>הושלם</value></data>
 </root>

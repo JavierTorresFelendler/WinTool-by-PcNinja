@@ -185,4 +185,95 @@
   <data name="WU_Legacy_Confirm" xml:space="preserve"><value>לייבא את ההגדרות של WinUpdate Tool ולהסיר את המשימות המתוזמנות שלו?</value></data>
   <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool קיבל את התזמון. הסר את WinUpdate Tool דרך הגדרות &gt; אפליקציות.</value></data>
   <data name="WU_RunAtStartup" xml:space="preserve"><value>להריץ גם אחרי הפעלת המחשב (5 דק׳)</value></data>
+  <data name="UP_Warning" xml:space="preserve"><value>שיטת תאימות ניסיונית. גבה קבצים חשובים לפני השדרוג.</value></data>
+  <data name="UP_ThisComputer" xml:space="preserve"><value>המחשב הזה</value></data>
+  <data name="UP_Windows" xml:space="preserve"><value>Windows</value></data>
+  <data name="UP_Processor" xml:space="preserve"><value>מעבד</value></data>
+  <data name="UP_Memory" xml:space="preserve"><value>זיכרון</value></data>
+  <data name="UP_FreeSpace" xml:space="preserve"><value>שטח פנוי</value></data>
+  <data name="UP_SecureBoot" xml:space="preserve"><value>Secure Boot</value></data>
+  <data name="UP_Eligibility" xml:space="preserve"><value>שדרוג</value></data>
+  <data name="UP_Eligible" xml:space="preserve"><value>זמין</value></data>
+  <data name="UP_Blocked" xml:space="preserve"><value>לא זמין</value></data>
+  <data name="UP_ServerGuidance" xml:space="preserve"><value>הנחיות ידניות בלבד</value></data>
+  <data name="UP_NextAction" xml:space="preserve"><value>הצעד הבא המומלץ</value></data>
+  <data name="UP_Next_Download" xml:space="preserve"><value>להוריד את Windows 11 אוטומטית, ואז להתחיל את השדרוג לאחר הבדיקה.</value></data>
+  <data name="UP_Next_Media" xml:space="preserve"><value>לבחור מדיית Windows מתאימה, ואז לבדוק אותה.</value></data>
+  <data name="UP_Next_Image" xml:space="preserve"><value>לבחור תמונת Windows, ואז להתחיל את השדרוג.</value></data>
+  <data name="UP_Next_Start" xml:space="preserve"><value>הכול נבדק. אפשר להתחיל את השדרוג.</value></data>
+  <data name="UP_Next_Server" xml:space="preserve"><value>לבדוק מדיית Server, ואז להעתיק את הפקודה הידנית. התקנת Windows לא תרוץ כאן.</value></data>
+  <data name="UP_Next_Blocked" xml:space="preserve"><value>לא ניתן לשדרג במחשב הזה. הסיבה מופיעה למעלה.</value></data>
+  <data name="UP_Previous" xml:space="preserve"><value>שדרוג קודם</value></data>
+  <data name="UP_ChooseSource" xml:space="preserve"><value>בחר את מקור ההתקנה</value></data>
+  <data name="UP_SrcDownload" xml:space="preserve"><value>הורדה אוטומטית של Windows 11</value></data>
+  <data name="UP_SrcDownloadHint" xml:space="preserve"><value>שפה {0}. קובץ ה־ISO נבדק לפני שהשדרוג מתחיל.</value></data>
+  <data name="UP_SrcDownloadUnavailable" xml:space="preserve"><value>הורדה אוטומטית אינה זמינה למחשב הזה. השתמש בקובץ ISO, בכונן או בתיקייה.</value></data>
+  <data name="UP_DownloadTo" xml:space="preserve"><value>הורדה אל</value></data>
+  <data name="UP_SrcLocal" xml:space="preserve"><value>שימוש בקובץ ISO, בכונן או בתיקייה</value></data>
+  <data name="UP_SrcLocalHint" xml:space="preserve"><value>תמונה מתאימה נבחרת אוטומטית כשאפשר.</value></data>
+  <data name="UP_Iso" xml:space="preserve"><value>ISO…</value></data>
+  <data name="UP_Folder" xml:space="preserve"><value>תיקייה…</value></data>
+  <data name="UP_Refresh" xml:space="preserve"><value>רענון</value></data>
+  <data name="UP_IsoLinks" xml:space="preserve"><value>ISO:</value></data>
+  <data name="UP_FindIso" xml:space="preserve"><value>חיפוש ISO מתאים</value></data>
+  <data name="UP_PcNinjaIso" xml:space="preserve"><value>הורדות PcNinja</value></data>
+  <data name="UP_MicrosoftIso" xml:space="preserve"><value>Microsoft</value></data>
+  <data name="UP_Image" xml:space="preserve"><value>תמונת Windows</value></data>
+  <data name="UP_ImageValidateFirst" xml:space="preserve"><value>יש לבדוק מקור תחילה</value></data>
+  <data name="UP_Silent" xml:space="preserve"><value>הרצת התקנת Windows בשקט</value></data>
+  <data name="UP_AutoRestart" xml:space="preserve"><value>הפעלה מחדש אוטומטית כשצריך</value></data>
+  <data name="UP_AutoRestartQuiet" xml:space="preserve"><value>מצב שקט מפעיל מחדש אוטומטית. כבה אותו כדי להפעיל מחדש בעצמך.</value></data>
+  <data name="UP_Ready" xml:space="preserve"><value>מוכן.</value></data>
+  <data name="UP_ViewLog" xml:space="preserve"><value>הצגת היומן</value></data>
+  <data name="UP_Validate" xml:space="preserve"><value>בדיקת מדיה</value></data>
+  <data name="UP_Start" xml:space="preserve"><value>התחלת שדרוג</value></data>
+  <data name="UP_Cancel" xml:space="preserve"><value>ביטול</value></data>
+  <data name="UP_SetupRunning" xml:space="preserve"><value>התקנת Windows פועלת</value></data>
+  <data name="UP_CopyCommand" xml:space="preserve"><value>העתקת פקודת שדרוג</value></data>
+  <data name="UP_Status_Reading" xml:space="preserve"><value>קורא את פרטי המחשב…</value></data>
+  <data name="UP_Status_Downloading" xml:space="preserve"><value>מוריד את {0}… {1}</value></data>
+  <data name="UP_Status_Validating" xml:space="preserve"><value>בודק את מדיית ההתקנה ואת התמונות שבה…</value></data>
+  <data name="UP_Status_Starting" xml:space="preserve"><value>בודק שוב את הבטיחות ומפעיל את התקנת Windows…</value></data>
+  <data name="UP_Status_Finding" xml:space="preserve"><value>מחפש הורדת Windows מתאימה…</value></data>
+  <data name="UP_Status_Cancelling" xml:space="preserve"><value>מבטל…</value></data>
+  <data name="UP_Status_Cancelled" xml:space="preserve"><value>בוטל. התקנת Windows לא הופעלה.</value></data>
+  <data name="UP_Status_Validated" xml:space="preserve"><value>המדיה נבדקה: {0} תמונות.</value></data>
+  <data name="UP_Status_ImageSelected" xml:space="preserve"><value>נבחרה תמונה {0}. אפשר להתחיל את השדרוג.</value></data>
+  <data name="UP_Status_ChooseImage" xml:space="preserve"><value>בחר תמונת Windows, ואז התחל את השדרוג.</value></data>
+  <data name="UP_Status_NoImage" xml:space="preserve"><value>אין תמונה שמתאימה למחשב הזה ({0}, {1}). בחר מדיית Windows מתאימה.</value></data>
+  <data name="UP_Status_SourceChanged" xml:space="preserve"><value>המקור השתנה. יש לבדוק אותו שוב.</value></data>
+  <data name="UP_Status_ManualRestart" xml:space="preserve"><value>הכנת השדרוג הושלמה. הפעל מחדש את המחשב כדי להמשיך בשדרוג.</value></data>
+  <data name="UP_Status_StageDone" xml:space="preserve"><value>התקנת Windows סיימה את השלב הזה. בדוק את התוצאה אחרי ההפעלה מחדש.</value></data>
+  <data name="UP_Status_Unconfirmed" xml:space="preserve"><value>התקנת Windows נסגרה במהלך המעבר. פתח את WinTool אחרי ההפעלה מחדש כדי לבדוק את התוצאה.</value></data>
+  <data name="UP_Status_PageOpened" xml:space="preserve"><value>דף ההורדה נפתח. כשההורדה מסתיימת, בחר את הקובץ בעזרת ISO… ובדוק אותו.</value></data>
+  <data name="UP_Status_PageOpenedNoMatch" xml:space="preserve"><value>לא נמצאה הורדה מדויקת. בחר מדיה מתאימה בעצמך ובדוק אותה.</value></data>
+  <data name="UP_Status_ServerInspected" xml:space="preserve"><value>מדיית Server נבדקה. בחר את התמונה המתאימה והעתק את הפקודה. ההתקנה לא רצה כאן.</value></data>
+  <data name="UP_Status_CommandCopied" xml:space="preserve"><value>הפקודה הועתקה ולא הורצה. עבור עליה לפני שתריץ אותה בעצמך.</value></data>
+  <data name="UP_Status_Busy" xml:space="preserve"><value>פעולה אחרת של WinTool פועלת. המתן לסיומה ונסה שוב.</value></data>
+  <data name="UP_Failed" xml:space="preserve"><value>השדרוג נעצר:</value></data>
+  <data name="UP_SetupFailed" xml:space="preserve"><value>התקנת Windows נעצרה עם הקוד {0}. המחשב לא הופעל מחדש.</value></data>
+  <data name="UP_DownloadFailed" xml:space="preserve"><value>ההורדה האוטומטית לא הושלמה. דף ההורדות של PcNinja נפתח: הורד ממנו את ה־ISO, ואז בחר אותו בעזרת ISO…</value></data>
+  <data name="UP_UnsafeMedia" xml:space="preserve"><value>השדרוג נחסם בגלל מדיית התקנה מפריעה. הסר אותה ולחץ על רענון.</value></data>
+  <data name="UP_NoSource" xml:space="preserve"><value>בחר תחילה קובץ ISO, כונן או תיקייה.</value></data>
+  <data name="UP_NoDestination" xml:space="preserve"><value>בחר לאן להוריד. חבר כונן ולחץ על רענון אם צריך.</value></data>
+  <data name="UP_Confirm_Download" xml:space="preserve"><value>להוריד (או להשתמש שוב) בקובץ ה־ISO של Windows בתיקייה:
+{0}
+
+ולאחר מכן לבדוק אותו ולהתחיל שדרוג במקום, שישמור על היישומים ועל הקבצים האישיים.
+{1}{2}
+
+שיטת תאימות ניסיונית. גבה קבצים חשובים ושמור את העבודה. להמשיך?</value></data>
+  <data name="UP_Confirm_Start" xml:space="preserve"><value>{0} (תמונה {1})
+{2}{3}{4}
+
+שמור את העבודה. להתחיל את השדרוג?</value></data>
+  <data name="UP_Confirm_Restart" xml:space="preserve"><value>ייתכן ש־Windows יופעל מחדש אוטומטית.</value></data>
+  <data name="UP_Confirm_NoRestart" xml:space="preserve"><value>הפעל מחדש בעצמך כשההתקנה מוכנה.</value></data>
+  <data name="UP_Confirm_Silent" xml:space="preserve"><value>
+התקנת Windows תרוץ בשקט.</value></data>
+  <data name="UP_ChooseIsoTitle" xml:space="preserve"><value>בחר קובץ ISO של Windows</value></data>
+  <data name="UP_ChooseFolderTitle" xml:space="preserve"><value>בחר כונן או תיקיית התקנה של Windows שחולצה</value></data>
+  <data name="UP_ChooseDownloadFolderTitle" xml:space="preserve"><value>בחר את תיקיית ההורדה</value></data>
+  <data name="UP_SelectedFolder" xml:space="preserve"><value>תיקייה שנבחרה</value></data>
+  <data name="UP_IsoFilter" xml:space="preserve"><value>קובצי ISO</value></data>
 </root>

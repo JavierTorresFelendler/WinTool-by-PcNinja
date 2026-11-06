@@ -1,0 +1,272 @@
+<UserControl x:Class="WinTool.App.Views.WindowsUpgradePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:WinTool.App.Localization">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+
+        <!-- Core messages are English: shown left-to-right in both languages so they stay readable. -->
+        <Style x:Key="CoreText" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
+            <Setter Property="FlowDirection" Value="LeftToRight" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style x:Key="RowLine" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Divider}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="Padding" Value="0,8" />
+        </Style>
+
+        <Style x:Key="NoticeBorder" TargetType="Border" BasedOn="{StaticResource Notice}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding NoticeIsWarning}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Brush.WarnSoft}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="EligibilityTag" TargetType="Border" BasedOn="{StaticResource Tag}">
+            <Setter Property="Background" Value="{DynamicResource Brush.WarnSoft}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding UpgradeAllowed}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Brush.AccentSoft}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ImageInfoText" TargetType="TextBlock" BasedOn="{StaticResource CoreText}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Muted}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ImageInfoIsWarning}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.WarnText}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SourceOption" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="12,10" />
+        </Style>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <!-- Header -->
+        <StackPanel Margin="0,0,0,14">
+            <TextBlock Text="{Binding Title}" Style="{StaticResource Text.PageTitle}" />
+            <TextBlock Text="{Binding Subtitle}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,0" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Style="{StaticResource Notice.Warning}" Margin="0,0,0,14">
+            <TextBlock Text="{loc:Loc UP_Warning}" Style="{StaticResource Text.Body}" Foreground="{DynamicResource Brush.WarnText}" TextWrapping="Wrap" />
+        </Border>
+
+        <!-- Result of the last operation -->
+        <Border Style="{StaticResource NoticeBorder}" Margin="0,0,0,14" Visibility="{Binding HasNotice, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="{Binding Notice}" Style="{StaticResource Text.Body}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding NoticeDetail}" Style="{StaticResource CoreText}" Margin="0,4,0,0"
+                           Visibility="{Binding HasNoticeDetail, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+        </Border>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="280" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="1.35*" MinWidth="340" />
+            </Grid.ColumnDefinitions>
+
+            <!-- This computer -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock Text="{loc:Loc UP_ThisComputer}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,6" />
+                    <Border Style="{StaticResource RowLine}">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{loc:Loc UP_Windows}" Style="{StaticResource Text.Label}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="1" Text="{Binding WindowsText}" Style="{StaticResource CoreText}" FontSize="13" HorizontalAlignment="Right" TextAlignment="Right" />
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource RowLine}">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{loc:Loc UP_Processor}" Style="{StaticResource Text.Label}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="1" Text="{Binding ProcessorText}" Style="{StaticResource CoreText}" FontSize="13" HorizontalAlignment="Right" TextAlignment="Right" />
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource RowLine}">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{loc:Loc UP_Memory}" Style="{StaticResource Text.Label}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="1" Text="{Binding MemoryText}" Style="{StaticResource CoreText}" FontSize="13" HorizontalAlignment="Right" TextAlignment="Right" />
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource RowLine}">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{loc:Loc UP_FreeSpace}" Style="{StaticResource Text.Label}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="1" Text="{Binding FreeSpaceText}" Style="{StaticResource CoreText}" FontSize="13" HorizontalAlignment="Right" TextAlignment="Right" />
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource RowLine}">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{loc:Loc UP_SecureBoot}" Style="{StaticResource Text.Label}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="1" Text="{Binding SecureBootText}" Style="{StaticResource Text.Body}" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Border>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="{loc:Loc UP_Eligibility}" Style="{StaticResource Text.Label}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <Border Grid.Column="1" Style="{StaticResource EligibilityTag}" HorizontalAlignment="Right">
+                            <TextBlock Text="{Binding EligibilityText}" FontSize="12" />
+                        </Border>
+                    </Grid>
+                    <TextBlock Text="{Binding HostBlock}" Style="{StaticResource CoreText}" Foreground="{DynamicResource Brush.WarnText}" Margin="0,8,0,0"
+                               Visibility="{Binding HasHostBlock, Converter={StaticResource BoolToVisibility}}" />
+
+                    <Border Margin="0,12,0,0" Padding="12,10" CornerRadius="8" Background="{DynamicResource Brush.Raised}">
+                        <StackPanel>
+                            <TextBlock Text="{loc:Loc UP_NextAction}" Style="{StaticResource Text.Body}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding NextActionText}" Style="{StaticResource Text.Label}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Margin="0,12,0,0" Visibility="{Binding HasPrevious, Converter={StaticResource BoolToVisibility}}">
+                        <TextBlock Text="{loc:Loc UP_Previous}" Style="{StaticResource Text.Body}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding PreviousText}" Style="{StaticResource CoreText}" Foreground="{DynamicResource Brush.Muted}" Margin="0,2,0,0" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Installation source -->
+            <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock Text="{loc:Loc UP_ChooseSource}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,12" />
+
+                    <!-- Automatic download -->
+                    <Border Style="{StaticResource SourceOption}" Margin="0,0,0,10" Visibility="{Binding IsClient, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel>
+                            <RadioButton GroupName="Source" IsChecked="{Binding UseDownload}" IsEnabled="{Binding AutomaticDownloadAvailable}">
+                                <StackPanel>
+                                    <TextBlock Text="{loc:Loc UP_SrcDownload}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding DownloadHint}" Style="{StaticResource Text.Label}" FontSize="12" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </RadioButton>
+                            <Grid Margin="25,8,0,0" Visibility="{Binding AutomaticDownloadAvailable, Converter={StaticResource BoolToVisibility}}" IsEnabled="{Binding CanUseSources}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{loc:Loc UP_DownloadTo}" Style="{StaticResource Text.Label}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding Destinations}" SelectedItem="{Binding SelectedDestination}" MinWidth="0"
+                                          AutomationProperties.Name="{loc:Loc UP_DownloadTo}" />
+                                <Button Grid.Column="2" Style="{StaticResource Button.Secondary}" Margin="8,0,0,0" Padding="10,4"
+                                        Command="{Binding ChooseDownloadFolderCommand}" Content="{loc:Loc UP_Folder}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Existing media -->
+                    <Border Style="{StaticResource SourceOption}" Margin="0,0,0,10">
+                        <StackPanel>
+                            <RadioButton GroupName="Source" IsChecked="{Binding UseExisting}">
+                                <StackPanel>
+                                    <TextBlock Text="{loc:Loc UP_SrcLocal}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <TextBlock Text="{loc:Loc UP_SrcLocalHint}" Style="{StaticResource Text.Label}" FontSize="12" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </RadioButton>
+                            <Grid Margin="25,8,0,0" IsEnabled="{Binding CanUseSources}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" MinWidth="0"
+                                         AutomationProperties.Name="{loc:Loc UP_SrcLocal}" />
+                                <Button Grid.Column="1" Style="{StaticResource Button.Secondary}" Margin="8,0,0,0" Padding="10,4"
+                                        Command="{Binding BrowseIsoCommand}" Content="{loc:Loc UP_Iso}" />
+                                <Button Grid.Column="2" Style="{StaticResource Button.Secondary}" Margin="6,0,0,0" Padding="10,4"
+                                        Command="{Binding BrowseFolderCommand}" Content="{loc:Loc UP_Folder}" />
+                            </Grid>
+                            <Grid Margin="25,6,0,0" IsEnabled="{Binding CanUseSources}" Visibility="{Binding HasFoundSources, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox ItemsSource="{Binding Sources}" SelectedItem="{Binding SelectedFoundSource}" FlowDirection="LeftToRight" MinWidth="0"
+                                          AutomationProperties.Name="{loc:Loc UP_SrcLocal}" />
+                                <Button Grid.Column="1" Style="{StaticResource Button.Link}" Margin="6,0,0,0"
+                                        Command="{Binding RefreshCommand}" Content="{loc:Loc UP_Refresh}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Where to get an ISO -->
+                    <WrapPanel Margin="0,0,0,12">
+                        <TextBlock Text="{loc:Loc UP_IsoLinks}" Style="{StaticResource Text.Label}" VerticalAlignment="Center" Margin="0,0,8,6" />
+                        <Button Style="{StaticResource Button.Soft}" Margin="0,0,8,6" Padding="10,4" Command="{Binding FindIsoCommand}" Content="{loc:Loc UP_FindIso}" />
+                        <Button Style="{StaticResource Button.Secondary}" Margin="0,0,8,6" Padding="10,4" Command="{Binding OpenPcNinjaCommand}">
+                            <TextBlock><Run Text="{loc:Loc UP_PcNinjaIso}" /><Run Text=" ↗" /></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Button.Secondary}" Margin="0,0,0,6" Padding="10,4" Command="{Binding OpenMicrosoftCommand}">
+                            <TextBlock><Run Text="{loc:Loc UP_MicrosoftIso}" /><Run Text=" ↗" /></TextBlock>
+                        </Button>
+                    </WrapPanel>
+
+                    <!-- Image -->
+                    <TextBlock Text="{loc:Loc UP_Image}" Style="{StaticResource Text.Label}" FontSize="12" Margin="0,0,0,4" />
+                    <ComboBox ItemsSource="{Binding Images}" SelectedItem="{Binding SelectedImage}" FlowDirection="LeftToRight"
+                              IsEnabled="{Binding HasImages}" AutomationProperties.Name="{loc:Loc UP_Image}" />
+                    <TextBlock Text="{Binding ImagePrompt}" Style="{StaticResource Text.Label}" FontSize="12" Margin="0,4,0,0"
+                               Visibility="{Binding ShowImagePrompt, Converter={StaticResource BoolToVisibility}}" />
+                    <TextBlock Text="{Binding ImageInfo}" Style="{StaticResource ImageInfoText}" Margin="0,4,0,0"
+                               Visibility="{Binding HasImageInfo, Converter={StaticResource BoolToVisibility}}" />
+
+                    <!-- Options (not for Server: Setup never runs there) -->
+                    <StackPanel Margin="0,12,0,0" Visibility="{Binding IsClient, Converter={StaticResource BoolToVisibility}}">
+                        <CheckBox IsChecked="{Binding Quiet}" IsEnabled="{Binding CanChangeOptions}" Content="{loc:Loc UP_Silent}" Margin="0,0,0,8" />
+                        <CheckBox IsChecked="{Binding AutoRestart}" IsEnabled="{Binding CanChangeRestart}" Content="{loc:Loc UP_AutoRestart}" />
+                        <TextBlock Text="{loc:Loc UP_AutoRestartQuiet}" Style="{StaticResource Text.Label}" FontSize="12" Margin="25,2,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding Quiet, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+
+                    <!-- Progress -->
+                    <ProgressBar Margin="0,14,0,0" Maximum="100" Value="{Binding ProgressValue, Mode=OneWay}" IsIndeterminate="{Binding ProgressIndeterminate}"
+                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+
+                    <!-- Status and actions -->
+                    <Border Margin="0,14,0,0" Padding="0,10,0,0" BorderBrush="{DynamicResource Brush.Divider}" BorderThickness="0,1,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center" Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Style="{StaticResource StatusDot}" Tag="Ok" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <Button Style="{StaticResource Button.Link}" Command="{Binding ViewLogCommand}" Content="{loc:Loc UP_ViewLog}" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding Status}" Style="{StaticResource Text.Label}" FontSize="12.5" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                <TextBlock Text="{Binding StatusDetail}" Style="{StaticResource CoreText}" Foreground="{DynamicResource Brush.Muted}" Margin="0,2,0,0"
+                                           Visibility="{Binding HasStatusDetail, Converter={StaticResource BoolToVisibility}}" />
+                            </StackPanel>
+                            <WrapPanel Grid.Column="1" VerticalAlignment="Center">
+                                <Button Style="{StaticResource Button.Secondary}" Margin="0,0,8,0" Command="{Binding ValidateCommand}" Content="{loc:Loc UP_Validate}" />
+                                <Button Style="{StaticResource Button.Primary}" Command="{Binding StartCommand}" Content="{Binding StartLabel}"
+                                        Visibility="{Binding IsClient, Converter={StaticResource BoolToVisibility}}" />
+                                <Button Style="{StaticResource Button.Primary}" Command="{Binding CopyCommandCommand}" Content="{loc:Loc UP_CopyCommand}"
+                                        Visibility="{Binding IsServer, Converter={StaticResource BoolToVisibility}}" />
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </StackPanel>
+</UserControl>

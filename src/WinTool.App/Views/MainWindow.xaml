@@ -31,6 +31,9 @@
         <DataTemplate DataType="{x:Type vm:WindowsUpdatePageViewModel}">
             <views:WindowsUpdatePage />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:WindowsUpgradePageViewModel}">
+            <views:WindowsUpgradePage />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:DashboardPageViewModel}">
             <views:DashboardPage />
         </DataTemplate>

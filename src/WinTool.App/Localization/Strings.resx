@@ -185,4 +185,95 @@ If the file is moved or deleted, the schedule stops working. Continue?</value></
   <data name="WU_Legacy_Confirm" xml:space="preserve"><value>Import the WinUpdate Tool settings and remove its scheduled tasks?</value></data>
   <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool took over the schedule. Uninstall WinUpdate Tool from Settings &gt; Apps.</value></data>
   <data name="WU_RunAtStartup" xml:space="preserve"><value>Also run after startup (5 min)</value></data>
+  <data name="UP_Warning" xml:space="preserve"><value>Experimental compatibility method. Back up important files before upgrading.</value></data>
+  <data name="UP_ThisComputer" xml:space="preserve"><value>This computer</value></data>
+  <data name="UP_Windows" xml:space="preserve"><value>Windows</value></data>
+  <data name="UP_Processor" xml:space="preserve"><value>Processor</value></data>
+  <data name="UP_Memory" xml:space="preserve"><value>Memory</value></data>
+  <data name="UP_FreeSpace" xml:space="preserve"><value>Free space</value></data>
+  <data name="UP_SecureBoot" xml:space="preserve"><value>Secure Boot</value></data>
+  <data name="UP_Eligibility" xml:space="preserve"><value>Upgrade</value></data>
+  <data name="UP_Eligible" xml:space="preserve"><value>Available</value></data>
+  <data name="UP_Blocked" xml:space="preserve"><value>Not available</value></data>
+  <data name="UP_ServerGuidance" xml:space="preserve"><value>Manual guidance only</value></data>
+  <data name="UP_NextAction" xml:space="preserve"><value>Recommended next action</value></data>
+  <data name="UP_Next_Download" xml:space="preserve"><value>Download Windows 11 automatically, then start the checked upgrade.</value></data>
+  <data name="UP_Next_Media" xml:space="preserve"><value>Choose matching Windows media, then validate it.</value></data>
+  <data name="UP_Next_Image" xml:space="preserve"><value>Choose a Windows image, then start the upgrade.</value></data>
+  <data name="UP_Next_Start" xml:space="preserve"><value>Everything is checked. Start the upgrade when ready.</value></data>
+  <data name="UP_Next_Server" xml:space="preserve"><value>Validate Server media, then copy the manual command. Windows Setup does not run here.</value></data>
+  <data name="UP_Next_Blocked" xml:space="preserve"><value>An upgrade cannot run on this computer. See the reason above.</value></data>
+  <data name="UP_Previous" xml:space="preserve"><value>Previous upgrade</value></data>
+  <data name="UP_ChooseSource" xml:space="preserve"><value>Choose your installation source</value></data>
+  <data name="UP_SrcDownload" xml:space="preserve"><value>Download Windows 11 automatically</value></data>
+  <data name="UP_SrcDownloadHint" xml:space="preserve"><value>Language {0}. The ISO is checked before the upgrade starts.</value></data>
+  <data name="UP_SrcDownloadUnavailable" xml:space="preserve"><value>Automatic download is not available for this computer. Use an ISO, drive or folder.</value></data>
+  <data name="UP_DownloadTo" xml:space="preserve"><value>Download to</value></data>
+  <data name="UP_SrcLocal" xml:space="preserve"><value>Use an ISO, drive or folder</value></data>
+  <data name="UP_SrcLocalHint" xml:space="preserve"><value>A matching image is selected automatically when possible.</value></data>
+  <data name="UP_Iso" xml:space="preserve"><value>ISO…</value></data>
+  <data name="UP_Folder" xml:space="preserve"><value>Folder…</value></data>
+  <data name="UP_Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="UP_IsoLinks" xml:space="preserve"><value>ISO:</value></data>
+  <data name="UP_FindIso" xml:space="preserve"><value>Find matching ISO</value></data>
+  <data name="UP_PcNinjaIso" xml:space="preserve"><value>PcNinja downloads</value></data>
+  <data name="UP_MicrosoftIso" xml:space="preserve"><value>Microsoft</value></data>
+  <data name="UP_Image" xml:space="preserve"><value>Windows image</value></data>
+  <data name="UP_ImageValidateFirst" xml:space="preserve"><value>Validate a source first</value></data>
+  <data name="UP_Silent" xml:space="preserve"><value>Run Windows Setup silently</value></data>
+  <data name="UP_AutoRestart" xml:space="preserve"><value>Restart automatically when needed</value></data>
+  <data name="UP_AutoRestartQuiet" xml:space="preserve"><value>Silent mode restarts automatically. Turn it off to restart yourself.</value></data>
+  <data name="UP_Ready" xml:space="preserve"><value>Ready.</value></data>
+  <data name="UP_ViewLog" xml:space="preserve"><value>View log</value></data>
+  <data name="UP_Validate" xml:space="preserve"><value>Validate Media</value></data>
+  <data name="UP_Start" xml:space="preserve"><value>Start Upgrade</value></data>
+  <data name="UP_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="UP_SetupRunning" xml:space="preserve"><value>Windows Setup is running</value></data>
+  <data name="UP_CopyCommand" xml:space="preserve"><value>Copy Upgrade Command</value></data>
+  <data name="UP_Status_Reading" xml:space="preserve"><value>Reading this computer…</value></data>
+  <data name="UP_Status_Downloading" xml:space="preserve"><value>Downloading {0}… {1}</value></data>
+  <data name="UP_Status_Validating" xml:space="preserve"><value>Checking the installation media and its images…</value></data>
+  <data name="UP_Status_Starting" xml:space="preserve"><value>Checking safety again and starting Windows Setup…</value></data>
+  <data name="UP_Status_Finding" xml:space="preserve"><value>Finding a matching Windows download…</value></data>
+  <data name="UP_Status_Cancelling" xml:space="preserve"><value>Cancelling…</value></data>
+  <data name="UP_Status_Cancelled" xml:space="preserve"><value>Cancelled. Windows Setup was not started.</value></data>
+  <data name="UP_Status_Validated" xml:space="preserve"><value>Media checked: {0} image(s).</value></data>
+  <data name="UP_Status_ImageSelected" xml:space="preserve"><value>Image {0} selected. Start the upgrade when ready.</value></data>
+  <data name="UP_Status_ChooseImage" xml:space="preserve"><value>Choose a Windows image, then start the upgrade.</value></data>
+  <data name="UP_Status_NoImage" xml:space="preserve"><value>No image matches this computer ({0}, {1}). Choose matching Windows media.</value></data>
+  <data name="UP_Status_SourceChanged" xml:space="preserve"><value>The source changed. Validate it again.</value></data>
+  <data name="UP_Status_ManualRestart" xml:space="preserve"><value>Upgrade preparation is complete. Restart the computer to continue the upgrade.</value></data>
+  <data name="UP_Status_StageDone" xml:space="preserve"><value>Windows Setup finished this stage. Check the result after the restart.</value></data>
+  <data name="UP_Status_Unconfirmed" xml:space="preserve"><value>Windows Setup closed during the transition. Open WinTool after the restart to check the result.</value></data>
+  <data name="UP_Status_PageOpened" xml:space="preserve"><value>The download page is open. When the download finishes, choose the file with ISO… and validate it.</value></data>
+  <data name="UP_Status_PageOpenedNoMatch" xml:space="preserve"><value>No exact download was confirmed. Choose matching media yourself, then validate it.</value></data>
+  <data name="UP_Status_ServerInspected" xml:space="preserve"><value>Server media checked. Choose the matching image and copy the command. Setup does not run here.</value></data>
+  <data name="UP_Status_CommandCopied" xml:space="preserve"><value>The command was copied, not run. Review it before you run it yourself.</value></data>
+  <data name="UP_Status_Busy" xml:space="preserve"><value>Another WinTool operation is running. Wait for it to finish, then try again.</value></data>
+  <data name="UP_Failed" xml:space="preserve"><value>The upgrade stopped:</value></data>
+  <data name="UP_SetupFailed" xml:space="preserve"><value>Windows Setup stopped with code {0}. The computer was not restarted.</value></data>
+  <data name="UP_DownloadFailed" xml:space="preserve"><value>The automatic download did not complete. The PcNinja download page was opened: download the ISO there, then choose it with ISO…</value></data>
+  <data name="UP_UnsafeMedia" xml:space="preserve"><value>Upgrade blocked by interfering installation media. Remove it, then Refresh.</value></data>
+  <data name="UP_NoSource" xml:space="preserve"><value>Choose an ISO file, a drive or a folder first.</value></data>
+  <data name="UP_NoDestination" xml:space="preserve"><value>Choose where to download. Connect a drive and Refresh if needed.</value></data>
+  <data name="UP_Confirm_Download" xml:space="preserve"><value>Download (or reuse) the Windows ISO in:
+{0}
+
+Then check it and start the in-place upgrade, keeping apps and personal files.
+{1}{2}
+
+Experimental compatibility method. Back up important files and save your work. Continue?</value></data>
+  <data name="UP_Confirm_Start" xml:space="preserve"><value>{0} (image {1})
+{2}{3}{4}
+
+Save your work. Start the upgrade?</value></data>
+  <data name="UP_Confirm_Restart" xml:space="preserve"><value>Windows may restart automatically.</value></data>
+  <data name="UP_Confirm_NoRestart" xml:space="preserve"><value>Restart yourself when Setup is ready.</value></data>
+  <data name="UP_Confirm_Silent" xml:space="preserve"><value>
+Windows Setup will run silently.</value></data>
+  <data name="UP_ChooseIsoTitle" xml:space="preserve"><value>Choose a Windows ISO file</value></data>
+  <data name="UP_ChooseFolderTitle" xml:space="preserve"><value>Choose a drive or an extracted Windows Setup folder</value></data>
+  <data name="UP_ChooseDownloadFolderTitle" xml:space="preserve"><value>Choose the download folder</value></data>
+  <data name="UP_SelectedFolder" xml:space="preserve"><value>Selected folder</value></data>
+  <data name="UP_IsoFilter" xml:space="preserve"><value>ISO files</value></data>
 </root>

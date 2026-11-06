@@ -100,7 +100,7 @@ namespace WinTool.App.ViewModels
     /// The Windows Update screen: everything on one page (owner decision):
     /// status, available updates, health and maintenance, and the schedule.
     /// </summary>
-    public sealed class WindowsUpdatePageViewModel : PageViewModel
+    public sealed class WindowsUpdatePageViewModel : PageViewModel, IOperationPage
     {
         private readonly IWindowsUpdateEnvironment env;
         private CancellationTokenSource cancellation;
@@ -155,6 +155,11 @@ namespace WinTool.App.ViewModels
         public ICommand ScanCommand { get; }
         public ICommand InstallCommand { get; }
         public ICommand CancelCommand { get; }
+
+        public void RequestCancel()
+        {
+            if (CancelCommand.CanExecute(null)) CancelCommand.Execute(null);
+        }
         public ICommand RestartCommand { get; }
         public ICommand HealthCheckCommand { get; }
         public ICommand CollectLogsCommand { get; }

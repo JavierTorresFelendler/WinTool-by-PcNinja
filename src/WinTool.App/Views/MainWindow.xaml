@@ -109,7 +109,7 @@
                             <TextBlock Text="{Binding VersionText}" FontSize="12" Foreground="{DynamicResource Brush.Muted}" Margin="8,0,8,8"
                                        Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibility}}" />
                             <Button Style="{StaticResource Button.Secondary}" Command="{Binding CheckToolUpdateCommand}" Padding="10,7"
-                                    ToolTip="{loc:Loc Footer_CheckToolUpdate_Later}" ToolTipService.ShowOnDisabled="True"
+                                    ToolTip="{Binding Updates.Status}"
                                     AutomationProperties.Name="{loc:Loc Footer_CheckToolUpdate}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE895;" FontFamily="{StaticResource Font.Icons}" VerticalAlignment="Center" />

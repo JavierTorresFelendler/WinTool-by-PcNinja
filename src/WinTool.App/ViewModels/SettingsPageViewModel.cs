@@ -14,9 +14,11 @@ namespace WinTool.App.ViewModels
         private readonly Action save;
         private readonly Action applyTheme;
 
-        public SettingsPageViewModel(AppSettings settings, Action save, Action applyTheme)
+        public SettingsPageViewModel(AppSettings settings, Action save, Action applyTheme, AppUpdateViewModel updates)
             : base("Nav_Settings", null)
         {
+            Updates = updates;
+            CheckNowCommand = new RelayCommand(() => _ = updates.CheckAsync(true), () => !updates.IsBusy);
             this.settings = settings;
             this.save = save;
             this.applyTheme = applyTheme;
@@ -37,6 +39,20 @@ namespace WinTool.App.ViewModels
         public string WebsiteText => ProductInfo.WebsiteUrl.Replace("https://", string.Empty);
 
         public ICommand OpenWebsiteCommand { get; }
+        public ICommand CheckNowCommand { get; }
+        public AppUpdateViewModel Updates { get; }
+
+        public bool CheckAtStartup
+        {
+            get => settings.CheckForAppUpdatesAtStartup;
+            set { settings.CheckForAppUpdatesAtStartup = value; save(); OnPropertyChanged(); }
+        }
+
+        public bool IncludeTestVersions
+        {
+            get => settings.IncludeTestVersions;
+            set { settings.IncludeTestVersions = value; save(); OnPropertyChanged(); }
+        }
         public ICommand OpenRepositoryCommand { get; }
 
         private bool Is(ThemePreference preference) => settings.ThemePreference == preference;

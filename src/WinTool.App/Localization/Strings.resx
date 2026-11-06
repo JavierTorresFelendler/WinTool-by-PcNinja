@@ -391,4 +391,7 @@ Update now?</value></data>
   <data name="Settings_CheckAtStartup" xml:space="preserve"><value>Check for WinTool updates at startup</value></data>
   <data name="Settings_TestVersions" xml:space="preserve"><value>Also get test versions (beta and release candidates)</value></data>
   <data name="Settings_CheckNow" xml:space="preserve"><value>Check Now</value></data>
+  <data name="Close_OperationRunning" xml:space="preserve"><value>{0} is still running.
+
+Cancel what can be cancelled and close WinTool when it has stopped? An installer that is already running is never interrupted: WinTool closes after it finishes.</value></data>
 </root>

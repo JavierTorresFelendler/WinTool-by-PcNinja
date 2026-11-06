@@ -391,4 +391,7 @@
   <data name="Settings_CheckAtStartup" xml:space="preserve"><value>בדיקת עדכונים של WinTool בהפעלה</value></data>
   <data name="Settings_TestVersions" xml:space="preserve"><value>קבלת גם גרסאות בדיקה (בטא וגרסאות מועמדות)</value></data>
   <data name="Settings_CheckNow" xml:space="preserve"><value>בדיקה עכשיו</value></data>
+  <data name="Close_OperationRunning" xml:space="preserve"><value>{0} עדיין פועל.
+
+לבטל את מה שאפשר ולסגור את WinTool כשהפעולה תיעצר? מתקין שכבר פועל לעולם אינו נקטע: WinTool ייסגר אחרי שהוא יסתיים.</value></data>
 </root>

@@ -39,8 +39,9 @@ namespace WinTool.App.Infrastructure
 
             var exePath = Process.GetCurrentProcess().MainModule.FileName;
             var settings = new AppSettings();
-            var settingsPage = new SettingsPageViewModel(settings, () => { }, () => { });
-            var model = new MainViewModel(settingsPage, new WinTool.WindowsUpdate.Platform.WindowsUpdateEnvironment(exePath, useEventLog: false));
+            var updates = new AppUpdateViewModel(settings, exePath);
+            var settingsPage = new SettingsPageViewModel(settings, () => { }, () => { }, updates);
+            var model = new MainViewModel(settingsPage, new WinTool.WindowsUpdate.Platform.WindowsUpdateEnvironment(exePath, useEventLog: false), updates);
             var window = new MainWindow
             {
                 DataContext = model,

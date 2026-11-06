@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -21,8 +22,12 @@ namespace WinTool.App.ViewModels
         private PageViewModel currentPage;
         private bool isCompact;
 
-        public MainViewModel(SettingsPageViewModel settingsPage, IWindowsUpdateEnvironment windowsUpdate)
+        private readonly List<KeyValuePair<string, IOperationPage>> operations = new List<KeyValuePair<string, IOperationPage>>();
+        private System.Windows.Threading.DispatcherTimer closeTimer;
+
+        public MainViewModel(SettingsPageViewModel settingsPage, IWindowsUpdateEnvironment windowsUpdate, AppUpdateViewModel updates)
         {
+            Updates = updates;
             var windowsUpdatePage = new WindowsUpdatePageViewModel(windowsUpdate);
             var upgradePage = new WindowsUpgradePageViewModel();
             var officePage = new OfficePageViewModel();
@@ -39,7 +44,12 @@ namespace WinTool.App.ViewModels
             };
 
             OpenHelpCommand = new RelayCommand(() => OpenUrl(ProductInfo.HelpUrl));
-            CheckToolUpdateCommand = new RelayCommand(() => { }, () => false);
+            operations.Add(new KeyValuePair<string, IOperationPage>("Nav_WindowsUpdate", windowsUpdatePage));
+            operations.Add(new KeyValuePair<string, IOperationPage>("Nav_WindowsUpgrade", upgradePage));
+            operations.Add(new KeyValuePair<string, IOperationPage>("Nav_Office", officePage));
+            operations.Add(new KeyValuePair<string, IOperationPage>("Footer_CheckToolUpdate", updates));
+            updates.OperationRunning = () => operations.Any(o => !ReferenceEquals(o.Value, updates) && o.Value.IsBusy);
+            CheckToolUpdateCommand = new RelayCommand(() => _ = updates.CheckAsync(true), () => !updates.IsBusy);
             NavItems[0].IsSelected = true;
         }
 
@@ -75,6 +85,32 @@ namespace WinTool.App.ViewModels
 
         /// <summary>Disabled until the self-update flow (roadmap phase 6).</summary>
         public ICommand CheckToolUpdateCommand { get; }
+
+        public AppUpdateViewModel Updates { get; }
+
+        public bool AnyOperationRunning => operations.Any(o => o.Value.IsBusy);
+
+        /// <summary>Names of the running operations, in the current language.</summary>
+        public string RunningOperationNames => string.Join(", ", operations.Where(o => o.Value.IsBusy).Select(o => T[o.Key]));
+
+        /// <summary>True after the user chose to close: the window closes as soon as nothing runs.</summary>
+        public bool ClosingWhenIdle { get; private set; }
+
+        /// <summary>Asks every page to cancel, then calls close once no operation runs (Codex review F1).</summary>
+        public void CancelAllThenClose(Action close)
+        {
+            ClosingWhenIdle = true;
+            OnPropertyChanged(nameof(ClosingWhenIdle));
+            foreach (var operation in operations) operation.Value.RequestCancel();
+            closeTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+            closeTimer.Tick += (sender, e) =>
+            {
+                if (AnyOperationRunning) return;
+                closeTimer.Stop();
+                close();
+            };
+            closeTimer.Start();
+        }
 
         public void Navigate(string key)
         {

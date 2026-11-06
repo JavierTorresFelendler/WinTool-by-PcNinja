@@ -58,6 +58,18 @@
 
         <Border Style="{StaticResource Card}" Margin="0,14,0,0">
             <StackPanel>
+                <TextBlock Text="{loc:Loc Settings_Updates}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,10" />
+                <CheckBox IsChecked="{Binding CheckAtStartup}" Content="{loc:Loc Settings_CheckAtStartup}" Margin="0,0,0,8" />
+                <CheckBox IsChecked="{Binding IncludeTestVersions}" Content="{loc:Loc Settings_TestVersions}" Margin="0,0,0,10" />
+                <StackPanel Orientation="Horizontal">
+                    <Button Style="{StaticResource Button.Secondary}" Command="{Binding CheckNowCommand}" Content="{loc:Loc Settings_CheckNow}" />
+                    <TextBlock Text="{Binding Updates.Status}" Style="{StaticResource Text.Label}" VerticalAlignment="Center" Margin="12,0,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource Card}" Margin="0,14,0,0">
+            <StackPanel>
                 <TextBlock Text="{loc:Loc Settings_About}" Style="{StaticResource Text.CardTitle}" Margin="0,0,0,8" />
                 <TextBlock Style="{StaticResource Text.Body}"><Run Text="{Binding Version, Mode=OneWay}" /></TextBlock>
                 <TextBlock Text="{loc:Loc Settings_License}" Style="{StaticResource Text.Subtitle}" Margin="0,4,0,8" />

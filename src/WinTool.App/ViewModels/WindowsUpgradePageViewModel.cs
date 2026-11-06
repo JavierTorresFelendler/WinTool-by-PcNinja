@@ -36,7 +36,7 @@ namespace WinTool.App.ViewModels
     /// same Core operations as "upgrade" on the command line (WINUPGRADE-BEHAVIOR).
     /// Core messages are English; they appear as details under a translated headline.
     /// </summary>
-    public sealed class WindowsUpgradePageViewModel : PageViewModel
+    public sealed class WindowsUpgradePageViewModel : PageViewModel, IOperationPage
     {
         private const int SetupTransitionExitCode = 0x40010004;
 
@@ -372,6 +372,14 @@ namespace WinTool.App.ViewModels
         }
 
         // ---------------------------------------------------------------- validate and upgrade
+
+        /// <summary>Stops preparation; once Windows Setup runs it is never interrupted.</summary>
+        public void RequestCancel()
+        {
+            if (!IsBusy || setupStarted || operation == null) return;
+            IsCancelling = true;
+            operation.Cancel();
+        }
 
         private void StartOrCancel()
         {

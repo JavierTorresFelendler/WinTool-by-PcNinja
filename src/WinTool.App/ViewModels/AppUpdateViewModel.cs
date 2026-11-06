@@ -16,7 +16,7 @@ namespace WinTool.App.ViewModels
     /// only when the user agrees. An installed copy runs the new MSI; a portable copy
     /// replaces itself and keeps the previous EXE as WinTool-by-PcNinja-v&lt;version&gt;.exe.
     /// </summary>
-    public sealed class AppUpdateViewModel : LocalizedObject
+    public sealed class AppUpdateViewModel : LocalizedObject, IOperationPage
     {
         /// <summary>Set for the new copy after a portable update: the PID of the copy it replaces.</summary>
         public const string WaitForPidVariable = "WINTOOL_WAIT_FOR_PID";
@@ -42,6 +42,11 @@ namespace WinTool.App.ViewModels
         public Func<bool> OperationRunning { get; set; } = () => false;
 
         public bool IsBusy { get => busy; private set => Set(ref busy, value); }
+
+        /// <summary>A WinTool download is short; closing waits for it.</summary>
+        public void RequestCancel()
+        {
+        }
         public string Status { get => status; private set => Set(ref status, value); }
 
         public bool IsInstalled => exePath.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase);

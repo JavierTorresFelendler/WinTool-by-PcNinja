@@ -63,7 +63,7 @@ namespace WinTool.App.ViewModels
     /// The Office screen (approved mockup): Smart Office Installer's choices on
     /// one page, on the same library as "office" on the command line (OFFICE-BEHAVIOR).
     /// </summary>
-    public sealed class OfficePageViewModel : PageViewModel
+    public sealed class OfficePageViewModel : PageViewModel, IOperationPage
     {
         private OfficeFamily family = OfficeFamily.Microsoft365;
         private OfficeMode mode = OfficeMode.Install;
@@ -103,6 +103,12 @@ namespace WinTool.App.ViewModels
         }
 
         public ICommand RunCommand { get; }
+
+        /// <summary>Cancels downloads; the Office installer itself is never interrupted.</summary>
+        public void RequestCancel()
+        {
+            if (IsBusy && CanCancel) CancelCommand.Execute(null);
+        }
         public ICommand CancelCommand { get; }
         public ICommand ToggleAddLanguageCommand { get; }
         public ICommand AddLanguageCommand { get; }

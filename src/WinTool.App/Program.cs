@@ -67,6 +67,8 @@ namespace WinTool.App
                 return RestartElevated();
             }
 
+            WaitForReplacedCopy();
+
             PcNinjaSingleInstanceOutcome outcome;
             using (var holder = PcNinjaSingleInstance.Acquire(ProductInfo.SingleInstanceAppId, options, out outcome))
             {
@@ -80,6 +82,24 @@ namespace WinTool.App
                 var app = new App();
                 app.InitializeComponent();
                 return app.RunMainWindow(settings);
+            }
+        }
+
+        /// <summary>A portable update starts the new copy before the old one exits; wait (at most 30 s) for it.</summary>
+        private static void WaitForReplacedCopy()
+        {
+            var text = Environment.GetEnvironmentVariable(ViewModels.AppUpdateViewModel.WaitForPidVariable);
+            if (string.IsNullOrEmpty(text)) return;
+            Environment.SetEnvironmentVariable(ViewModels.AppUpdateViewModel.WaitForPidVariable, null);
+            int pid;
+            if (!int.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out pid)) return;
+            try
+            {
+                using (var previous = Process.GetProcessById(pid)) previous.WaitForExit(30000);
+            }
+            catch (ArgumentException)
+            {
+                // Already gone.
             }
         }
 

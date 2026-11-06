@@ -53,6 +53,21 @@ namespace WinTool.App.Views
             SystemCommands.CloseWindow(this);
         }
 
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            // Codex review F1: never drop an operation that is still running (its lock, result and cleanup).
+            if (DataContext is ViewModels.MainViewModel model && model.AnyOperationRunning)
+            {
+                e.Cancel = true;
+                if (!model.ClosingWhenIdle && ViewModels.Dialogs.Confirm(Loc.Instance.Format("Close_OperationRunning", model.RunningOperationNames)))
+                {
+                    model.CancelAllThenClose(Close);
+                }
+            }
+
+            base.OnClosing(e);
+        }
+
         private void OnStateChanged(object sender, EventArgs e)
         {
             UpdateMaximizeButton();

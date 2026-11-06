@@ -84,7 +84,7 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ## D-006 Interface languages: English, Hebrew, Spanish
 
-- **Status:** Accepted (2026-11-06)
+- **Status:** Superseded in part by D-011 (timing only) (2026-11-06)
 - **Decision:** All UI text lives in `.resx` resources from the first commit.
   English ships first. Hebrew (right-to-left) and Spanish are added before
   1.0. See `docs/LOCALIZATION.md`.
@@ -133,6 +133,46 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   Tool, which has the newest version (with acknowledgements). The Smart Office
   Installer copy is older and differs, although `shared/README.md` requires
   identical copies. That gap belongs to the Smart Office repository.
+
+## D-011 Hebrew from the first screen; Spanish before 1.0
+
+- **Status:** Accepted (2026-11-06). Supersedes the timing in D-006.
+- **Decision:** Every screen ships in English and Hebrew (right-to-left) from
+  the first build. Spanish is added in the release-readiness phase.
+- **Consequences:** Right-to-left problems are found while each screen is
+  built, not at the end.
+
+## D-012 Theme follows Windows (dark and light)
+
+- **Status:** Accepted (2026-11-06)
+- **Context:** The approved design is dark. WinUpdate V1 had a manual
+  Light/Dark choice, and its light theme used plain Windows system colors.
+- **Decision:** The app reads the Windows app mode
+  (`HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize`,
+  value `AppsUseLightTheme`) at startup and switches live when the user
+  changes it. Dark mode uses the approved Nocturne-based design. Light mode
+  gets its own designed palette with the same PcNinja accents, not plain
+  system colors. Settings offers **System** (default), **Light** and
+  **Dark**. When Windows High Contrast is on, the app uses the system
+  high-contrast colors.
+- **Consequences:** Every color is a theme token; no screen may use a fixed
+  color. Each screen is reviewed in both themes and both text directions.
+
+## D-013 Single instance also covers the installer
+
+- **Status:** Accepted (2026-11-06)
+- **Decision:**
+  - Windows Installer already allows only one installation at a time; a
+    second one fails with error 1618. Scripts and the self-updater must treat
+    1618 as "busy, try later", not as failure.
+  - The MSI detects a running WinTool and asks to close it (interactive), or
+    closes it cleanly (silent), before files are replaced.
+  - The self-updater starts at most one installer, and only after the GUI and
+    any running WinTool operation have finished.
+  - While an install or update is running, WinTool refuses to start
+    machine-changing operations.
+- **Consequences:** One GUI, one installer, and one machine-changing
+  operation at a time on each computer.
 
 ---
 

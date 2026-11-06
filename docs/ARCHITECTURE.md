@@ -100,5 +100,7 @@ versioned, so scripts can depend on it.
   Smart Office).
 - GUI single instance per logon session; CLI is never blocked by an open
   window (`shared/README.md`).
+- Theme follows Windows dark/light mode live; colors come only from theme
+  tokens (D-012).
 - No hidden console window and no reliance on an attached console in the GUI
   (WinUpdate V2.2.8 incident).

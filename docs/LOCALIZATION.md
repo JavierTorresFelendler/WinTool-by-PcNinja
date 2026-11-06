@@ -2,6 +2,9 @@
 
 Languages: English (`en`, default), Hebrew (`he`, right-to-left), Spanish (`es`).
 
+English and Hebrew ship from the first build. Spanish is added before 1.0
+(decision D-011).
+
 ## Rules from the first screen
 
 - No user-visible text in XAML or C# code. All text lives in resources:
@@ -33,5 +36,6 @@ Languages: English (`en`, default), Hebrew (`he`, right-to-left), Spanish (`es`)
 ## Cost
 
 With these rules in place from the start, each new screen needs roughly
-10–15% more work for resources and right-to-left checks. Translation itself is
-done per release, before 1.0.
+10–15% more work for resources and right-to-left checks. Every screen is
+reviewed in four combinations: dark and light theme, left-to-right and
+right-to-left.

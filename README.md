@@ -18,8 +18,8 @@ are still maintained in their own repositories.
 | --- | --- |
 | Platform | Windows 10 1903 or later, Windows 11, x64 |
 | Runtime | .NET Framework 4.8 (built into Windows) |
-| UI | WPF, dark theme based on the PcNinja Dashboard design |
-| Languages | English, Hebrew, Spanish |
+| UI | WPF, follows the Windows dark/light setting; based on the PcNinja Dashboard design |
+| Languages | English and Hebrew; Spanish before 1.0 |
 | Packages | MSI (interactive and silent) and portable EXE |
 | License | PcNinja Freeware Use License (free to use; no redistribution or resale) |
 

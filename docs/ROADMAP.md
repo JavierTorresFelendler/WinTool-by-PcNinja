@@ -7,7 +7,8 @@ Versions before 1.0 are internal previews.
 
 - Decisions, architecture, MSI specification, localization rules, upstream
   sync log, license.
-- Mockup of the unified window based on the approved PcNinja Dashboard design.
+- Mockup of the unified window based on the approved PcNinja Dashboard design,
+  in dark and light themes, English and Hebrew.
 
 ## Phase 1: Skeleton (0.1)
 
@@ -16,8 +17,9 @@ Versions before 1.0 are internal previews.
   assets, high-DPI checks.
 - Core services: logging, settings, atomic writes, OS version gate,
   elevation, operation lock, single instance (`WinTool`).
-- Localization infrastructure with English resources and a right-to-left
-  test pass.
+- Localization infrastructure with English and Hebrew resources.
+- Theme service: follows the Windows dark/light setting live; dark and light
+  palettes; Settings override (System, Light, Dark).
 - Portable EXE build.
 
 ## Phase 2: Windows Update (0.2)
@@ -48,7 +50,7 @@ Versions before 1.0 are internal previews.
 ## Phase 6: Release readiness (0.9)
 
 - One self-update flow for MSI and portable installs.
-- Hebrew and Spanish translations.
+- Spanish translation.
 - Release workflow that publishes only tested packages, with SHA-256 hashes.
 - VM test checklist across Windows 10 1903, Windows 10 22H2 and Windows 11.
 

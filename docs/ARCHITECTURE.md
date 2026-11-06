@@ -58,7 +58,9 @@ included.
 ```text
 Dashboard          Summary only: pending updates and restart, Windows
                    version and upgrade path, installed Office edition and
-                   its apps, computer facts, WinTool status
+                   its apps, computer details (name, user, LAN/WAN IP, CPU,
+                   memory, storage, graphics, board, BIOS, TPM, last
+                   restart), WinTool status
 ──────────
 Windows Update     Status and restart state, available updates, health and
                    maintenance actions, and the schedule (edited in place)
@@ -70,7 +72,13 @@ Office             Product family, mode (install / offline package /
 ──────────
 Logs               Lazy-loaded, filtered by tool
 Settings           Theme, language, application updates, about
+Drivers & Links    help.pcninja.pro, PcNinja free tools (Driver Updater,
+                   Windows & Office Activation, www.pcninja.pro, this
+                   repository), shared file password, manufacturer
+                   sources (Dell, HP, Lenovo, ASUS; reference only)
 ```
+
+A Help link to help.pcninja.pro is always visible in the sidebar footer.
 
 Footer: installed version, latest version, **Check Tool Update**.
 

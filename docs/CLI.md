@@ -5,9 +5,19 @@ line with arguments (decision D-016). Output is English; add `--json` for
 machine-readable output with stable camelCase names. Options are
 `--name` or `--name value`; an unknown option is an error, never ignored.
 
-The EXE is a Windows application, so `cmd.exe` does not wait for it. In
-scripts use `start /wait`, or PowerShell `Start-Process -Wait -PassThru`, to
-get the exit code. Scheduled tasks always wait.
+The EXE is a Windows application, so `cmd.exe` and PowerShell do not wait
+for it: the prompt comes back at once and the output arrives after it
+(decision D-020). To wait and get the exit code:
+
+```bat
+start /wait WinTool-by-PcNinja.exe update run
+```
+
+```powershell
+Start-Process .\WinTool-by-PcNinja.exe -ArgumentList 'update','run' -Wait -NoNewWindow -PassThru
+```
+
+Scheduled tasks and the MSI always wait.
 
 ## Windows Update
 

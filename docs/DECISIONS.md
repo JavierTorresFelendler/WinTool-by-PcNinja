@@ -238,6 +238,16 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - **Consequences:** Layouts use wrapping and flexible columns, never fixed
   page widths.
 
+## D-020 Command-line use stays on the one EXE; waiting is documented
+
+- **Status:** Accepted (2026-11-06). Confirms D-016 after the first real-machine test.
+- **Context:** `WinTool-by-PcNinja.exe` is a Windows (GUI) program, so cmd.exe
+  and PowerShell do not wait for it: the prompt returns at once and the output
+  arrives after it. Scheduled tasks and the MSI wait normally.
+- **Decision:** No separate console program. Interactive and script use waits
+  with `start /wait` (cmd.exe) or `Start-Process -Wait -PassThru` (PowerShell),
+  as documented in `docs/CLI.md` and in `help`.
+
 ---
 
 ## Open questions

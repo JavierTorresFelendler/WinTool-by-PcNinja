@@ -85,7 +85,10 @@ namespace WinTool.App.Infrastructure
             writer.WriteLine("  logs collect     [--output folder-or-file.zip]");
             writer.WriteLine("  version | help | --self-test");
             writer.WriteLine();
-            writer.WriteLine("Exit codes: docs/CLI.md. In cmd.exe use \"start /wait\" to wait for the result.");
+            writer.WriteLine("Windows does not wait for this program in a command prompt. To wait for the result:");
+            writer.WriteLine("  cmd.exe:     start /wait WinTool-by-PcNinja.exe update run");
+            writer.WriteLine("  PowerShell:  Start-Process .\\WinTool-by-PcNinja.exe -ArgumentList 'update','run' -Wait -NoNewWindow");
+            writer.WriteLine("Exit codes and all options: docs/CLI.md in the WinTool repository.");
         }
 
         /// <summary>

@@ -1,0 +1,19 @@
+# Build output
+bin/
+obj/
+.vs/
+artifacts/
+release-output/
+TestResults/
+
+# Runtime files
+*.log
+*.tmp
+*.partial
+
+# Editor and OS files
+.idea/
+.vscode/
+*.user
+Thumbs.db
+Desktop.ini

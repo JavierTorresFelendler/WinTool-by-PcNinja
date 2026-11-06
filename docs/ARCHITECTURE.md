@@ -1,0 +1,104 @@
+# Architecture
+
+WinTool by PcNinja is a WPF application on .NET Framework 4.8 (see
+[DECISIONS.md](DECISIONS.md)). This document describes the target structure.
+Nothing below is implemented yet.
+
+## Solution layout
+
+```text
+src/
+  WinTool.App/              WPF executable: shell window, navigation, views,
+                            view models, CLI entry point
+  WinTool.Core/             Shared services: logging, settings, atomic file
+                            writes, elevation, operation locks, OS checks,
+                            localization, app self-update
+  WinTool.WindowsUpdate/    Windows Update engine (WUA COM), schedule
+                            (Task Scheduler), health check, reset
+  WinTool.Upgrade/          Windows upgrade engine (ported from
+                            PcNinja.Win11Upgrade.Core)
+  WinTool.Office/           Office deployment engine (ported from Smart Office
+                            Installer, uses the Office Deployment Tool)
+tests/
+  WinTool.Core.Tests/
+  WinTool.WindowsUpdate.Tests/
+  WinTool.Upgrade.Tests/
+  WinTool.Office.Tests/
+packaging/
+  msi/                      WiX source, setup pages, license RTF
+  portable/                 Single-file portable build
+shared/                     Files shared byte-identical with other PcNinja tools
+docs/
+```
+
+### Dependency rules
+
+```text
+WinTool.App ──► WinTool.WindowsUpdate ─┐
+            ├─► WinTool.Upgrade ───────┼──► WinTool.Core
+            └─► WinTool.Office ────────┘
+```
+
+- Feature modules depend only on `WinTool.Core`, never on each other.
+- Feature modules never reference WPF. They expose plain services that the
+  GUI, the CLI and the tests all call the same way.
+- Every machine-changing operation (install updates, upgrade, Office install
+  or removal, Windows Update reset) runs under the machine-wide operation
+  lock from `WinTool.Core`. Two such operations never overlap, whether they
+  come from the GUI, the CLI, or a scheduled task.
+
+## Navigation
+
+The sidebar follows the approved PcNinja Dashboard design, grouped by area.
+The Drivers page from WinUpdate V2 is not included.
+
+```text
+Home                 Whole-system overview: update status, restart pending,
+                     upgrade readiness, Office status, tool version
+Windows Update
+  Updates            Scan, preview, install; categories; restart state
+  Schedule           Frequency, time, retry, wake-to-run, run-if-missed
+Windows Upgrade      Readiness, image source, validation, upgrade
+Office               Product, channel, languages, install / remove
+Logs                 Lazy-loaded, per module, search later
+Settings             Language, app update channel, about
+```
+
+Footer: installed version, latest version, **Check Tool Update**.
+
+## Command line
+
+One CLI grammar for all modules, which the scheduled task also uses:
+
+```text
+WinTool.exe <area> <command> [options] [--json]
+
+WinTool.exe update scan
+WinTool.exe update install [--include-optional] [--no-reboot]
+WinTool.exe update reset
+WinTool.exe schedule show
+WinTool.exe schedule set --frequency Monthly --day 15 --time 03:00 ...
+WinTool.exe schedule remove
+WinTool.exe upgrade status | scan | validate | run
+WinTool.exe office status | install --product ... | remove
+WinTool.exe app-update check | install
+WinTool.exe status [--json]
+WinTool.exe logs collect
+```
+
+Exit codes are documented per command. `--json` output is stable and
+versioned, so scripts can depend on it.
+
+## Cross-cutting rules carried over from the existing tools
+
+- UTF-8 everywhere. Update titles in Hebrew and other scripts must never be
+  garbled (WinUpdate V2.2.7).
+- Configuration and state files are written atomically: write a temporary
+  file, then replace (WinUpdate V2.2.6).
+- Self-update downloads to a temporary file, verifies SHA-256 and the expected
+  file name, and only then replaces anything (WinUpdate V2.2.6, Upgrade Tool,
+  Smart Office).
+- GUI single instance per logon session; CLI is never blocked by an open
+  window (`shared/README.md`).
+- No hidden console window and no reliance on an attached console in the GUI
+  (WinUpdate V2.2.8 incident).

@@ -1,15 +1,46 @@
-# PcNinja Tools
+# WinTool by PcNinja
 
-An idea for a unified PcNinja application bringing together the capabilities of:
+One Windows maintenance application that brings together the capabilities of
+three PcNinja tools:
 
-- PcNinja WinUpdate Tool
-- PcNinja Windows 11 Upgrade Assistant
-- PcNinja Smart Office Installer
+- [PcNinja WinUpdate Tool V2](https://github.com/JavierTorresFelendler/PcNinja-WinUpdateTool-V2): Windows Update management and scheduling
+- [Windows Upgrade Tool by PcNinja](https://github.com/JavierTorresFelendler/Win-Upgrade-Tool-by-PcNinja): in-place Windows upgrade
+- [Smart Office Installer](https://github.com/JavierTorresFelendler/pcninja-smart-office-installer): Office installation and removal
 
 ## Status
 
-Early idea for future development. The scope, design, and implementation have not yet been decided. The existing applications remain independent.
+Planning. There is no release yet. The existing tools remain independent and
+are still maintained in their own repositories.
 
-## Requirement to carry forward
+## At a glance
 
-The application must allow only one instance of itself to run at a time. This is a safety requirement: concurrent instances could interfere with operations on a customer's computer. Define and validate the appropriate behavior when another launch is attempted during implementation.
+| | |
+| --- | --- |
+| Platform | Windows 10 1903 or later, Windows 11, x64 |
+| Runtime | .NET Framework 4.8 (built into Windows) |
+| UI | WPF, dark theme based on the PcNinja Dashboard design |
+| Languages | English, Hebrew, Spanish |
+| Packages | MSI (interactive and silent) and portable EXE |
+| License | PcNinja Freeware Use License (free to use; no redistribution or resale) |
+
+## Documents
+
+- [Decision log](docs/DECISIONS.md): what was decided and why, plus open questions
+- [Architecture](docs/ARCHITECTURE.md): projects, navigation, CLI, shared rules
+- [MSI specification](docs/MSI-AND-CLI.md): setup pages and silent install properties
+- [Localization](docs/LOCALIZATION.md): three languages, including right-to-left Hebrew
+- [Upstream sync log](docs/UPSTREAM-SYNC.md): how fixes in the existing tools are carried over
+- [Roadmap](docs/ROADMAP.md)
+
+## Requirement carried forward
+
+The application allows only one GUI instance per Windows session. A second
+launch brings the running window to the front. This is a safety requirement:
+concurrent instances could interfere with operations on a customer's
+computer. See [shared/README.md](shared/README.md).
+
+## License
+
+Free to use. The source code is published for inspection only; reuse,
+modification, redistribution and resale require written permission. See
+[LICENSE](LICENSE).

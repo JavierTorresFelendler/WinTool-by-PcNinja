@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Serialization" Condition="'$(TargetFramework)' == 'net48'" />
+    <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net48'" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\Polyfills\*.cs" LinkBase="Polyfills" />

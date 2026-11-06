@@ -106,6 +106,9 @@ namespace WinTool.App.Infrastructure
                     root.DataContext = model;
                     root.SetBinding(FrameworkElement.FlowDirectionProperty, new System.Windows.Data.Binding("FlowDirection") { Source = Loc.Instance });
                     var host = new System.Windows.Controls.Border { Child = root, FlowDirection = FlowDirection.LeftToRight };
+                    // Codex T-004 probe: a detached element does not see theme swaps unless it holds the
+                    // application resources itself.
+                    host.Resources.MergedDictionaries.Add(Application.Current.Resources);
                     host.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "Brush.Bg");
                     // What the window gives its content (Codex T-003: dark captures lost text colour and font).
                     host.SetResourceReference(System.Windows.Documents.TextElement.ForegroundProperty, "Brush.Text");
@@ -214,9 +217,36 @@ namespace WinTool.App.Infrastructure
             }
 
             var scale = size.Dpi / 96.0;
-            var bitmap = new System.Windows.Media.Imaging.RenderTargetBitmap(
-                (int)Math.Round(size.Width * scale), (int)Math.Round(size.Height * scale), size.Dpi, size.Dpi, System.Windows.Media.PixelFormats.Pbgra32);
-            bitmap.Render(host);
+            var pixelWidth = (int)Math.Round(size.Width * scale);
+            var pixelHeight = (int)Math.Round(size.Height * scale);
+            // Layout rounds to whole DIPs, so content may not reach the last pixels at 120 dpi:
+            // paint an opaque backdrop over the whole bitmap first, then the content (Codex T-004).
+            var drawing = new System.Windows.Media.DrawingVisual();
+            using (var context = drawing.RenderOpen())
+            {
+                var full = new Rect(0, 0, pixelWidth / scale, pixelHeight / scale);
+                var backdrop = host.TryFindResource("Brush.Bg") as System.Windows.Media.SolidColorBrush;
+                var opaque = new System.Windows.Media.SolidColorBrush(backdrop == null ? System.Windows.Media.Colors.White
+                    : System.Windows.Media.Color.FromRgb(backdrop.Color.R, backdrop.Color.G, backdrop.Color.B));
+                context.DrawRectangle(opaque, null, full);
+                var laidOut = new Rect(0, 0, host.ActualWidth, host.ActualHeight);
+                context.DrawRectangle(new System.Windows.Media.VisualBrush(host)
+                {
+                    Stretch = System.Windows.Media.Stretch.None,
+                    AlignmentX = System.Windows.Media.AlignmentX.Left,
+                    AlignmentY = System.Windows.Media.AlignmentY.Top,
+                    ViewboxUnits = System.Windows.Media.BrushMappingMode.Absolute,
+                    Viewbox = laidOut
+                }, null, laidOut);
+            }
+
+            var bitmap = new System.Windows.Media.Imaging.RenderTargetBitmap(pixelWidth, pixelHeight, size.Dpi, size.Dpi, System.Windows.Media.PixelFormats.Pbgra32);
+            bitmap.Render(drawing);
+            var pixels = new byte[pixelWidth * pixelHeight * 4];
+            bitmap.CopyPixels(pixels, pixelWidth * 4, 0);
+            var transparent = 0;
+            for (var i = 3; i < pixels.Length; i += 4) if (pixels[i] != 255) transparent++;
+            if (transparent > 0) yield return "Screenshot " + System.IO.Path.GetFileName(path) + " has " + transparent + " pixels that are not fully opaque";
             var encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
             encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bitmap));
             using (var file = System.IO.File.Create(path)) encoder.Save(file);

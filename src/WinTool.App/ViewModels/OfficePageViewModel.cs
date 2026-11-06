@@ -307,7 +307,8 @@ namespace WinTool.App.ViewModels
             var request = BuildRequest();
             if (request == null) return;
             if (mode == OfficeMode.Remove && !Dialogs.Confirm(T["OF_Confirm_Remove"])) return;
-            if (mode == OfficeMode.Install && removeExisting && installed != null && !Dialogs.Confirm(T["OF_Confirm_RemoveExisting"])) return;
+            // Confirm whatever detection found: a failed or incomplete read must not skip the question (Codex review F2).
+            if (mode == OfficeMode.Install && removeExisting && !Dialogs.Confirm(T["OF_Confirm_RemoveExisting"])) return;
             _ = RunAsync(request);
         }
 

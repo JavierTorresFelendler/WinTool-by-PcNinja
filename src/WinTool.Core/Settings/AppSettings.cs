@@ -31,6 +31,10 @@ namespace WinTool.Core.Settings
         [DataMember(Name = "checkForAppUpdatesAtStartup", Order = 3)]
         public bool CheckForAppUpdatesAtStartup { get; set; }
 
+        /// <summary>Also offer beta and release-candidate versions (D-023). Off by default.</summary>
+        [DataMember(Name = "includeTestVersions", Order = 4)]
+        public bool IncludeTestVersions { get; set; }
+
         public ThemePreference ThemePreference
         {
             get

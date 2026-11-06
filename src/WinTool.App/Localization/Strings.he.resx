@@ -337,7 +337,7 @@
   <data name="OF_Confirm_Remove" xml:space="preserve"><value>להסיר את כל מוצרי ה־Office מסוג Click-to-Run מהמחשב הזה?
 
 לא ניתן לבטל זאת מתוך WinTool.</value></data>
-  <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>ה־Office המותקן יוסר לפני ההתקנה החדשה. להמשיך?</value></data>
+  <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>כל מוצרי ה־Office מסוג Click-to-Run המותקנים יוסרו לפני ההתקנה החדשה. להמשיך?</value></data>
   <data name="OF_NeedApp" xml:space="preserve"><value>בחר לפחות יישום אחד.</value></data>
   <data name="OF_NeedLanguage" xml:space="preserve"><value>בחר לפחות שפה אחת.</value></data>
   <data name="OF_NeedFolder" xml:space="preserve"><value>בחר את תיקיית החבילה.</value></data>
@@ -370,4 +370,25 @@
   <data name="LK_Vendors" xml:space="preserve"><value>מקורות יצרנים (לעיון בלבד)</value></data>
   <data name="LK_VendorsSub" xml:space="preserve"><value>המקורות האלה מיועדים לעיון ולחיפוש ידני. WinTool לא מתקין חבילות של יצרנים מהקישורים האלה.</value></data>
   <data name="LK_VendorsNote" xml:space="preserve"><value>התקנת מנהלי התקנים נשארת באחריות Windows Update.</value></data>
+  <data name="UPD_Checking" xml:space="preserve"><value>בודק אם יש גרסה חדשה של WinTool…</value></data>
+  <data name="UPD_UpToDate" xml:space="preserve"><value>WinTool {0} מעודכן.</value></data>
+  <data name="UPD_CheckFailed" xml:space="preserve"><value>לא ניתן היה לבדוק אם יש גרסה חדשה של WinTool.</value></data>
+  <data name="UPD_Available" xml:space="preserve"><value>WinTool {0} זמין (אצלך {1}).
+
+{2}
+
+לעדכן עכשיו?</value></data>
+  <data name="UPD_AvailableTest" xml:space="preserve"><value>גרסת בדיקה WinTool {0} זמינה (אצלך {1}).
+
+{2}
+
+לעדכן עכשיו?</value></data>
+  <data name="UPD_Downloading" xml:space="preserve"><value>מוריד את העדכון… {0} MB</value></data>
+  <data name="UPD_Failed" xml:space="preserve"><value>העדכון לא הושלם. WinTool לא שונה.</value></data>
+  <data name="UPD_WaitForOperation" xml:space="preserve"><value>פעולה אחרת של WinTool פועלת. עדכן אחרי שהיא תסתיים.</value></data>
+  <data name="UPD_Done" xml:space="preserve"><value>WinTool עודכן מ־{0} ל־{1}.</value></data>
+  <data name="Settings_Updates" xml:space="preserve"><value>עדכוני היישום</value></data>
+  <data name="Settings_CheckAtStartup" xml:space="preserve"><value>בדיקת עדכונים של WinTool בהפעלה</value></data>
+  <data name="Settings_TestVersions" xml:space="preserve"><value>קבלת גם גרסאות בדיקה (בטא וגרסאות מועמדות)</value></data>
+  <data name="Settings_CheckNow" xml:space="preserve"><value>בדיקה עכשיו</value></data>
 </root>

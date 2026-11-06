@@ -17,6 +17,15 @@ English and Hebrew ship from the first build. Spanish is added before 1.0
   `--json` output stay in English (invariant culture) so that scripts and
   support work in every language.
 
+## Pseudo-localization (from the first build)
+
+Spanish arrives late, but its longer text must not break layouts then. Debug
+builds include a generated pseudo-language (`qps`) that wraps every English
+string in brackets and lengthens it by about 40%, for example
+`[Ĉĥéçķ ƒöŕ Ûþðåţéš ······]`. Every screen is checked in it. Text that is
+cut off, overlaps or is missing its brackets (hard-coded) is a bug found
+before any translation exists.
+
 ## Hebrew (right-to-left)
 
 - The shell sets `FlowDirection="RightToLeft"` when the language is Hebrew.

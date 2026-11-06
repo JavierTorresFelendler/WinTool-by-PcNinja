@@ -197,6 +197,15 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - **Decision:** `WinTool.exe` runs the GUI with no arguments and the CLI with
   arguments, as the Windows Upgrade Tool already does.
 
+## D-017 Repository becomes public at the first release candidate
+
+- **Status:** Accepted (2026-11-06)
+- **Decision:** The repository stays private during development and becomes
+  public when the first release candidate is published. The in-app link to
+  the repository depends on this.
+- **Note:** The shared file password shown on the Drivers & Links screen is
+  public on purpose (it carries the PcNinja name).
+
 ---
 
 ## Open questions

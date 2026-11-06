@@ -39,10 +39,9 @@ namespace WinTool.App.Theming
             if (application == null) return;
             if (active != null && Current == theme) return;
 
-            var dictionary = new ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/WinTool;component/Themes/" + theme + ".xaml", UriKind.Absolute)
-            };
+            var dictionary = theme == VisualTheme.HighContrast
+                ? CreateHighContrastDictionary()
+                : new ResourceDictionary { Source = new Uri("pack://application:,,,/WinTool;component/Themes/" + theme + ".xaml", UriKind.Absolute) };
 
             var merged = application.Resources.MergedDictionaries;
             if (active != null) merged.Remove(active);
@@ -54,12 +53,47 @@ namespace WinTool.App.Theming
 
         public static IEnumerable<string> ThemeResourceNames()
         {
-            foreach (VisualTheme theme in Enum.GetValues(typeof(VisualTheme)))
-            {
-                yield return "themes/" + theme.ToString().ToLowerInvariant() + ".baml";
-            }
-
+            yield return "themes/dark.baml";
+            yield return "themes/light.baml";
             yield return "themes/styles.baml";
+        }
+
+        /// <summary>
+        /// Windows High Contrast: every brush comes from the current system colors
+        /// (decision D-012). Built in code because the keys map to system brushes.
+        /// </summary>
+        private static ResourceDictionary CreateHighContrastDictionary()
+        {
+            var map = new Dictionary<string, System.Windows.Media.Brush>
+            {
+                { "Brush.Bg", SystemColors.WindowBrush },
+                { "Brush.Surface", SystemColors.WindowBrush },
+                { "Brush.Side", SystemColors.ControlBrush },
+                { "Brush.Raised", SystemColors.ControlBrush },
+                { "Brush.Input", SystemColors.WindowBrush },
+                { "Brush.Text", SystemColors.WindowTextBrush },
+                { "Brush.Muted", SystemColors.WindowTextBrush },
+                { "Brush.Divider", SystemColors.WindowTextBrush },
+                { "Brush.Border", SystemColors.WindowTextBrush },
+                { "Brush.CardBorder", SystemColors.WindowTextBrush },
+                { "Brush.Hover", SystemColors.HighlightBrush },
+                { "Brush.Accent", SystemColors.HighlightBrush },
+                { "Brush.OnAccent", SystemColors.HighlightTextBrush },
+                { "Brush.AccentText", SystemColors.HotTrackBrush },
+                { "Brush.AccentSoft", SystemColors.ControlBrush },
+                { "Brush.Ok", SystemColors.WindowTextBrush },
+                { "Brush.Warn", SystemColors.WindowTextBrush },
+                { "Brush.WarnText", SystemColors.WindowTextBrush },
+                { "Brush.WarnSoft", SystemColors.ControlBrush },
+                { "Brush.Danger", SystemColors.WindowTextBrush },
+                { "Brush.DangerBorder", SystemColors.WindowTextBrush },
+                { "Brush.CaptionCloseHover", SystemColors.HighlightBrush },
+                { "Brush.CaptionCloseText", SystemColors.HighlightTextBrush },
+            };
+
+            var dictionary = new ResourceDictionary();
+            foreach (var pair in map) dictionary[pair.Key] = pair.Value;
+            return dictionary;
         }
 
         /// <summary>Names of the compiled XAML resources inside WinTool.exe.</summary>

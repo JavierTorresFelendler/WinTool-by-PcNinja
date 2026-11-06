@@ -59,7 +59,7 @@ jobs:
       - name: Portable EXE self-test (WinTool.exe alone in an empty folder)
         shell: pwsh
         run: |
-          $source = "src/WinTool.App/bin/x64/${{ matrix.configuration }}/net48/WinTool.exe"
+          $source = "src/WinTool.App/bin/${{ matrix.configuration }}/net48/WinTool.exe"
           if (-not (Test-Path $source)) { Write-Output "::warning title=self-test::$source not found, searching" }
           if (-not (Test-Path $source)) { $source = Get-ChildItem -Recurse -Filter WinTool.exe src/WinTool.App/bin | Where-Object FullName -like "*${{ matrix.configuration }}*" | Select-Object -First 1 -ExpandProperty FullName }
           $portable = Join-Path $env:RUNNER_TEMP "portable"
@@ -89,5 +89,5 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: WinTool-portable-unsigned
-          path: src/WinTool.App/bin/**/Release/net48/WinTool.exe
+          path: src/WinTool.App/bin/Release/net48/WinTool.exe
           if-no-files-found: error

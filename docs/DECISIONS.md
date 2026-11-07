@@ -369,6 +369,10 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
     once per launch: the answer travels to the elevated restart as the
     internal argument `--portable-chosen`, which only skips the question. A
     self-update restart and an installed copy never ask.
+  - **Added (owner, 2026-11-07):** before asking, the EXE looks for an
+    installed WinTool (the MSI's `InstallFolder` value). This version or a
+    newer one installed: it starts that copy and does not ask or reinstall.
+    An older one installed: it asks, and Install updates it.
   - **Prototype first:** antivirus risk (D-009, the WinUpdate V2.2.5 lesson)
     is measured before anything replaces today's packaging.
 - **Build (acyclic, T-008):** app EXE → MSI → universal EXE carrying that

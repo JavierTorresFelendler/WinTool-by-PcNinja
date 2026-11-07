@@ -171,6 +171,24 @@ namespace WinTool.App
             var exe = Process.GetCurrentProcess().MainModule.FileName;
             if (exe.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase)) return true;
 
+            // Already installed in this version or newer: start that copy instead of asking (owner, 2026-11-07).
+            var installed = FindInstalledCopy();
+            var choice = WinTool.Core.Updates.InstalledCopy.Decide(exe, installed?.Item1, installed?.Item2, WinTool.Core.Updates.AppVersion.Current.FileVersion);
+            if (choice == WinTool.Core.Updates.LaunchChoice.RunThis) return true;
+            if (choice == WinTool.Core.Updates.LaunchChoice.RunInstalled)
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(installed.Item1) { UseShellExecute = true, WorkingDirectory = System.IO.Path.GetDirectoryName(installed.Item1) });
+                    AppLog.Current.Info("App", "WinTool " + installed.Item2 + " is installed; started " + installed.Item1 + " instead of asking.");
+                    return false;
+                }
+                catch (Exception ex) when (ex is Win32Exception || ex is System.IO.IOException || ex is InvalidOperationException)
+                {
+                    AppLog.Current.Warn("App", "Could not start the installed copy " + installed.Item1 + ": " + ex.Message);
+                }
+            }
+
             var options = Loc.Instance.FlowDirection == FlowDirection.RightToLeft
                 ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
                 : MessageBoxOptions.None;
@@ -194,6 +212,25 @@ namespace WinTool.App
             }
 
             return false;
+        }
+
+        /// <summary>The installed WinTool (path and file version) from the MSI's InstallFolder value, or null.</summary>
+        private static Tuple<string, Version> FindInstalledCopy()
+        {
+            try
+            {
+                var folder = InstallDefault("InstallFolder");
+                if (string.IsNullOrWhiteSpace(folder)) return null;
+                var path = System.IO.Path.Combine(folder, ReleaseFiles.Executable);
+                if (!System.IO.File.Exists(path)) return null;
+                Version version;
+                return Version.TryParse(FileVersionInfo.GetVersionInfo(path).FileVersion, out version) ? Tuple.Create(path, version) : null;
+            }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is ArgumentException)
+            {
+                AppLog.Current.Warn("App", "Could not check for an installed copy: " + ex.Message);
+                return null;
+            }
         }
 
         private static int RestartElevated(string argument)

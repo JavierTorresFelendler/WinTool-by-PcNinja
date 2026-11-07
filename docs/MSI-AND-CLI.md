@@ -44,6 +44,9 @@ directly opens it in English; IT can choose a language the same way:
 msiexec /i WinTool-by-PcNinja.msi TRANSFORMS=:1037
 ```
 
+Windows Installer shows text through Windows' system code page (the "language for non-Unicode
+programs"). Hebrew therefore appears only when that code page is Hebrew (1255); elsewhere it would
+show as `?`, so WinTool opens the installer in English there. Spanish needs 1252 (Western).
 The dialogs keep a left-to-right layout in Hebrew. The license text is English.
 
 ## Public properties (silent install)

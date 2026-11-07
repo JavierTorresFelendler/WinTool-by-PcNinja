@@ -171,23 +171,10 @@ namespace WinTool.App
             var exe = Process.GetCurrentProcess().MainModule.FileName;
             if (exe.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase)) return true;
 
-            // Already installed in this version or newer: start that copy instead of asking (owner, 2026-11-07).
+            // The installed copy itself (also outside Program Files) never asks.
             var installed = FindInstalledCopy();
             var choice = WinTool.Core.Updates.InstalledCopy.Decide(exe, installed?.Item1, installed?.Item2, WinTool.Core.Updates.AppVersion.Current.FileVersion);
             if (choice == WinTool.Core.Updates.LaunchChoice.RunThis) return true;
-            if (choice == WinTool.Core.Updates.LaunchChoice.RunInstalled)
-            {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(installed.Item1) { UseShellExecute = true, WorkingDirectory = System.IO.Path.GetDirectoryName(installed.Item1) });
-                    AppLog.Current.Info("App", "WinTool " + installed.Item2 + " is installed; started " + installed.Item1 + " instead of asking.");
-                    return false;
-                }
-                catch (Exception ex) when (ex is Win32Exception || ex is System.IO.IOException || ex is InvalidOperationException)
-                {
-                    AppLog.Current.Warn("App", "Could not start the installed copy " + installed.Item1 + ": " + ex.Message);
-                }
-            }
 
             var options = Loc.Instance.FlowDirection == FlowDirection.RightToLeft
                 ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
@@ -199,6 +186,22 @@ namespace WinTool.App
             {
                 AppLog.Current.Info("App", "Run portable chosen.");
                 return true;
+            }
+
+            // Install chosen, but this version or a newer one is already installed: start it instead of
+            // reinstalling (owner, 2026-11-07). An older installed version is updated by the installer.
+            if (choice == WinTool.Core.Updates.LaunchChoice.RunInstalled)
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(installed.Item1) { UseShellExecute = true, WorkingDirectory = System.IO.Path.GetDirectoryName(installed.Item1) });
+                    AppLog.Current.Info("App", "Install chosen; WinTool " + installed.Item2 + " is already installed, started " + installed.Item1 + ".");
+                    return false;
+                }
+                catch (Exception ex) when (ex is Win32Exception || ex is System.IO.IOException || ex is InvalidOperationException)
+                {
+                    AppLog.Current.Warn("App", "Could not start the installed copy " + installed.Item1 + "; running the installer: " + ex.Message);
+                }
             }
 
             try

@@ -4,17 +4,17 @@ namespace WinTool.Core.Updates
 {
     public enum LaunchChoice
     {
-        /// <summary>Ask Install / Run portable (nothing installed, or an older version is installed).</summary>
+        /// <summary>Ask Install / Run portable; Install runs the installer (nothing installed, or an older version).</summary>
         Ask,
-        /// <summary>Start the installed copy instead: it is this version or newer (owner, 2026-11-07).</summary>
+        /// <summary>When Install is chosen, start the installed copy: it is this version or newer (owner, 2026-11-07).</summary>
         RunInstalled,
         /// <summary>This process is the installed copy: run normally, never ask.</summary>
         RunThis
     }
 
     /// <summary>
-    /// D-026 addition: a downloaded universal EXE first looks for an installed WinTool, so opening it
-    /// again does not reinstall the same version.
+    /// D-026 addition: the downloaded universal EXE always asks; when Install is chosen and this version
+    /// or a newer one is already installed, it starts that copy instead of reinstalling it.
     /// </summary>
     public static class InstalledCopy
     {

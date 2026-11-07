@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- WinTool installer texts, he-IL. Codepage for Windows Installer. -->
+<WixLocalization Culture="he-IL" Codepage="1255" xmlns="http://wixtoolset.org/schemas/v4/wxl">
+  <String Id="WT_Lcid" Value="1037" />
+  <String Id="WT_Downgrade" Value="גרסה חדשה יותר של WinTool by PcNinja כבר מותקנת." />
+  <String Id="WT_ShortcutDescription" Value="כלים ל־Windows Update, שדרוג Windows ו־Office" />
+  <String Id="WT_OpenAfterInstall" Value="פתח את WinTool by PcNinja" />
+  <String Id="WT_OptionsTitle" Value="אפשרויות" />
+  <String Id="WT_OptionsDescription" Value="קיצורי דרך והשפה שבה WinTool נפתח." />
+  <String Id="WT_StartMenu" Value="הוסף קיצור דרך בתפריט התחל" />
+  <String Id="WT_Desktop" Value="הוסף קיצור דרך בשולחן העבודה" />
+  <String Id="WT_LanguageLabel" Value="שפה:" />
+  <String Id="WT_LanguageAuto" Value="כמו ב־Windows" />
+  <String Id="WT_LanguageEnglish" Value="אנגלית" />
+  <String Id="WT_LanguageHebrew" Value="עברית" />
+  <String Id="WT_LanguageSpanish" Value="ספרדית" />
+  <String Id="WT_UpdateCheck" Value="בדוק עדכונים ל־WinTool בהפעלה" />
+  <String Id="WT_ScheduleTitle" Value="תזמון Windows Update" />
+  <String Id="WT_ScheduleDescription" Value="אופציונלי, כבוי אם לא מסומן. תזמון קיים נשמר, גם של WinUpdate Tool, שיוסר." />
+  <String Id="WT_EnableSchedule" Value="הפעל את Windows Update לפי תזמון" />
+  <String Id="WT_Frequency" Value="תדירות:" />
+  <String Id="WT_Daily" Value="יומי" />
+  <String Id="WT_Weekly" Value="שבועי" />
+  <String Id="WT_Monthly" Value="חודשי" />
+  <String Id="WT_Startup" Value="בהפעלת המחשב" />
+  <String Id="WT_Time" Value="שעה:" />
+  <String Id="WT_WeekDay" Value="יום בשבוע:" />
+  <String Id="WT_Sunday" Value="ראשון" />
+  <String Id="WT_Monday" Value="שני" />
+  <String Id="WT_Tuesday" Value="שלישי" />
+  <String Id="WT_Wednesday" Value="רביעי" />
+  <String Id="WT_Thursday" Value="חמישי" />
+  <String Id="WT_Friday" Value="שישי" />
+  <String Id="WT_Saturday" Value="שבת" />
+  <String Id="WT_MonthDay" Value="יום בחודש:" />
+  <String Id="WT_RunAtStartup" Value="הפעל גם אחרי הפעלת המחשב" />
+  <String Id="WT_Delay" Value="השהיה:" />
+  <String Id="WT_Minutes" Value="דק'" />
+  <String Id="WT_RunIfMissed" Value="הפעל אם המועד הוחמץ" />
+  <String Id="WT_Wake" Value="הער את המחשב" />
+  <String Id="WT_Retry" Value="נסה שוב אחרי כישלון" />
+  <String Id="WT_AskRestart" Value="שאל לפני הפעלה מחדש" />
+  <String Id="WT_Firmware" Value="אפשר עדכוני BIOS / קושחה (רק עם חשמל יציב)" />
+  <String Id="WT_DialogTitle" Value="התקנת [ProductName]" />
+</WixLocalization>

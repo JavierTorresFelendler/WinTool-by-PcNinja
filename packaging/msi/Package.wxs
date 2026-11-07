@@ -10,6 +10,8 @@
      xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
   <Package Name="WinTool by PcNinja"
            Manufacturer="PcNinja"
+           Language="!(loc.WT_Lcid)"
+           ProductCode="$(ProductCode)"
            Version="$(ProductVersion)"
            UpgradeCode="{6E0B6C2A-4F1D-4B8E-9C3A-7A2D5E9B1F40}"
            Scope="perMachine"
@@ -19,7 +21,7 @@
 
     <!-- Newer: upgrade in place. Same MSI again: maintenance (Repair/Remove). Older: blocked. -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
-                  DowngradeErrorMessage="A newer version of WinTool by PcNinja is already installed." />
+                  DowngradeErrorMessage="!(loc.WT_Downgrade)" />
     <MediaTemplate EmbedCab="yes" />
 
     <Icon Id="PcNinjaIcon" SourceFile="$(AssetsDir)\PcNinja.ico" />
@@ -75,7 +77,7 @@
     </Component>
 
     <Component Id="StartMenuShortcut" Directory="ProgramMenuFolder" Guid="{5A4B3C2D-1E0F-4A9B-8C7D-6E5F4A3B2C12}" Condition="WINTOOL_START_MENU_SHORTCUT = &quot;1&quot;">
-      <Shortcut Id="StartMenuShortcutLink" Name="WinTool by PcNinja" Description="Windows Update, Windows Upgrade and Office tools"
+      <Shortcut Id="StartMenuShortcutLink" Name="WinTool by PcNinja" Description="!(loc.WT_ShortcutDescription)"
                 Target="[#MainExe]" WorkingDirectory="INSTALLFOLDER" Icon="PcNinjaIcon" />
       <RegistryValue Root="HKLM" Key="SOFTWARE\PcNinja\WinTool" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
     </Component>
@@ -119,7 +121,7 @@
     </InstallExecuteSequence>
 
     <!-- Finish page: optional launch, as the signed-in user. -->
-    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Open WinTool by PcNinja" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="!(loc.WT_OpenAfterInstall)" />
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
     <Property Id="WixShellExecTarget" Value="[#MainExe]" />
     <CustomAction Id="LaunchWinTool" BinaryRef="Wix4UtilCA_X64" DllEntry="WixShellExec" Impersonate="yes" />
@@ -127,73 +129,73 @@
     <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
 
     <UI>
-      <Dialog Id="WinToolOptionsDlg" Width="370" Height="270" Title="[ProductName] Setup">
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Options" />
-        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="Shortcuts and the language WinTool starts in." />
+      <Dialog Id="WinToolOptionsDlg" Width="370" Height="270" Title="!(loc.WT_DialogTitle)">
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}!(loc.WT_OptionsTitle)" />
+        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="!(loc.WT_OptionsDescription)" />
         <Control Id="TopLine" Type="Line" X="0" Y="50" Width="370" Height="0" />
-        <Control Id="StartMenu" Type="CheckBox" X="25" Y="64" Width="320" Height="17" Property="WINTOOL_START_MENU_SHORTCUT" CheckBoxValue="1" Text="Add a Start menu shortcut" />
-        <Control Id="Desktop" Type="CheckBox" X="25" Y="86" Width="320" Height="17" Property="WINTOOL_DESKTOP_SHORTCUT" CheckBoxValue="1" Text="Add a desktop shortcut" />
-        <Control Id="LanguageLabel" Type="Text" X="25" Y="118" Width="80" Height="15" Text="Language:" />
+        <Control Id="StartMenu" Type="CheckBox" X="25" Y="64" Width="320" Height="17" Property="WINTOOL_START_MENU_SHORTCUT" CheckBoxValue="1" Text="!(loc.WT_StartMenu)" />
+        <Control Id="Desktop" Type="CheckBox" X="25" Y="86" Width="320" Height="17" Property="WINTOOL_DESKTOP_SHORTCUT" CheckBoxValue="1" Text="!(loc.WT_Desktop)" />
+        <Control Id="LanguageLabel" Type="Text" X="25" Y="118" Width="80" Height="15" Text="!(loc.WT_LanguageLabel)" />
         <Control Id="LanguageCombo" Type="ComboBox" X="108" Y="114" Width="150" Height="18" Property="WINTOOL_LANGUAGE" ComboList="yes">
           <ComboBox Property="WINTOOL_LANGUAGE">
-            <ListItem Text="Same as Windows" Value="auto" />
-            <ListItem Text="English" Value="en" />
-            <ListItem Text="Hebrew" Value="he" />
-            <ListItem Text="Spanish" Value="es" />
+            <ListItem Text="!(loc.WT_LanguageAuto)" Value="auto" />
+            <ListItem Text="!(loc.WT_LanguageEnglish)" Value="en" />
+            <ListItem Text="!(loc.WT_LanguageHebrew)" Value="he" />
+            <ListItem Text="!(loc.WT_LanguageSpanish)" Value="es" />
           </ComboBox>
         </Control>
-        <Control Id="Updates" Type="CheckBox" X="25" Y="144" Width="320" Height="17" Property="WINTOOL_APP_UPDATE_CHECK" CheckBoxValue="1" Text="Check for WinTool updates at startup" />
+        <Control Id="Updates" Type="CheckBox" X="25" Y="144" Width="320" Height="17" Property="WINTOOL_APP_UPDATE_CHECK" CheckBoxValue="1" Text="!(loc.WT_UpdateCheck)" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="Back" />
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Next" />
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)" />
       </Dialog>
 
-      <Dialog Id="WinToolScheduleDlg" Width="370" Height="270" Title="[ProductName] Setup">
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Windows Update schedule" />
-        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="Optional. Off unless checked. An existing schedule is kept, also one from WinUpdate Tool, which is then removed." />
+      <Dialog Id="WinToolScheduleDlg" Width="370" Height="270" Title="!(loc.WT_DialogTitle)">
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}!(loc.WT_ScheduleTitle)" />
+        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="!(loc.WT_ScheduleDescription)" />
         <Control Id="TopLine" Type="Line" X="0" Y="50" Width="370" Height="0" />
-        <Control Id="EnableSchedule" Type="CheckBox" X="25" Y="58" Width="320" Height="17" Property="WINTOOL_ENABLE_SCHEDULE" CheckBoxValue="1" Text="Run Windows Update on a schedule" />
-        <Control Id="FrequencyLabel" Type="Text" X="40" Y="84" Width="65" Height="15" Text="Frequency:" />
+        <Control Id="EnableSchedule" Type="CheckBox" X="25" Y="58" Width="320" Height="17" Property="WINTOOL_ENABLE_SCHEDULE" CheckBoxValue="1" Text="!(loc.WT_EnableSchedule)" />
+        <Control Id="FrequencyLabel" Type="Text" X="40" Y="84" Width="65" Height="15" Text="!(loc.WT_Frequency)" />
         <Control Id="FrequencyCombo" Type="ComboBox" X="108" Y="80" Width="90" Height="18" Property="WINTOOL_FREQUENCY" ComboList="yes">
           <ComboBox Property="WINTOOL_FREQUENCY">
-            <ListItem Text="Daily" Value="Daily" />
-            <ListItem Text="Weekly" Value="Weekly" />
-            <ListItem Text="Monthly" Value="Monthly" />
-            <ListItem Text="Startup" Value="Startup" />
+            <ListItem Text="!(loc.WT_Daily)" Value="Daily" />
+            <ListItem Text="!(loc.WT_Weekly)" Value="Weekly" />
+            <ListItem Text="!(loc.WT_Monthly)" Value="Monthly" />
+            <ListItem Text="!(loc.WT_Startup)" Value="Startup" />
           </ComboBox>
         </Control>
-        <Control Id="TimeLabel" Type="Text" X="215" Y="84" Width="35" Height="15" Text="Time:" />
+        <Control Id="TimeLabel" Type="Text" X="215" Y="84" Width="35" Height="15" Text="!(loc.WT_Time)" />
         <Control Id="TimeEdit" Type="Edit" X="252" Y="80" Width="55" Height="18" Property="WINTOOL_TIME" />
         <Control Id="TimeHint" Type="Text" X="310" Y="84" Width="40" Height="15" Text="HH:mm" />
-        <Control Id="DayLabel" Type="Text" X="40" Y="109" Width="65" Height="15" Text="Week day:" />
+        <Control Id="DayLabel" Type="Text" X="40" Y="109" Width="65" Height="15" Text="!(loc.WT_WeekDay)" />
         <Control Id="DayCombo" Type="ComboBox" X="108" Y="105" Width="90" Height="18" Property="WINTOOL_DAY_OF_WEEK" ComboList="yes">
           <ComboBox Property="WINTOOL_DAY_OF_WEEK">
-            <ListItem Text="Sunday" Value="Sunday" />
-            <ListItem Text="Monday" Value="Monday" />
-            <ListItem Text="Tuesday" Value="Tuesday" />
-            <ListItem Text="Wednesday" Value="Wednesday" />
-            <ListItem Text="Thursday" Value="Thursday" />
-            <ListItem Text="Friday" Value="Friday" />
-            <ListItem Text="Saturday" Value="Saturday" />
+            <ListItem Text="!(loc.WT_Sunday)" Value="Sunday" />
+            <ListItem Text="!(loc.WT_Monday)" Value="Monday" />
+            <ListItem Text="!(loc.WT_Tuesday)" Value="Tuesday" />
+            <ListItem Text="!(loc.WT_Wednesday)" Value="Wednesday" />
+            <ListItem Text="!(loc.WT_Thursday)" Value="Thursday" />
+            <ListItem Text="!(loc.WT_Friday)" Value="Friday" />
+            <ListItem Text="!(loc.WT_Saturday)" Value="Saturday" />
           </ComboBox>
         </Control>
-        <Control Id="MonthDayLabel" Type="Text" X="215" Y="109" Width="70" Height="15" Text="Month day:" />
+        <Control Id="MonthDayLabel" Type="Text" X="215" Y="109" Width="70" Height="15" Text="!(loc.WT_MonthDay)" />
         <Control Id="MonthDayEdit" Type="Edit" X="288" Y="105" Width="28" Height="18" Property="WINTOOL_MONTHLY_DAY" />
         <Control Id="MonthDayHint" Type="Text" X="320" Y="109" Width="30" Height="15" Text="1-28" />
-        <Control Id="RunAtStartup" Type="CheckBox" X="40" Y="133" Width="220" Height="17" Property="WINTOOL_RUN_AT_STARTUP" CheckBoxValue="1" Text="Also run after computer startup" />
-        <Control Id="StartupDelayLabel" Type="Text" X="262" Y="134" Width="34" Height="15" Text="Delay:" />
+        <Control Id="RunAtStartup" Type="CheckBox" X="40" Y="133" Width="220" Height="17" Property="WINTOOL_RUN_AT_STARTUP" CheckBoxValue="1" Text="!(loc.WT_RunAtStartup)" />
+        <Control Id="StartupDelayLabel" Type="Text" X="262" Y="134" Width="34" Height="15" Text="!(loc.WT_Delay)" />
         <Control Id="StartupDelayEdit" Type="Edit" X="298" Y="130" Width="28" Height="18" Property="WINTOOL_STARTUP_DELAY" />
-        <Control Id="StartupDelayHint" Type="Text" X="330" Y="134" Width="25" Height="15" Text="min" />
-        <Control Id="RunIfMissed" Type="CheckBox" X="40" Y="156" Width="170" Height="17" Property="WINTOOL_RUN_IF_MISSED" CheckBoxValue="1" Text="Run if the time was missed" />
-        <Control Id="WakeToRun" Type="CheckBox" X="218" Y="156" Width="130" Height="17" Property="WINTOOL_WAKE_TO_RUN" CheckBoxValue="1" Text="Wake the computer" />
-        <Control Id="AutoRetry" Type="CheckBox" X="40" Y="177" Width="170" Height="17" Property="WINTOOL_ENABLE_AUTORETRY" CheckBoxValue="1" Text="Retry after a failure" />
-        <Control Id="RebootPrompt" Type="CheckBox" X="218" Y="177" Width="130" Height="17" Property="WINTOOL_REBOOT_PROMPT" CheckBoxValue="1" Text="Ask before restarting" />
-        <Control Id="Firmware" Type="CheckBox" X="40" Y="198" Width="300" Height="17" Property="WINTOOL_ALLOW_FIRMWARE" CheckBoxValue="1" Text="Allow BIOS / firmware updates (reliable power only)" />
+        <Control Id="StartupDelayHint" Type="Text" X="330" Y="134" Width="25" Height="15" Text="!(loc.WT_Minutes)" />
+        <Control Id="RunIfMissed" Type="CheckBox" X="40" Y="156" Width="170" Height="17" Property="WINTOOL_RUN_IF_MISSED" CheckBoxValue="1" Text="!(loc.WT_RunIfMissed)" />
+        <Control Id="WakeToRun" Type="CheckBox" X="218" Y="156" Width="130" Height="17" Property="WINTOOL_WAKE_TO_RUN" CheckBoxValue="1" Text="!(loc.WT_Wake)" />
+        <Control Id="AutoRetry" Type="CheckBox" X="40" Y="177" Width="170" Height="17" Property="WINTOOL_ENABLE_AUTORETRY" CheckBoxValue="1" Text="!(loc.WT_Retry)" />
+        <Control Id="RebootPrompt" Type="CheckBox" X="218" Y="177" Width="130" Height="17" Property="WINTOOL_REBOOT_PROMPT" CheckBoxValue="1" Text="!(loc.WT_AskRestart)" />
+        <Control Id="Firmware" Type="CheckBox" X="40" Y="198" Width="300" Height="17" Property="WINTOOL_ALLOW_FIRMWARE" CheckBoxValue="1" Text="!(loc.WT_Firmware)" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="Back" />
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Next" />
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)" />
       </Dialog>
 
       <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="WinToolOptionsDlg" Order="10" Condition="1" />

@@ -213,15 +213,9 @@ jobs:
           $assets = (Resolve-Path "src/WinTool.App/Assets").Path
           $out = Join-Path $env:RUNNER_TEMP "msi"
           New-Item -ItemType Directory -Force $out | Out-Null
-          Push-Location packaging/msi
-          $log = & wix build -arch x64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext -d "ExePath=$exe" -d "AssetsDir=$assets" -d "ProductVersion=$version" -o (Join-Path $out "WinTool-by-PcNinja.msi") Package.wxs 2>&1
-          $code = $LASTEXITCODE
-          Pop-Location
-          $log | ForEach-Object { Write-Host $_ }
-          if ($code -ne 0) {
-            $log | Where-Object { "$_" -match 'error' } | Select-Object -First 20 | ForEach-Object { Write-Host ("::error title=wix::" + ("$_" -replace '%', '%25')) }
-            exit $code
-          }
+          # English base with Hebrew and Spanish transforms embedded (packaging/msi/Build-Msi.ps1).
+          & ./packaging/msi/Build-Msi.ps1 -ExePath $exe -AssetsDir $assets -ProductVersion $version -OutputMsi (Join-Path $out "WinTool-by-PcNinja.msi")
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
           Get-ChildItem $out | Format-Table Name, Length
 
       - name: MSI test (silent install, schedule, upgrade, uninstall, invalid value)
@@ -252,8 +246,13 @@ jobs:
           if ($r.Code -ne 1603) { Fail "invalid time should fail with 1603, got $($r.Code)" $r }
           if (Test-Path $installed) { Fail "files remained after a failed install" $null }
 
-          # 2. Silent install with a weekly schedule and a desktop shortcut.
-          $r = Msi @('/i', "`"$msi`"", 'WINTOOL_ENABLE_SCHEDULE=1', 'WINTOOL_FREQUENCY=Weekly', 'WINTOOL_DAY_OF_WEEK=Friday', 'WINTOOL_TIME=04:30', 'WINTOOL_WAKE_TO_RUN=1', 'WINTOOL_DESKTOP_SHORTCUT=1', 'WINTOOL_LANGUAGE=he') 'install'
+          function ProductLanguage() {
+            $key = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall' | Get-ItemProperty | Where-Object DisplayName -eq 'WinTool by PcNinja' | Select-Object -First 1
+            return $key.Language
+          }
+
+          # 2. Silent install in Hebrew (embedded transform :1037) with a weekly schedule and a desktop shortcut.
+          $r = Msi @('/i', "`"$msi`"", 'TRANSFORMS=:1037', 'WINTOOL_ENABLE_SCHEDULE=1', 'WINTOOL_FREQUENCY=Weekly', 'WINTOOL_DAY_OF_WEEK=Friday', 'WINTOOL_TIME=04:30', 'WINTOOL_WAKE_TO_RUN=1', 'WINTOOL_DESKTOP_SHORTCUT=1', 'WINTOOL_LANGUAGE=he') 'install'
           if ($r.Code -ne 0) { Fail "install failed with $($r.Code)" $r }
           if (-not (Test-Path $installed)) { Fail "WinTool-by-PcNinja.exe was not installed" $r }
           $show = Show
@@ -261,6 +260,7 @@ jobs:
           if ($show -notmatch '"matchesSettings": true' -or $show -notmatch '"dayOfWeek": "Friday"' -or $show -notmatch '"wakeToRun": true') { Fail "schedule from MSI properties is wrong" $r }
           if ((Get-ItemProperty 'HKLM:\SOFTWARE\PcNinja\WinTool').Language -ne 'he') { Fail "language default was not written" $r }
           if (-not (Test-Path (Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'WinTool by PcNinja.lnk'))) { Fail "desktop shortcut missing" $r }
+          if ((ProductLanguage) -ne 1037) { Fail "the Hebrew transform was not applied (language $(ProductLanguage))" $r }
 
           # 3. Installing again without schedule properties keeps the schedule (upgrade/repair path).
           $r = Msi @('/i', "`"$msi`"", 'REINSTALL=ALL', 'REINSTALLMODE=vomus') 'repair'
@@ -273,6 +273,13 @@ jobs:
           if (Test-Path $installed) { Fail "files remained after uninstall" $r }
           schtasks.exe /Query /TN "\PcNinja\WinTool by PcNinja" 2>$null | Out-Null
           if ($LASTEXITCODE -eq 0) { Fail "scheduled task remained after uninstall" $r }
+
+          # 5. Spanish transform (:3082) installs and removes cleanly.
+          $r = Msi @('/i', "`"$msi`"", 'TRANSFORMS=:3082') 'install-es'
+          if ($r.Code -ne 0) { Fail "Spanish install failed with $($r.Code)" $r }
+          if ((ProductLanguage) -ne 3082) { Fail "the Spanish transform was not applied (language $(ProductLanguage))" $r }
+          $r = Msi @('/x', "`"$msi`"") 'uninstall-es'
+          if ($r.Code -ne 0) { Fail "Spanish uninstall failed with $($r.Code)" $r }
           Write-Host "MSI test passed."
           exit 0
 

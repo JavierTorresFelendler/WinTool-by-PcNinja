@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- WinTool installer texts, es-ES. Spanish needs review (D-023). Codepage for Windows Installer. -->
+<WixLocalization Culture="es-ES" Codepage="1252" xmlns="http://wixtoolset.org/schemas/v4/wxl">
+  <String Id="WT_Lcid" Value="3082" />
+  <String Id="WT_Downgrade" Value="Ya hay instalada una versión más reciente de WinTool by PcNinja." />
+  <String Id="WT_ShortcutDescription" Value="Herramientas para Windows Update, actualización de Windows y Office" />
+  <String Id="WT_OpenAfterInstall" Value="Abrir WinTool by PcNinja" />
+  <String Id="WT_OptionsTitle" Value="Opciones" />
+  <String Id="WT_OptionsDescription" Value="Accesos directos y el idioma en que se abre WinTool." />
+  <String Id="WT_StartMenu" Value="Agregar un acceso directo al menú Inicio" />
+  <String Id="WT_Desktop" Value="Agregar un acceso directo al escritorio" />
+  <String Id="WT_LanguageLabel" Value="Idioma:" />
+  <String Id="WT_LanguageAuto" Value="Igual que Windows" />
+  <String Id="WT_LanguageEnglish" Value="Inglés" />
+  <String Id="WT_LanguageHebrew" Value="Hebreo" />
+  <String Id="WT_LanguageSpanish" Value="Español" />
+  <String Id="WT_UpdateCheck" Value="Buscar actualizaciones de WinTool al iniciar" />
+  <String Id="WT_ScheduleTitle" Value="Programación de Windows Update" />
+  <String Id="WT_ScheduleDescription" Value="Opcional; desactivado si no se marca. Se conserva una programación existente, también la de WinUpdate Tool, que luego se desinstala." />
+  <String Id="WT_EnableSchedule" Value="Ejecutar Windows Update según una programación" />
+  <String Id="WT_Frequency" Value="Frecuencia:" />
+  <String Id="WT_Daily" Value="Diaria" />
+  <String Id="WT_Weekly" Value="Semanal" />
+  <String Id="WT_Monthly" Value="Mensual" />
+  <String Id="WT_Startup" Value="Al iniciar" />
+  <String Id="WT_Time" Value="Hora:" />
+  <String Id="WT_WeekDay" Value="Día de la semana:" />
+  <String Id="WT_Sunday" Value="Domingo" />
+  <String Id="WT_Monday" Value="Lunes" />
+  <String Id="WT_Tuesday" Value="Martes" />
+  <String Id="WT_Wednesday" Value="Miércoles" />
+  <String Id="WT_Thursday" Value="Jueves" />
+  <String Id="WT_Friday" Value="Viernes" />
+  <String Id="WT_Saturday" Value="Sábado" />
+  <String Id="WT_MonthDay" Value="Día del mes:" />
+  <String Id="WT_RunAtStartup" Value="Ejecutar también al iniciar el equipo" />
+  <String Id="WT_Delay" Value="Retraso:" />
+  <String Id="WT_Minutes" Value="min" />
+  <String Id="WT_RunIfMissed" Value="Ejecutar si se perdió la hora" />
+  <String Id="WT_Wake" Value="Activar el equipo" />
+  <String Id="WT_Retry" Value="Reintentar tras un error" />
+  <String Id="WT_AskRestart" Value="Preguntar antes de reiniciar" />
+  <String Id="WT_Firmware" Value="Permitir actualizaciones de BIOS/firmware (solo con alimentación fiable)" />
+  <String Id="WT_DialogTitle" Value="Instalación de [ProductName]" />
+</WixLocalization>

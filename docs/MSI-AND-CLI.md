@@ -32,6 +32,20 @@ left 164 pixels; the banner keeps the left title area light and puts the
 mascot on the right. These replace wizard artwork; the existing shortcut
 and installed-product icon remains `PcNinja.ico`.
 
+## Languages
+
+The MSI is English, with Hebrew (LCID 1037) and Spanish (3082) embedded as language
+transforms (`packaging/msi/Build-Msi.ps1`, texts in `WinTool.<culture>.wxl`). When WinTool
+starts the installer (the universal EXE, a self-update, the schedule offer), it passes
+`TRANSFORMS=:1037` or `TRANSFORMS=:3082` to match its own language. Running the MSI
+directly opens it in English; IT can choose a language the same way:
+
+```
+msiexec /i WinTool-by-PcNinja.msi TRANSFORMS=:1037
+```
+
+The dialogs keep a left-to-right layout in Hebrew. The license text is English.
+
 ## Public properties (silent install)
 
 Every option on the setup pages has a property. Defaults match the

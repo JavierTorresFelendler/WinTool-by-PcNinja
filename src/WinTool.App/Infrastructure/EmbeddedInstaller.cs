@@ -56,7 +56,7 @@ namespace WinTool.App.Infrastructure
         {
             var msi = Extract();
             AppLog.Current.Info("App", "Installing from the embedded installer: " + msi);
-            Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\"") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\"" + InstallerLanguage.Arguments(msi)) { UseShellExecute = true });
         }
     }
 }

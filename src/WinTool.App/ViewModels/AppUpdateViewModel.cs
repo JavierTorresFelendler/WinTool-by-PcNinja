@@ -166,7 +166,7 @@ namespace WinTool.App.ViewModels
 
                 if (!EnterUpdateGate()) return true;
                 AppLog.Current.Info("Update", "Installing " + msi + " with the schedule from the portable copy.");
-                Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\" " + msiProperties) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\" " + msiProperties + Infrastructure.InstallerLanguage.Arguments(msi)) { UseShellExecute = true });
                 CloseForUpdate();
                 return true;
             }
@@ -206,7 +206,7 @@ namespace WinTool.App.ViewModels
         /// <summary>The MSI replaces the installed copy; WinTool closes so its files are free.</summary>
         private void RunInstaller(string msi)
         {
-            Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\"") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\"" + Infrastructure.InstallerLanguage.Arguments(msi)) { UseShellExecute = true });
             AppLog.Current.Info("Update", "Started the installer; closing.");
             CloseForUpdate();
         }

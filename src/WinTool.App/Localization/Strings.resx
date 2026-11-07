@@ -298,6 +298,7 @@ Windows Setup will run silently.</value></data>
   <data name="OF_RemoveLanguage" xml:space="preserve"><value>Remove {0}</value></data>
   <data name="OF_Addons" xml:space="preserve"><value>Additional products</value></data>
   <data name="OF_AutoActivate" xml:space="preserve"><value>Activate the volume license during installation</value></data>
+  <data name="OF_Silent" xml:space="preserve"><value>Silent installation (no Office setup window)</value></data>
   <data name="OF_RemoveExisting" xml:space="preserve"><value>Remove the installed Office first</value></data>
   <data name="OF_PackageFolder" xml:space="preserve"><value>Package folder</value></data>
   <data name="OF_PackageHint" xml:space="preserve"><value>Office is saved in an OFFICE-OFFLINE folder inside the folder you choose.</value></data>

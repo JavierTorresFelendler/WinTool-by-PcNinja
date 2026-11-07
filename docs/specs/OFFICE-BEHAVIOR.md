@@ -28,7 +28,7 @@ Line numbers refer to `InstallerForm.cs` at `381a08e`.
 | --- | --- | --- |
 | OF-10 | The XML layout of `BuildXML` (1982): Add with edition and channel, products with languages and exclusions, optional Remove, Display Full with AcceptEULA, AUTOACTIVATE for LTSC, RemoveMSI. | **Keep**, byte for byte for the same choices (`ConfigurationTests`). |
 | OF-11 | SourcePath only for the offline download, XML-escaped. (1987) | **Keep**. |
-| OF-12 | Always `Display Level="Full"`. | **Change**: `Display Level="None"` with `--quiet` on the command line; the window keeps Full. |
+| OF-12 | Always `Display Level="Full"`. | **Change**: `Display Level="None"` with `--quiet` on the command line, and with **Silent installation** in the window (off by default; install and package, owner request 2026-11-07). WinTool still shows progress and the result. Remove stays Full in the window. |
 | OF-13 | Visio and Project get the same languages as Office. | **Change**: en-GB, fr-CA and es-MX are skipped for Visio and Project, which Microsoft does not offer in them; English is used when nothing is left. |
 | OF-14 | Remove-all file: Remove All, Display Full, AcceptEULA. (1819) | **Keep**. |
 | OF-15 | XML written with a UTF-8 byte order mark. | **Change**: without it. The ODT reads both. |

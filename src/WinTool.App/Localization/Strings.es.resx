@@ -298,6 +298,7 @@ El programa de instalación de Windows se ejecutará en silencio.</value><commen
   <data name="OF_RemoveLanguage" xml:space="preserve"><value>Quitar {0}</value><comment>needs review (D-023)</comment></data>
   <data name="OF_Addons" xml:space="preserve"><value>Productos adicionales</value><comment>needs review (D-023)</comment></data>
   <data name="OF_AutoActivate" xml:space="preserve"><value>Activar la licencia por volumen durante la instalación</value><comment>needs review (D-023)</comment></data>
+  <data name="OF_Silent" xml:space="preserve"><value>Instalación silenciosa (sin la ventana de instalación de Office)</value><comment>needs review (D-023)</comment></data>
   <data name="OF_RemoveExisting" xml:space="preserve"><value>Quitar primero el Office instalado</value><comment>needs review (D-023)</comment></data>
   <data name="OF_PackageFolder" xml:space="preserve"><value>Carpeta del paquete</value><comment>needs review (D-023)</comment></data>
   <data name="OF_PackageHint" xml:space="preserve"><value>Office se guarda en una carpeta OFFICE-OFFLINE dentro de la carpeta que elijas.</value><comment>needs review (D-023)</comment></data>

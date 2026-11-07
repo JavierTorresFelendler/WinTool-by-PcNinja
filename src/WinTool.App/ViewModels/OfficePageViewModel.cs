@@ -69,7 +69,7 @@ namespace WinTool.App.ViewModels
         private OfficeMode mode = OfficeMode.Install;
         private OfficeChannelOption channel;
         private bool use32Bit;
-        private bool visio, project, autoActivate = true, removeExisting;
+        private bool visio, project, autoActivate = true, removeExisting, silent;
         private string packageFolder = string.Empty;
         private string languageSearch = string.Empty;
         private bool addingLanguage;
@@ -186,6 +186,9 @@ namespace WinTool.App.ViewModels
         public bool Visio { get => visio; set => Set(ref visio, value); }
         public bool Project { get => project; set => Set(ref project, value); }
         public bool AutoActivate { get => autoActivate; set => Set(ref autoActivate, value); }
+
+        /// <summary>Display Level None: no Office setup window; WinTool still shows progress and the result.</summary>
+        public bool Silent { get => silent; set => Set(ref silent, value); }
 
         public bool RemoveExisting
         {
@@ -330,7 +333,8 @@ namespace WinTool.App.ViewModels
                 Project = project,
                 Use32Bit = use32Bit,
                 AutoActivate = autoActivate,
-                RemoveExisting = mode == OfficeMode.Install && removeExisting
+                RemoveExisting = mode == OfficeMode.Install && removeExisting,
+                Silent = mode != OfficeMode.Remove && silent
             };
             if (mode == OfficeMode.Remove) return request;
             string problem = null;

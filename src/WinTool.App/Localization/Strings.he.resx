@@ -298,6 +298,7 @@
   <data name="OF_RemoveLanguage" xml:space="preserve"><value>הסרת {0}</value></data>
   <data name="OF_Addons" xml:space="preserve"><value>מוצרים נוספים</value></data>
   <data name="OF_AutoActivate" xml:space="preserve"><value>הפעלת רישיון הנפח במהלך ההתקנה</value></data>
+  <data name="OF_Silent" xml:space="preserve"><value>התקנה שקטה (בלי חלון ההתקנה של Office)</value></data>
   <data name="OF_RemoveExisting" xml:space="preserve"><value>הסרת ה־Office המותקן תחילה</value></data>
   <data name="OF_PackageFolder" xml:space="preserve"><value>תיקיית החבילה</value></data>
   <data name="OF_PackageHint" xml:space="preserve"><value>Office נשמר בתיקייה OFFICE-OFFLINE בתוך התיקייה שתבחר.</value></data>

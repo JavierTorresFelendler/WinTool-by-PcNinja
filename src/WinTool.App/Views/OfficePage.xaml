@@ -179,6 +179,7 @@
                                   Visibility="{Binding IsLtsc, Converter={StaticResource BoolToVisibility}}" />
                         <CheckBox IsChecked="{Binding RemoveExisting}" Content="{loc:Loc OF_RemoveExisting}" Margin="0,8,0,0"
                                   Visibility="{Binding IsInstallMode, Converter={StaticResource BoolToVisibility}}" />
+                        <CheckBox IsChecked="{Binding Silent}" Content="{loc:Loc OF_Silent}" Margin="0,8,0,0" />
 
                         <StackPanel Margin="0,12,0,0" Visibility="{Binding IsPackageMode, Converter={StaticResource BoolToVisibility}}">
                             <TextBlock Text="{loc:Loc OF_PackageFolder}" Style="{StaticResource Text.Label}" FontSize="12" Margin="0,0,0,4" />

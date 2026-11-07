@@ -44,6 +44,7 @@
 Este equipo tiene {0}.</value><comment>needs review (D-023)</comment></data>
   <data name="Startup_AlreadyRunning" xml:space="preserve"><value>WinTool ya está abierto pero no responde. Ciérralo e inténtalo de nuevo.</value><comment>needs review (D-023)</comment></data>
   <data name="Startup_ElevationCancelled" xml:space="preserve"><value>WinTool necesita permisos de administrador para gestionar Windows Update, las actualizaciones de Windows y Office. Ábrelo de nuevo y elige Sí.</value><comment>needs review (D-023)</comment></data>
+  <data name="Startup_TestOverridesNeedAdmin" xml:space="preserve"><value>Hay ajustes de prueba de WinTool (WINTOOL_DATA_ROOT o WINTOOL_UPDATE_FEED), pero Windows no los transmite cuando WinTool se reinicia con permisos de administrador. Para que la prueba no toque los datos reales, WinTool se detiene aquí. Ábrelo desde un símbolo del sistema abierto como administrador.</value><comment>needs review (D-023)</comment></data>
   <data name="Error_Unexpected" xml:space="preserve"><value>Algo salió mal. Los detalles están en el registro:
 {0}</value><comment>needs review (D-023)</comment></data>
   <data name="Dash_Refresh" xml:space="preserve"><value>Actualizar</value><comment>needs review (D-023)</comment></data>

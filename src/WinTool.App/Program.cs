@@ -66,6 +66,15 @@ namespace WinTool.App
                 PcNinjaSingleInstance.TryActivateExisting(ProductInfo.SingleInstanceAppId, options, out probe);
                 if (probe == PcNinjaSingleInstanceOutcome.ActivatedExisting) return ExitOk;
                 if (probe == PcNinjaSingleInstanceOutcome.ExistingNotResponding) return ShowNotResponding();
+                if (TestOverridesSet())
+                {
+                    // Windows does not pass this process's environment to the elevated copy, and
+                    // forwarding test settings across the UAC boundary on the command line would let a
+                    // standard user steer an administrator process. Stop instead of silently using real data.
+                    AppLog.Current.Warn("App", "Test settings are set; not restarting with administrator rights because they would be lost.");
+                    ShowMessage(Loc.Instance["Startup_TestOverridesNeedAdmin"], MessageBoxImage.Warning);
+                    return ExitElevationCancelled;
+                }
                 return RestartElevated();
             }
 
@@ -134,6 +143,10 @@ namespace WinTool.App
             return false;
 #endif
         }
+
+        private static bool TestOverridesSet() =>
+            !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinToolPaths.DataRootVariable)) ||
+            !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinTool.Core.Updates.AppUpdater.FeedVariable));
 
         private static int RestartElevated()
         {

@@ -152,6 +152,8 @@ For testing only; WinTool works without them.
 | `WINTOOL_DATA_ROOT` | An absolute folder. WinTool keeps its machine data (logs, Windows Update and upgrade state, downloaded updates, log packages) in `<root>\ProgramData` and its user settings in `<root>\User`, instead of `%ProgramData%\PcNinja\WinTool` and `%LocalAppData%\PcNinja\WinTool`. The log's first line says so. A relative or empty value is ignored. It does not move the old WinUpdate Tool's configuration, scheduled tasks, the registry or the installed program. |
 | `WINTOOL_UPDATE_FEED` | Another releases JSON (https or a local file) for `app-update` and the update question; files beside a local JSON are used as the downloads. |
 
+Windows does not pass a process's variables to the copy it starts with administrator rights. When either variable is set and WinTool is not already running as administrator, the window does not restart itself elevated: it says so and exits with code 5. Set the variables in a command prompt opened as administrator and start WinTool from there. (Passing them on the command line instead would let a standard user steer an administrator process.)
+
 ## Exit codes
 
 | Code | `update run` | Other commands |

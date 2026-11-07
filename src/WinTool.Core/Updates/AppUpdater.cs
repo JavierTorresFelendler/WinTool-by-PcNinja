@@ -64,6 +64,8 @@ namespace WinTool.Core.Updates
             this.readVersion = readVersion;
         }
 
+        public const string FeedVariable = "WINTOOL_UPDATE_FEED";
+
         public static string DefaultDownloadFolder => Path.Combine(WinToolPaths.MachineData, "Updates");
 
         /// <summary>
@@ -74,7 +76,7 @@ namespace WinTool.Core.Updates
         {
             get
             {
-                var custom = Environment.GetEnvironmentVariable("WINTOOL_UPDATE_FEED");
+                var custom = Environment.GetEnvironmentVariable(FeedVariable);
                 return string.IsNullOrWhiteSpace(custom) ? ReleaseFeed.ApiUrl : custom.Trim();
             }
         }

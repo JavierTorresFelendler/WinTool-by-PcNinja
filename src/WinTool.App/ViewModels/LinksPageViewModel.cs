@@ -7,7 +7,7 @@ using WinTool.Core.Diagnostics;
 
 namespace WinTool.App.ViewModels
 {
-    /// <summary>Drivers &amp; Links (mockup): help, PcNinja's free tools and manufacturer pages. Opens links only.</summary>
+    /// <summary>Useful Links (formerly Drivers &amp; Links in the mockup): help, PcNinja's free tools and manufacturer pages. Opens links only.</summary>
     public sealed class LinksPageViewModel : PageViewModel
     {
         /// <summary>The password of PcNinja's shared download files. Public on purpose (owner decision).</summary>

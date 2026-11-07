@@ -124,7 +124,7 @@ Line numbers refer to that commit.
 
 | Id | V2 behavior | Source | WinTool |
 | --- | --- | --- | --- |
-| WU-99 | Driver inventory report (CSV, JSON, summary) with manufacturer recommendations. | Core 2348–3014 | **Drop** (owner, Q-WU-1). Driver updates through Windows Update stay (WU-03, WU-07); manufacturer links are on the Drivers & Links screen. |
+| WU-99 | Driver inventory report (CSV, JSON, summary) with manufacturer recommendations. | Core 2348–3014 | **Drop** (owner, Q-WU-1). Driver updates through Windows Update stay (WU-03, WU-07); manufacturer links are on the Useful Links screen. |
 
 ---
 

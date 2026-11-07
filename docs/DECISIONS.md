@@ -203,7 +203,7 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - **Decision:** The repository stays private during development and becomes
   public when the first release candidate is published. The in-app link to
   the repository depends on this.
-- **Note:** The shared file password shown on the Drivers & Links screen is
+- **Note:** The shared file password shown on the Useful Links screen (formerly Drivers & Links) is
   public on purpose (it carries the PcNinja name).
 
 ## D-018 Official file names and how updates replace them

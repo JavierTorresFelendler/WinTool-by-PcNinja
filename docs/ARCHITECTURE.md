@@ -72,7 +72,7 @@ Office             Product family, mode (install / offline package /
 ──────────
 Logs               Lazy-loaded, filtered by tool
 Settings           Theme, language, application updates, about
-Drivers & Links    help.pcninja.pro, PcNinja free tools (Driver Updater,
+Useful Links       help.pcninja.pro, PcNinja free tools (Driver Updater,
                    Windows & Office Activation, www.pcninja.pro, this
                    repository), shared file password, manufacturer
                    sources (Dell, HP, Lenovo, ASUS; reference only)

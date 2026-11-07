@@ -11,7 +11,7 @@
   <data name="Nav_Office" xml:space="preserve"><value>Office</value></data>
   <data name="Nav_Logs" xml:space="preserve"><value>Logs</value></data>
   <data name="Nav_Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Nav_Links" xml:space="preserve"><value>Drivers &amp; Links</value></data>
+  <data name="Nav_Links" xml:space="preserve"><value>Useful Links</value></data>
   <data name="Footer_Installed" xml:space="preserve"><value>Version {0}</value></data>
   <data name="Footer_CheckToolUpdate" xml:space="preserve"><value>Check Tool Update</value></data>
   <data name="Footer_CheckToolUpdate_Later" xml:space="preserve"><value>Application updates arrive in a later version.</value></data>

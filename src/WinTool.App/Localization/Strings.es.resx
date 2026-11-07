@@ -11,7 +11,7 @@
   <data name="Nav_Office" xml:space="preserve"><value>Office</value><comment>needs review (D-023)</comment></data>
   <data name="Nav_Logs" xml:space="preserve"><value>Registros</value><comment>needs review (D-023)</comment></data>
   <data name="Nav_Settings" xml:space="preserve"><value>Configuración</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_Links" xml:space="preserve"><value>Controladores y enlaces</value><comment>needs review (D-023)</comment></data>
+  <data name="Nav_Links" xml:space="preserve"><value>Enlaces útiles</value><comment>needs review (D-023)</comment></data>
   <data name="Footer_Installed" xml:space="preserve"><value>Versión {0}</value><comment>needs review (D-023)</comment></data>
   <data name="Footer_CheckToolUpdate" xml:space="preserve"><value>Buscar actualización</value><comment>needs review (D-023)</comment></data>
   <data name="Footer_CheckToolUpdate_Later" xml:space="preserve"><value>Las actualizaciones de la aplicación llegarán en una versión posterior.</value><comment>needs review (D-023)</comment></data>

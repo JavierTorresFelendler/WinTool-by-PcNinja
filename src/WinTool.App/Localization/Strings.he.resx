@@ -11,7 +11,7 @@
   <data name="Nav_Office" xml:space="preserve"><value>Office</value></data>
   <data name="Nav_Logs" xml:space="preserve"><value>יומנים</value></data>
   <data name="Nav_Settings" xml:space="preserve"><value>הגדרות</value></data>
-  <data name="Nav_Links" xml:space="preserve"><value>דרייברים וקישורים</value></data>
+  <data name="Nav_Links" xml:space="preserve"><value>קישורים שימושיים</value></data>
   <data name="Footer_Installed" xml:space="preserve"><value>גרסה {0}</value></data>
   <data name="Footer_CheckToolUpdate" xml:space="preserve"><value>בדיקת עדכון לכלי</value></data>
   <data name="Footer_CheckToolUpdate_Later" xml:space="preserve"><value>עדכוני התוכנה יתווספו בגרסה מאוחרת יותר.</value></data>

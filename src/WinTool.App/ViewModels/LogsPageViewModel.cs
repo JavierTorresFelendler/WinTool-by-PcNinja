@@ -35,10 +35,16 @@ namespace WinTool.App.ViewModels
         private bool collecting;
         private int reloadVersion;
 
-        public LogsPageViewModel(IWindowsUpdateEnvironment env)
+        private readonly WinTool.Core.Settings.AppSettings settings;
+        private readonly Action save;
+
+        public LogsPageViewModel(IWindowsUpdateEnvironment env, WinTool.Core.Settings.AppSettings settings, Action save)
             : base("Nav_Logs", "Page_Logs_Subtitle")
         {
             this.env = env;
+            this.settings = settings;
+            this.save = save;
+            follow = settings?.LogsFollow ?? true;
             timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
             timer.Tick += (sender, e) => _ = ReloadAsync();
             CollectCommand = new RelayCommand(() => _ = CollectAsync(), () => !collecting);
@@ -71,6 +77,12 @@ namespace WinTool.App.ViewModels
             set
             {
                 if (!Set(ref follow, value)) return;
+                if (settings != null)
+                {
+                    settings.LogsFollow = value;
+                    save?.Invoke();
+                }
+
                 UpdateTimer();
                 if (value) _ = ReloadAsync();
             }
@@ -110,6 +122,9 @@ namespace WinTool.App.ViewModels
 
         /// <summary>Reloads now and completes when the list shows the result (UI smoke screenshots).</summary>
         internal Task ReloadForCaptureAsync() => ReloadAsync();
+
+        private static bool SameEntry(LogEntry a, LogEntry b) =>
+            a == null ? b == null : b != null && a.Time == b.Time && a.Area == b.Area && a.Message == b.Message;
 
         private void UpdateTimer()
         {
@@ -160,7 +175,10 @@ namespace WinTool.App.ViewModels
             }
 
             if (!active || version != reloadVersion) return;
-            var grew = entries.Count != Entries.Count;
+            // New lines also count when the list is already full (the count stays at MaxEntries).
+            var last = Entries.Count == 0 ? null : Entries[Entries.Count - 1];
+            var newest = entries.Count == 0 ? null : entries[entries.Count - 1];
+            var grew = entries.Count != total || !SameEntry(last, newest);
             total = entries.Count;
             Entries.Clear();
             foreach (var entry in entries.Skip(Math.Max(0, entries.Count - MaxEntries))) Entries.Add(entry);

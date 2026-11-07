@@ -95,7 +95,7 @@ Este equipo tiene {0}.</value><comment>needs review (D-023)</comment></data>
   <data name="WU_NoRestart" xml:space="preserve"><value>No hace falta reiniciar</value><comment>needs review (D-023)</comment></data>
   <data name="WU_RestartNow" xml:space="preserve"><value>Reiniciar ahora</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Restart_Confirm" xml:space="preserve"><value>¿Reiniciar el equipo ahora? Guarda antes el trabajo abierto.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_RestartPrompt" xml:space="preserve"><value>Se instalaron actualizaciones. Reinicia el equipo para terminar; puede que aparezcan más actualizaciones después del reinicio.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_RestartPrompt" xml:space="preserve"><value>La instalación de las actualizaciones terminó. Reinicia el equipo para completarla; puede que aparezcan más actualizaciones después del reinicio.</value><comment>needs review (D-023)</comment></data>
   <data name="WU_InstallSelected" xml:space="preserve"><value>Instalar seleccionadas</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Cancel" xml:space="preserve"><value>Cancelar</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Available" xml:space="preserve"><value>Actualizaciones disponibles</value><comment>needs review (D-023)</comment></data>
@@ -120,7 +120,7 @@ Este equipo tiene {0}.</value><comment>needs review (D-023)</comment></data>
 ¿Detener Windows Update por ahora y continuar con WinTool? Elige No para cancelar.</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Result_Succeeded" xml:space="preserve"><value>Las actualizaciones se instalaron.</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Result_SomeFailed" xml:space="preserve"><value>Algunas actualizaciones no se pudieron instalar. Consulta la lista para ver los detalles.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Result_Restart" xml:space="preserve"><value>Se instalaron actualizaciones. Reinicia el equipo para terminar.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_Result_Restart" xml:space="preserve"><value>La instalación de las actualizaciones terminó. Reinicia el equipo para completarla.</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Result_Cancelled" xml:space="preserve"><value>Cancelado. No se instaló nada más.</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Result_Other" xml:space="preserve"><value>La ejecución no terminó: {0}</value><comment>needs review (D-023)</comment></data>
   <data name="WU_OperationRunning" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Inténtalo de nuevo cuando termine.</value><comment>needs review (D-023)</comment></data>
@@ -403,4 +403,8 @@ Cancelar: no hacer nada.</value><comment>needs review (D-023)</comment></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>No se pudo descargar el instalador de WinTool {0}. Descarga WinTool-by-PcNinja.msi desde {1}.</value><comment>needs review (D-023)</comment></data>
   <data name="Settings_Spanish_Review" xml:space="preserve"><value>El español es una primera traducción, pendiente de revisión por un hablante nativo.</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Health_FreeSpace" xml:space="preserve"><value>{0} GB libres</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_Result_RestartBlocking" xml:space="preserve"><value>Hace falta reiniciar el equipo para continuar con las actualizaciones. Guarda el trabajo abierto y pulsa «Reiniciar ahora». Puede que aparezcan más actualizaciones después del reinicio.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Reinicia primero el equipo y luego vuelve a buscar e instalar.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_Restart_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso, quizá una actualización programada. Reinicia cuando termine.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows sigue instalando una actualización en segundo plano. Reiniciar ahora puede hacer que el reinicio tarde más. ¿Reiniciar de todos modos?</value><comment>needs review (D-023)</comment></data>
 </root>

@@ -35,6 +35,10 @@ namespace WinTool.Core.Settings
         [DataMember(Name = "includeTestVersions", Order = 4)]
         public bool IncludeTestVersions { get; set; }
 
+        /// <summary>Logs page Follow; empty means on (the default, also for settings saved before it existed).</summary>
+        [DataMember(Name = "logsFollow", Order = 5, EmitDefaultValue = false)]
+        public bool? LogsFollow { get; set; }
+
         public ThemePreference ThemePreference
         {
             get

@@ -95,7 +95,7 @@ This computer runs {0}.</value></data>
   <data name="WU_NoRestart" xml:space="preserve"><value>No restart needed</value></data>
   <data name="WU_RestartNow" xml:space="preserve"><value>Restart Now</value></data>
   <data name="WU_Restart_Confirm" xml:space="preserve"><value>Restart the computer now? Save open work first.</value></data>
-  <data name="WU_RestartPrompt" xml:space="preserve"><value>Updates were installed. Restart the computer to finish; more updates may appear after the restart.</value></data>
+  <data name="WU_RestartPrompt" xml:space="preserve"><value>Installing the updates finished. Restart the computer to complete it; more updates may be found after the restart.</value></data>
   <data name="WU_InstallSelected" xml:space="preserve"><value>Install Selected</value></data>
   <data name="WU_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="WU_Available" xml:space="preserve"><value>Available updates</value></data>
@@ -120,7 +120,7 @@ This computer runs {0}.</value></data>
 Stop Windows Update for now and continue with WinTool? Choose No to cancel.</value></data>
   <data name="WU_Result_Succeeded" xml:space="preserve"><value>The updates were installed.</value></data>
   <data name="WU_Result_SomeFailed" xml:space="preserve"><value>Some updates could not be installed. See the list for details.</value></data>
-  <data name="WU_Result_Restart" xml:space="preserve"><value>Updates were installed. Restart the computer to finish.</value></data>
+  <data name="WU_Result_Restart" xml:space="preserve"><value>Installing the updates finished. Restart the computer to complete it.</value></data>
   <data name="WU_Result_Cancelled" xml:space="preserve"><value>Cancelled. Nothing more was installed.</value></data>
   <data name="WU_Result_Other" xml:space="preserve"><value>The run did not finish: {0}</value></data>
   <data name="WU_OperationRunning" xml:space="preserve"><value>Another WinTool operation is running. Try again when it has finished.</value></data>
@@ -403,4 +403,8 @@ Cancel: do nothing.</value></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>The installer for WinTool {0} could not be downloaded. Download WinTool-by-PcNinja.msi from {1}.</value></data>
   <data name="Settings_Spanish_Review" xml:space="preserve"><value>Spanish is a first translation, waiting for review by a native speaker.</value></data>
   <data name="WU_Health_FreeSpace" xml:space="preserve"><value>{0} GB free</value></data>
+  <data name="WU_Result_RestartBlocking" xml:space="preserve"><value>A restart is needed to continue with updates. Save your open work and press Restart Now. More updates may be found after the restart.</value></data>
+  <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Restart the computer first; then search and install again.</value></data>
+  <data name="WU_Restart_Busy" xml:space="preserve"><value>Another WinTool operation is running, possibly a scheduled update. Restart when it has finished.</value></data>
+  <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows is still installing an update in the background. Restarting now can make the restart take longer. Restart anyway?</value></data>
 </root>

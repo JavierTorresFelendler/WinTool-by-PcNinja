@@ -38,7 +38,7 @@ namespace WinTool.App.ViewModels
                 Item("windows-update", "Nav_WindowsUpdate", IconUpdate, true, windowsUpdatePage),
                 Item("windows-upgrade", "Nav_WindowsUpgrade", IconUpgrade, false, upgradePage),
                 Item("office", "Nav_Office", IconOffice, false, officePage),
-                Item("logs", "Nav_Logs", IconLogs, true, new LogsPageViewModel(windowsUpdate)),
+                Item("logs", "Nav_Logs", IconLogs, true, new LogsPageViewModel(windowsUpdate, settingsPage.Settings, settingsPage.Save)),
                 Item("settings", "Nav_Settings", IconSettings, false, settingsPage),
                 Item("links", "Nav_Links", IconLinks, false, new LinksPageViewModel())
             };
@@ -49,6 +49,7 @@ namespace WinTool.App.ViewModels
             operations.Add(new KeyValuePair<string, IOperationPage>("Nav_Office", officePage));
             operations.Add(new KeyValuePair<string, IOperationPage>("Footer_CheckToolUpdate", updates));
             windowsUpdatePage.InstallForSchedule = updates.InstallForScheduleAsync;
+            windowsUpdatePage.OtherOperationRunning = () => operations.Any(o => !ReferenceEquals(o.Value, windowsUpdatePage) && o.Value.IsBusy);
             updates.OperationRunning = () => operations.Any(o => !ReferenceEquals(o.Value, updates) && o.Value.IsBusy);
             CheckToolUpdateCommand = new RelayCommand(() => _ = updates.CheckAsync(true), () => !updates.IsBusy);
             NavItems[0].IsSelected = true;

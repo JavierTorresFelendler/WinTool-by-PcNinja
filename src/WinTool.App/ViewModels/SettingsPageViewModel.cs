@@ -41,6 +41,9 @@ namespace WinTool.App.ViewModels
 
         public ICommand OpenWebsiteCommand { get; }
         public ICommand CheckNowCommand { get; }
+
+        internal AppSettings Settings => settings;
+        internal void Save() => save();
         public AppUpdateViewModel Updates { get; }
 
         public bool CheckAtStartup

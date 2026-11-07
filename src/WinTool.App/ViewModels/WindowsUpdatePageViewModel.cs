@@ -141,7 +141,7 @@ namespace WinTool.App.ViewModels
         {
             this.env = env;
             ScanCommand = new AsyncCommand(ScanAsync, () => !busy);
-            InstallCommand = new AsyncCommand(InstallAsync, () => !busy && Rows.Any(r => r.IsSelected));
+            InstallCommand = new AsyncCommand(InstallAsync, () => !busy && !pending.Pending && Rows.Any(r => r.IsSelected));
             CancelCommand = new RelayCommand(() => cancellation?.Cancel(), () => busy && cancellation != null);
             RestartCommand = new RelayCommand(RestartNow, () => pending.Pending && !busy);
             HealthCheckCommand = new AsyncCommand(() => HealthAsync(true), () => !busy);
@@ -163,6 +163,9 @@ namespace WinTool.App.ViewModels
             if (CancelCommand.CanExecute(null)) CancelCommand.Execute(null);
         }
         public ICommand RestartCommand { get; }
+
+        /// <summary>Other WinTool operations in this window (Upgrade, Office, an update of WinTool); set by the main view model.</summary>
+        public Func<bool> OtherOperationRunning { get; set; } = () => false;
         public ICommand HealthCheckCommand { get; }
         public ICommand CollectLogsCommand { get; }
         public ICommand ResetCommand { get; }
@@ -190,6 +193,7 @@ namespace WinTool.App.ViewModels
         public string CountText => hasScanned ? T.Format("WU_Counts", ImportantCount, OtherCount) : T["WU_NotChecked"];
 
         public bool RestartPending => pending.Pending;
+        public bool NoRestartPending => !pending.Pending;
         public string RestartReason => pending.Pending ? string.Join("; ", pending.Reasons) : string.Empty;
 
         /// <summary>Re-translated on a language change, like every text on the page.</summary>
@@ -313,7 +317,9 @@ namespace WinTool.App.ViewModels
             if (outcome.RebootRequired || pending.Pending)
             {
                 RaiseSummary();
-                if (env.Store.LoadSettings().ShowRebootPrompt) Dialogs.Info(T["WU_RestartPrompt"]);
+                // Only claim an installation when this run installed something (owner VM test).
+                var installed = outcome.Items.Any(i => i.Succeeded);
+                if (env.Store.LoadSettings().ShowRebootPrompt) Dialogs.Info(T[installed ? "WU_RestartPrompt" : "WU_Result_RestartBlocking"]);
                 return;
             }
 
@@ -321,9 +327,28 @@ namespace WinTool.App.ViewModels
             RaiseSummary();
         }
 
+        private IDisposable restartLease;
+
         private void RestartNow()
         {
-            if (!Dialogs.Confirm(T["WU_Restart_Confirm"])) return;
+            // Never during another WinTool operation, here or in a scheduled task (owner VM test).
+            IDisposable lease;
+            var decision = RestartGuard.Evaluate(env.TryAcquireOperationLock, OtherOperationRunning, env.Probe.GetActivity, out lease);
+            if (decision == RestartDecision.OperationRunning)
+            {
+                Dialogs.Info(T["WU_Restart_Busy"]);
+                return;
+            }
+
+            var question = decision == RestartDecision.WindowsInstalling ? T["WU_Restart_WindowsBusy"] : T["WU_Restart_Confirm"];
+            if (!Dialogs.Confirm(question))
+            {
+                lease.Dispose();
+                return;
+            }
+
+            // Held until Windows restarts, so nothing else starts in between.
+            restartLease = lease;
             env.Log.Write(EventIds.RunFinished, EventLevel.Information, "Restart requested from the WinTool window.");
             Process.Start(new ProcessStartInfo("shutdown.exe", "/r /t 0") { CreateNoWindow = true, UseShellExecute = false });
         }
@@ -567,7 +592,8 @@ namespace WinTool.App.ViewModels
                 case RunResult.Succeeded: return T["WU_Result_Succeeded"];
                 case RunResult.SucceededWithErrors: return T["WU_Result_SomeFailed"];
                 case RunResult.NoUpdates: return T["WU_NoUpdates"];
-                case RunResult.RebootRequired: return T["WU_Result_Restart"];
+                case RunResult.RebootRequired:
+                    return outcome.Items.Any(i => i.Succeeded) ? T["WU_Result_Restart"] : T["WU_Result_RestartBlocking"];
                 case RunResult.Cancelled: return T["WU_Result_Cancelled"];
                 case RunResult.AlreadyRunning: return T["WU_OperationRunning"];
                 default: return T.Format("WU_Result_Other", outcome.Message);
@@ -627,7 +653,7 @@ namespace WinTool.App.ViewModels
         private void RaiseSummary()
         {
             foreach (var name in new[] { nameof(HasScanned), nameof(HasUpdates), nameof(NoUpdatesFound), nameof(ImportantCount), nameof(OtherCount),
-                nameof(LastCheckText), nameof(CountText), nameof(RestartPending), nameof(RestartReason) })
+                nameof(LastCheckText), nameof(CountText), nameof(RestartPending), nameof(NoRestartPending), nameof(RestartReason) })
             {
                 OnPropertyChanged(name);
             }

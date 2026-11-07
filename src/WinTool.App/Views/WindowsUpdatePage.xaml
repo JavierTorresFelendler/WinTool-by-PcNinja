@@ -81,9 +81,14 @@
                     </TextBlock>
                 </StackPanel>
                 <WrapPanel Grid.Column="4" VerticalAlignment="Center">
-                    <Button Style="{StaticResource Button.Secondary}" Margin="0,0,8,0" Command="{Binding RestartCommand}" Content="{loc:Loc WU_RestartNow}"
+                    <!-- A pending restart blocks installing: Restart Now leads, Install waits (owner VM test). -->
+                    <Button Style="{StaticResource Button.Primary}" Margin="0,0,8,0" Command="{Binding RestartCommand}" Content="{loc:Loc WU_RestartNow}"
                             Visibility="{Binding RestartPending, Converter={StaticResource BoolToVisibility}}" />
-                    <Button Style="{StaticResource Button.Primary}" Command="{Binding InstallCommand}" Content="{loc:Loc WU_InstallSelected}" />
+                    <Button Style="{StaticResource Button.Secondary}" Command="{Binding InstallCommand}" Content="{loc:Loc WU_InstallSelected}"
+                            ToolTip="{loc:Loc WU_InstallAfterRestart}" ToolTipService.ShowOnDisabled="True"
+                            Visibility="{Binding RestartPending, Converter={StaticResource BoolToVisibility}}" />
+                    <Button Style="{StaticResource Button.Primary}" Command="{Binding InstallCommand}" Content="{loc:Loc WU_InstallSelected}"
+                            Visibility="{Binding NoRestartPending, Converter={StaticResource BoolToVisibility}}" />
                 </WrapPanel>
             </Grid>
         </Border>

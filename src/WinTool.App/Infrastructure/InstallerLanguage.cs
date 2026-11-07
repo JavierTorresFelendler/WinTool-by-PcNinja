@@ -18,6 +18,15 @@ namespace WinTool.App.Infrastructure
         {
             var lcid = LcidFor(Loc.Instance.Language);
             if (lcid == null) return string.Empty;
+            // Windows Installer shows text through the system ANSI code page: Hebrew on a system whose
+            // code page is not 1255 turns into '?'. Then the installer stays English (CI, 2026-11-07).
+            var needed = CodepageFor(lcid);
+            if (GetACP() != needed)
+            {
+                AppLog.Current.Info("Update", "The installer opens in English: Windows' code page is " + GetACP() + ", the " + lcid + " texts need " + needed + ".");
+                return string.Empty;
+            }
+
             try
             {
                 if (HasStorage(msiPath, lcid)) return " TRANSFORMS=:" + lcid;
@@ -30,6 +39,8 @@ namespace WinTool.App.Infrastructure
 
             return string.Empty;
         }
+
+        internal static uint CodepageFor(string lcid) => lcid == "1037" ? 1255u : 1252u;
 
         internal static string LcidFor(string language)
         {
@@ -65,6 +76,9 @@ namespace WinTool.App.Infrastructure
         {
             if (code != 0) throw new ExternalException("Windows Installer error " + code, (int)code);
         }
+
+        [DllImport("kernel32.dll")]
+        private static extern uint GetACP();
 
         [DllImport("msi.dll", CharSet = CharSet.Unicode)]
         private static extern uint MsiOpenDatabase(string databasePath, IntPtr persist, out IntPtr database);

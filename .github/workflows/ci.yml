@@ -284,14 +284,6 @@ jobs:
           schtasks.exe /Query /TN "\PcNinja\WinTool by PcNinja" 2>$null | Out-Null
           if ($LASTEXITCODE -eq 0) { Fail "scheduled task remained after uninstall" $r }
 
-          # 4b. Diagnostics: the Hebrew build on its own (no transform).
-          $he = Join-Path ([IO.Path]::GetTempPath()) 'wintool-msi-diag\WinTool-he-IL.msi'
-          $r = Msi @('/i', "`"$he`"") 'install-he-direct'
-          $direct = ShortcutDescription
-          Write-Host ("Hebrew MSI directly, description (code points): " + (($direct.ToCharArray() | ForEach-Object { '{0:X4}' -f [int]$_ }) -join ' '))
-          Write-Host ("System ANSI code page: " + [Text.Encoding]::Default.CodePage + ", culture " + (Get-Culture).Name + ", UI " + (Get-UICulture).Name + ", system locale " + (Get-WinSystemLocale).Name)
-          $r = Msi @('/x', "`"$he`"") 'uninstall-he-direct'
-
           # 5. Spanish transform (:3082) installs and removes cleanly.
           $r = Msi @('/i', "`"$msi`"", 'TRANSFORMS=:3082') 'install-es'
           if ($r.Code -ne 0) { Fail "Spanish install failed with $($r.Code)" $r }

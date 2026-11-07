@@ -59,9 +59,5 @@ foreach ($lcid in '1037', '3082') {
 
 New-Item -ItemType Directory -Force (Split-Path $OutputMsi) | Out-Null
 Copy-Item $base $OutputMsi -Force
-# Diagnostics only (not released): the Hebrew build on its own, beside the work folder.
-$diag = Join-Path ([IO.Path]::GetTempPath()) 'wintool-msi-diag'
-New-Item -ItemType Directory -Force $diag | Out-Null
-Copy-Item $cultures[1].Msi (Join-Path $diag 'WinTool-he-IL.msi') -Force
 Remove-Item -Recurse -Force $work -ErrorAction SilentlyContinue
 Write-Host ("Built " + $OutputMsi + " with languages 1033 (base), 1037, 3082")

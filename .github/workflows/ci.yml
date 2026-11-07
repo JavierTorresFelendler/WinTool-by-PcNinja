@@ -269,7 +269,8 @@ jobs:
           $description = ShortcutDescription
           Write-Host ("Start menu shortcut description (code points): " + (($description.ToCharArray() | ForEach-Object { '{0:X4}' -f [int]$_ }) -join ' '))
           # Hebrew letters (U+05D0-U+05EA) and no '?' from a lost code page.
-          if (-not ($description.ToCharArray() | Where-Object { [int]$_ -ge 0x5D0 -and [int]$_ -le 0x5EA }) -or $description.Contains('?')) { Fail "the Hebrew transform was not applied" $r }
+          $hebrewOk = ($description.ToCharArray() | Where-Object { [int]$_ -ge 0x5D0 -and [int]$_ -le 0x5EA }) -and -not $description.Contains('?')
+          if (-not $hebrewOk) { Write-Host "::warning title=msi::Hebrew text lost in the transformed install; see the diagnostics below" }
 
           # 3. Installing again without schedule properties keeps the schedule (upgrade/repair path).
           $r = Msi @('/i', "`"$msi`"", 'REINSTALL=ALL', 'REINSTALLMODE=vomus') 'repair'
@@ -283,6 +284,14 @@ jobs:
           schtasks.exe /Query /TN "\PcNinja\WinTool by PcNinja" 2>$null | Out-Null
           if ($LASTEXITCODE -eq 0) { Fail "scheduled task remained after uninstall" $r }
 
+          # 4b. Diagnostics: the Hebrew build on its own (no transform).
+          $he = Join-Path ([IO.Path]::GetTempPath()) 'wintool-msi-diag\WinTool-he-IL.msi'
+          $r = Msi @('/i', "`"$he`"") 'install-he-direct'
+          $direct = ShortcutDescription
+          Write-Host ("Hebrew MSI directly, description (code points): " + (($direct.ToCharArray() | ForEach-Object { '{0:X4}' -f [int]$_ }) -join ' '))
+          Write-Host ("System ANSI code page: " + [Text.Encoding]::Default.CodePage + ", culture " + (Get-Culture).Name + ", UI " + (Get-UICulture).Name + ", system locale " + (Get-WinSystemLocale).Name)
+          $r = Msi @('/x', "`"$he`"") 'uninstall-he-direct'
+
           # 5. Spanish transform (:3082) installs and removes cleanly.
           $r = Msi @('/i', "`"$msi`"", 'TRANSFORMS=:3082') 'install-es'
           if ($r.Code -ne 0) { Fail "Spanish install failed with $($r.Code)" $r }
@@ -292,6 +301,7 @@ jobs:
           if (-not $description.StartsWith('Herramientas') -or -not $description.Contains([string][char]0xE1)) { Fail "the Spanish transform was not applied" $r }
           $r = Msi @('/x', "`"$msi`"") 'uninstall-es'
           if ($r.Code -ne 0) { Fail "Spanish uninstall failed with $($r.Code)" $r }
+          if (-not $hebrewOk) { Fail "the Hebrew transform was not applied" $null }
           Write-Host "MSI test passed."
           exit 0
 

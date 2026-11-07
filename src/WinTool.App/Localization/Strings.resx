@@ -354,6 +354,9 @@ Windows Setup will run silently.</value></data>
 
 This cannot be undone from WinTool.</value></data>
   <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>Every installed Click-to-Run Office will be removed before the new installation. Continue?</value></data>
+  <data name="OF_Confirm_Silent" xml:space="preserve"><value>Office will install silently, without its own window. Once the Office installer starts it cannot be cancelled: stopping it could leave Office half installed. It usually takes 10-30 minutes; WinTool shows the progress. Do not turn off the computer.
+
+Start the installation?</value></data>
   <data name="OF_NeedApp" xml:space="preserve"><value>Choose at least one app.</value></data>
   <data name="OF_NeedLanguage" xml:space="preserve"><value>Choose at least one language.</value></data>
   <data name="OF_NeedFolder" xml:space="preserve"><value>Choose the package folder.</value></data>

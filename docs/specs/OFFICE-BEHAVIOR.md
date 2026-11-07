@@ -54,7 +54,7 @@ Line numbers refer to `InstallerForm.cs` at `381a08e`.
 | OF-35 | Download progress from the size of the Office folder every second, a line at least every 10 s, 52-88 %. (1934) | **Keep**. MB/min is dropped from the line. **Change** (owner, 2026-11-07): installing Office also writes a line every 15 s to the window and the WinTool log (elapsed time, size of the Microsoft Office folders and growth since the start), because silent setup shows nothing (`DeploymentTests`). |
 | OF-36 | Cleans temporary files only after success. | **Change**: always (OF-16). The ODT's own logs stay in `%TEMP%`. |
 | OF-40 | No protection against another tool running at the same time. | **Change**: under WinTool's operation gate (exit 21 / message when busy). |
-| OF-41 | No cancel. | **Change**: cancel works until the Office installer starts, and during a package download (which is safe to stop). The installer is never interrupted. |
+| OF-41 | No cancel. | **Change**: cancel works until the Office installer starts, and during a package download (which is safe to stop). The installer is never interrupted. A silent install asks for confirmation first and says it cannot be cancelled once it starts (owner, 2026-11-07). |
 | OF-42 | Progress and log in the window only. | **Change**: also WinTool's log (area `Office`). |
 
 ## 5. Window and command line

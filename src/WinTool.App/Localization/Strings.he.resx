@@ -354,6 +354,9 @@
 
 לא ניתן לבטל זאת מתוך WinTool.</value></data>
   <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>כל מוצרי ה־Office מסוג Click-to-Run המותקנים יוסרו לפני ההתקנה החדשה. להמשיך?</value></data>
+  <data name="OF_Confirm_Silent" xml:space="preserve"><value>Office יותקן בשקט, בלי חלון משלו. אחרי שתוכנית ההתקנה של Office מתחילה אי אפשר לבטל אותה: עצירה עלולה להשאיר את Office מותקן חלקית. זה לוקח בדרך כלל 10-30 דקות, ו־WinTool מציג את ההתקדמות. אל תכבה את המחשב.
+
+להתחיל את ההתקנה?</value></data>
   <data name="OF_NeedApp" xml:space="preserve"><value>בחר לפחות יישום אחד.</value></data>
   <data name="OF_NeedLanguage" xml:space="preserve"><value>בחר לפחות שפה אחת.</value></data>
   <data name="OF_NeedFolder" xml:space="preserve"><value>בחר את תיקיית החבילה.</value></data>

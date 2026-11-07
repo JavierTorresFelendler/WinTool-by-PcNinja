@@ -318,6 +318,8 @@ namespace WinTool.App.ViewModels
             if (mode == OfficeMode.Remove && !Dialogs.Confirm(T["OF_Confirm_Remove"])) return;
             // Confirm whatever detection found: a failed or incomplete read must not skip the question (Codex review F2).
             if (mode == OfficeMode.Install && removeExisting && !Dialogs.Confirm(T["OF_Confirm_RemoveExisting"])) return;
+            // The Office installer is never interrupted (OF-41); silent, it has no window either, so say so first.
+            if (mode == OfficeMode.Install && silent && !Dialogs.Confirm(T["OF_Confirm_Silent"])) return;
             _ = RunAsync(request);
         }
 

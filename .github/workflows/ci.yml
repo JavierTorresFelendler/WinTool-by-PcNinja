@@ -246,9 +246,14 @@ jobs:
           if ($r.Code -ne 1603) { Fail "invalid time should fail with 1603, got $($r.Code)" $r }
           if (Test-Path $installed) { Fail "files remained after a failed install" $null }
 
-          function ProductLanguage() {
-            $key = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall' | Get-ItemProperty | Where-Object DisplayName -eq 'WinTool by PcNinja' | Select-Object -First 1
-            return $key.Language
+          # A transform's texts reach the shortcut description (WT_ShortcutDescription in WinTool.<culture>.wxl).
+          function ShortcutDescription() {
+            $lnk = Join-Path ([Environment]::GetFolderPath('CommonPrograms')) 'WinTool by PcNinja.lnk'
+            if (-not (Test-Path $lnk)) { return $null }
+            return (New-Object -ComObject WScript.Shell).CreateShortcut($lnk).Description
+          }
+          function ShowTransformLines($result) {
+            Get-Content $result.Log | Select-String -Pattern 'transform|TRANSFORMS|ProductLanguage' | Select-Object -First 15 | ForEach-Object { Write-Host $_ }
           }
 
           # 2. Silent install in Hebrew (embedded transform :1037) with a weekly schedule and a desktop shortcut.
@@ -260,7 +265,10 @@ jobs:
           if ($show -notmatch '"matchesSettings": true' -or $show -notmatch '"dayOfWeek": "Friday"' -or $show -notmatch '"wakeToRun": true') { Fail "schedule from MSI properties is wrong" $r }
           if ((Get-ItemProperty 'HKLM:\SOFTWARE\PcNinja\WinTool').Language -ne 'he') { Fail "language default was not written" $r }
           if (-not (Test-Path (Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'WinTool by PcNinja.lnk'))) { Fail "desktop shortcut missing" $r }
-          if ((ProductLanguage) -ne 1037) { Fail "the Hebrew transform was not applied (language $(ProductLanguage))" $r }
+          ShowTransformLines $r
+          $description = ShortcutDescription
+          Write-Host "Start menu shortcut description: $description"
+          if ($description -ne 'כלים ל־Windows Update, שדרוג Windows ו־Office') { Fail "the Hebrew transform was not applied" $r }
 
           # 3. Installing again without schedule properties keeps the schedule (upgrade/repair path).
           $r = Msi @('/i', "`"$msi`"", 'REINSTALL=ALL', 'REINSTALLMODE=vomus') 'repair'
@@ -277,7 +285,10 @@ jobs:
           # 5. Spanish transform (:3082) installs and removes cleanly.
           $r = Msi @('/i', "`"$msi`"", 'TRANSFORMS=:3082') 'install-es'
           if ($r.Code -ne 0) { Fail "Spanish install failed with $($r.Code)" $r }
-          if ((ProductLanguage) -ne 3082) { Fail "the Spanish transform was not applied (language $(ProductLanguage))" $r }
+          ShowTransformLines $r
+          $description = ShortcutDescription
+          Write-Host "Start menu shortcut description: $description"
+          if ($description -ne 'Herramientas para Windows Update, actualización de Windows y Office') { Fail "the Spanish transform was not applied" $r }
           $r = Msi @('/x', "`"$msi`"") 'uninstall-es'
           if ($r.Code -ne 0) { Fail "Spanish uninstall failed with $($r.Code)" $r }
           Write-Host "MSI test passed."

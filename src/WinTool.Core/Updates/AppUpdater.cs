@@ -80,17 +80,24 @@ namespace WinTool.Core.Updates
             }
         }
 
+        /// <summary>github.com assets; for a local test feed file, only files beside it.</summary>
+        private static Func<string, bool> AllowedAsset()
+        {
+            var feed = FeedUrl;
+            return File.Exists(feed) ? ReleaseFeed.LocalAssetsBeside(feed) : ReleaseFeed.IsGitHubAsset;
+        }
+
         public async Task<ReleaseInfo> CheckAsync(AppVersion current, bool includeTestVersions, CancellationToken token)
         {
             var json = await web.GetStringAsync(FeedUrl, token).ConfigureAwait(false);
-            return ReleaseFeed.Newest(ReleaseFeed.Parse(json), current, includeTestVersions);
+            return ReleaseFeed.Newest(ReleaseFeed.Parse(json, AllowedAsset()), current, includeTestVersions);
         }
 
         /// <summary>The published release of exactly this version (test versions included), or null.</summary>
         public async Task<ReleaseInfo> FindReleaseAsync(AppVersion version, CancellationToken token)
         {
             var json = await web.GetStringAsync(FeedUrl, token).ConfigureAwait(false);
-            foreach (var release in ReleaseFeed.Parse(json))
+            foreach (var release in ReleaseFeed.Parse(json, AllowedAsset()))
                 if (release.Version.CompareTo(version) == 0) return release;
             return null;
         }
@@ -164,6 +171,14 @@ namespace WinTool.Core.Updates
 
         public async Task DownloadAsync(string url, string path, IProgress<long> progress, CancellationToken token)
         {
+            if (File.Exists(url))
+            {
+                // A local test feed's asset (only accepted beside a local feed file, see ReleaseFeed).
+                File.Copy(url, path, false);
+                progress?.Report(new FileInfo(path).Length);
+                return;
+            }
+
             using (var response = await Http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();

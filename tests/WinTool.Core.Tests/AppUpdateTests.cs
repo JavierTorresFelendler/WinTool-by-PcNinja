@@ -127,6 +127,20 @@ namespace WinTool.Core.Tests
         }
 
         [Fact]
+        public void A_local_test_feed_accepts_only_files_beside_it()
+        {
+            Directory.CreateDirectory(folder);
+            var feed = Path.Combine(folder, "releases.json");
+            var beside = Path.Combine(folder, "WinTool-by-PcNinja.exe");
+            var allowed = ReleaseFeed.LocalAssetsBeside(feed);
+            Assert.True(allowed(beside));
+            Assert.False(allowed(Path.Combine(folder, "sub", "WinTool-by-PcNinja.exe")));
+            Assert.False(allowed(Path.Combine(Path.GetTempPath(), "WinTool-by-PcNinja.exe")));
+            Assert.False(allowed("https://github.com/x/dl/WinTool-by-PcNinja.exe"));
+            Assert.False(ReleaseFeed.IsGitHubAsset(beside));
+        }
+
+        [Fact]
         public void Checksums_follow_the_sha256sum_format()
         {
             var hash = new string('a', 64);

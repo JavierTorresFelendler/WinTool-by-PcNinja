@@ -44,7 +44,33 @@ namespace WinTool.Core.Updates
         public static string ApiUrl => "https://api.github.com/repos/" +
             ProductInfo.RepositoryUrl.Substring("https://github.com/".Length) + "/releases?per_page=30";
 
-        public static IReadOnlyList<ReleaseInfo> Parse(string json)
+        public static IReadOnlyList<ReleaseInfo> Parse(string json) => Parse(json, IsGitHubAsset);
+
+        /// <summary>Assets of published releases come from github.com only.</summary>
+        public static bool IsGitHubAsset(string url) => url.StartsWith("https://github.com/", StringComparison.Ordinal);
+
+        /// <summary>
+        /// For a local test feed (WINTOOL_UPDATE_FEED set to a file): assets must be files in that
+        /// feed's own folder, so the whole lifecycle can be tested without publishing a release.
+        /// </summary>
+        public static Func<string, bool> LocalAssetsBeside(string feedFile)
+        {
+            var folder = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(feedFile));
+            return url =>
+            {
+                try
+                {
+                    var full = System.IO.Path.GetFullPath(url);
+                    return string.Equals(System.IO.Path.GetDirectoryName(full), folder, StringComparison.OrdinalIgnoreCase);
+                }
+                catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is System.IO.PathTooLongException)
+                {
+                    return false;
+                }
+            };
+        }
+
+        public static IReadOnlyList<ReleaseInfo> Parse(string json, Func<string, bool> allowedAsset)
         {
             var list = JsonData.Parse(json) as List<object>;
             var releases = new List<ReleaseInfo>();
@@ -62,7 +88,7 @@ namespace WinTool.Core.Updates
                     {
                         var name = Text(asset, "name");
                         var url = Text(asset, "browser_download_url");
-                        if (name != null && url != null && url.StartsWith("https://github.com/", StringComparison.Ordinal)) assets[name] = url;
+                        if (name != null && url != null && allowedAsset(url)) assets[name] = url;
                     }
 
                 if (!assets.ContainsKey(ReleaseFiles.Executable) || !assets.ContainsKey(ReleaseFiles.Installer) || !assets.ContainsKey(ChecksumsFile))

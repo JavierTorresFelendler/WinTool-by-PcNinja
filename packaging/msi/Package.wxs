@@ -27,6 +27,8 @@
     <Property Id="ARPURLINFOABOUT" Value="https://www.pcninja.pro" />
     <Property Id="ARPHELPLINK" Value="https://help.pcninja.pro" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <WixVariable Id="WixUIDialogBmp" Value="PcNinjaDialog.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="PcNinjaBanner.bmp" />
 
     <!-- Public properties (docs/MSI-AND-CLI.md). Checkboxes delete the property when unchecked; the CLI reads empty as off. -->
     <Property Id="WINTOOL_START_MENU_SHORTCUT" Value="1" Secure="yes" />

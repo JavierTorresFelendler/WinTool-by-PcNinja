@@ -38,45 +38,20 @@ try {
   }
 } finally { Pop-Location }
 
-# Windows Installer automation (late bound): make each transform and embed it as a sub-storage named by its LCID.
-$installer = New-Object -ComObject WindowsInstaller.Installer
-function Call($target, [string] $name, [object[]] $arguments) { $target.GetType().InvokeMember($name, 'InvokeMethod', $null, $target, $arguments) }
-function GetProp($target, [string] $name, [object[]] $arguments) { $target.GetType().InvokeMember($name, 'GetProperty', $null, $target, $arguments) }
-function SetProp($target, [string] $name, [object[]] $arguments) { [void]$target.GetType().InvokeMember($name, 'SetProperty', $null, $target, $arguments) }
-
+# Make each transform and embed it in the base MSI as a sub-storage named by its LCID (msi.dll, MsiTransforms.cs).
+Add-Type -Path (Join-Path $here 'MsiTransforms.cs')
 $base = $cultures[0].Msi
-$baseDb = Call $installer 'OpenDatabase' @($base, 1)          # transact
 foreach ($c in $cultures | Select-Object -Skip 1) {
   $mst = Join-Path $work ([string]$c.Lcid + ".mst")
-  $langDb = Call $installer 'OpenDatabase' @($c.Msi, 0)       # read-only
-  [void](Call $langDb 'GenerateTransform' @($baseDb, $mst))
-  [void](Call $langDb 'CreateTransformSummaryInfo' @($baseDb, $mst, 0, 0))
-  [System.Runtime.InteropServices.Marshal]::ReleaseComObject($langDb) | Out-Null
-  $view = Call $baseDb 'OpenView' @('SELECT `Name`,`Data` FROM `_Storages`')
-  $record = Call $installer 'CreateRecord' @(2)
-  SetProp $record 'StringData' @(1, [string]$c.Lcid)
-  [void](Call $record 'SetStream' @(2, $mst))
-  [void](Call $view 'Execute' @($record))
-  [void](Call $view 'Modify' @(3, $record))                    # msiViewModifyAssign
-  [void](Call $view 'Close' @())
+  [MsiTransforms]::Generate([string]$c.Msi, [string]$base, [string]$mst)
+  [MsiTransforms]::Embed([string]$base, [string]$c.Lcid, [string]$mst)
   Write-Host ("Embedded transform " + $c.Lcid + " (" + $c.Culture + "), " + (Get-Item $mst).Length + " bytes")
 }
 # Template: the languages this package supports.
-$summary = GetProp $baseDb 'SummaryInformation' @(1)
-SetProp $summary 'Property' @(7, 'x64;1033,1037,3082')
-[void](Call $summary 'Persist' @())
-[void](Call $baseDb 'Commit' @())
-[System.Runtime.InteropServices.Marshal]::ReleaseComObject($baseDb) | Out-Null
-
-# Check: both transforms are inside.
-$check = Call $installer 'OpenDatabase' @($base, 0)
-foreach ($lcid in 1037, 3082) {
-  $view = Call $check 'OpenView' @("SELECT ``Name`` FROM ``_Storages`` WHERE ``Name``='$lcid'")
-  [void](Call $view 'Execute' @())
-  if ($null -eq (Call $view 'Fetch' @())) { Write-Host "::error title=msi::transform $lcid missing"; exit 1 }
-  [void](Call $view 'Close' @())
+[MsiTransforms]::SetTemplate([string]$base, 'x64;1033,1037,3082')
+foreach ($lcid in '1037', '3082') {
+  if (-not [MsiTransforms]::HasStorage([string]$base, $lcid)) { Write-Host "::error title=msi::transform $lcid missing"; exit 1 }
 }
-[System.Runtime.InteropServices.Marshal]::ReleaseComObject($check) | Out-Null
 
 New-Item -ItemType Directory -Force (Split-Path $OutputMsi) | Out-Null
 Copy-Item $base $OutputMsi -Force

@@ -37,7 +37,7 @@ Scheduled tasks and the MSI always wait.
 | `schedule set [options]` | Yes | Changes only the options given, validates, registers the task, then saves. Nothing is saved when anything fails. |
 | `schedule remove` | Yes | Turns the schedule off and removes WinTool's tasks. |
 | `schedule import <file>` | Yes | Applies a WinTool settings file, or a WinUpdate Tool `config.json`. |
-| `schedule import-v2` | Yes | Takes over WinUpdate Tool V1/V2 on this computer: imports its settings, removes its tasks, registers WinTool's (D-015). |
+| `schedule import-v2 [--if-present] [--keep-schedule] [--wait-for-installer]` | Yes | Takes over WinUpdate Tool V1/V2: imports its settings (unless `--keep-schedule`), removes its tasks, registers WinTool's schedule and uninstalls it (D-015, D-025). Exit 1 with "Incomplete" when the uninstall fails. `--if-present` succeeds quietly when there is nothing to take over. |
 
 `schedule set` options: `--enable`, `--disable`,
 `--frequency Daily|Weekly|Monthly|Startup`, `--time HH:mm`,

@@ -42,6 +42,9 @@ namespace WinTool.WindowsUpdate.Engine
         /// <summary>Text of the WinUpdate Tool V1/V2 config.json, or null when there is none (D-015).</summary>
         string ReadLegacyConfig();
 
+        /// <summary>Installed WinUpdate Tool V1/V2 (D-025).</summary>
+        Migration.ILegacyInstallations LegacyInstallations { get; }
+
         /// <summary>Folders and files to include in a log package.</summary>
         IEnumerable<string> LogSources();
     }

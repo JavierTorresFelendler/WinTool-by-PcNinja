@@ -316,6 +316,30 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - **Consequences:** Programs and Features shows the MSI version (for example
   1.0.999 for 1.0.0). WinTool itself shows 1.0.0.
 
+## D-025 Taking over from WinUpdate Tool also uninstalls it
+
+- **Status:** Accepted (2026-11-07). Owner's request after VM testing. Adds to
+  D-015, whose "offers to uninstall the old tool" becomes "uninstalls it".
+- **Decision:**
+  - WinUpdate Tool V1/V2 counts as present when any of these exist: its
+    config.json, its scheduled tasks, an MSI product with its UpgradeCode
+    {7BD3183C-C7D9-4F0C-BAE9-FF143A450F53} (V1 and V2 share it), or its
+    script install (Uninstall entry "PcNinja WinUpdate Tool").
+  - `schedule import-v2` (also behind the window's Take Over) imports its
+    settings, removes its tasks, applies WinTool's schedule, then uninstalls
+    it: an MSI with `msiexec /x <ProductCode> /qn /norestart`; a script
+    install only through the exact QuietUninstallString its installer
+    writes, rebuilt by WinTool and never run from the registry.
+  - A failed step is reported as a failure ("Incomplete", exit 1), never as
+    a completed migration. Portable EXEs and unrelated tasks are not touched.
+  - WinTool's MSI runs the takeover after its own installation succeeds (an
+    asynchronous commit action that waits for Windows Installer to be free,
+    because one MSI cannot remove another while it runs). When the installer
+    is given its own schedule, that schedule is kept (`--keep-schedule`);
+    otherwise the old tool's schedule is imported.
+- **Consequences:** The upstream repositories are not changed. CI covers the
+  rules with fakes; a real V1/V2 removal is a VM check.
+
 ---
 
 ## Open questions

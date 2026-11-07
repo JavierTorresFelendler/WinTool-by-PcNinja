@@ -208,3 +208,24 @@ namespace WinTool.WindowsUpdate.Tests
         }
     }
 }
+
+namespace WinTool.WindowsUpdate.Tests
+{
+    /// <summary>Installed WinUpdate Tool for tests; records uninstall calls.</summary>
+    internal sealed class FakeLegacyInstallations : WinTool.WindowsUpdate.Migration.ILegacyInstallations
+    {
+        public System.Collections.Generic.List<WinTool.WindowsUpdate.Migration.LegacyInstallation> Installed { get; } =
+            new System.Collections.Generic.List<WinTool.WindowsUpdate.Migration.LegacyInstallation>();
+        public System.Collections.Generic.List<string> Uninstalled { get; } = new System.Collections.Generic.List<string>();
+        public int ExitCode { get; set; }
+
+        public System.Collections.Generic.IReadOnlyList<WinTool.WindowsUpdate.Migration.LegacyInstallation> Find() => Installed.ToArray();
+
+        public int Uninstall(WinTool.WindowsUpdate.Migration.LegacyInstallation installation)
+        {
+            Uninstalled.Add(installation.Id);
+            if (WinTool.WindowsUpdate.Migration.LegacyInstallPolicy.Succeeded(ExitCode)) Installed.Remove(installation);
+            return ExitCode;
+        }
+    }
+}

@@ -84,6 +84,8 @@ namespace WinTool.WindowsUpdate.Platform
             };
         }
 
+        public ILegacyInstallations LegacyInstallations { get; } = new WindowsLegacyInstallations();
+
         public string ReadLegacyConfig()
         {
             var path = LegacyWinUpdateConfig.DefaultPath;

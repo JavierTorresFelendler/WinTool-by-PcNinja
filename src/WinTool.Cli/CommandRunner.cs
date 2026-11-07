@@ -401,17 +401,37 @@ namespace WinTool.Cli
         }
 
         /// <summary>D-015: take over the WinUpdate Tool V1/V2 schedule.</summary>
+        /// <summary>
+        /// Takes over from WinUpdate Tool V1/V2 (D-015, D-025): imports its settings, removes its
+        /// scheduled tasks, applies WinTool's schedule, then uninstalls it. A step that fails is
+        /// reported as a failure, never as a completed migration.
+        /// </summary>
         private int ScheduleImportV2(string[] rest)
         {
-            var a = Arguments.Parse(rest, new[] { "json" }, null);
+            var a = Arguments.Parse(rest, new[] { "json", "wait-for-installer", "if-present", "keep-schedule" }, null);
             a.NoPositional();
             if (!env.IsAdministrator) return AdminRequired(a);
-            var legacy = env.ReadLegacyConfig();
-            if (legacy == null) return Fail(a, "No WinUpdate Tool settings were found on this computer.");
+            // WinTool's MSI starts this after its own installation: one MSI cannot remove another while it runs.
+            if (a.Has("wait-for-installer")) WaitForWindowsInstaller(TimeSpan.FromMinutes(10));
 
-            var settings = LegacyWinUpdateConfig.Import(legacy);
+            var legacy = env.ReadLegacyConfig();
+            var tasks = env.Tasks.Find(TaskNames.IsLegacyWinUpdate);
+            var installs = env.LegacyInstallations.Find();
+            if (legacy == null && tasks.Count == 0 && installs.Count == 0)
+            {
+                if (a.Has("if-present"))
+                {
+                    if (a.Has("json")) Json(new { Result = "NothingToMigrate", ExitCode = CliExit.Ok });
+                    return CliExit.Ok;
+                }
+
+                return Fail(a, "No WinUpdate Tool was found on this computer.");
+            }
+
+            // --keep-schedule: the WinTool installer was given its own schedule, which wins over the old tool's.
+            var settings = legacy == null || a.Has("keep-schedule") ? null : LegacyWinUpdateConfig.Import(legacy);
             var removed = new List<string>();
-            foreach (var task in env.Tasks.Find(TaskNames.IsLegacyWinUpdate))
+            foreach (var task in tasks)
             {
                 try
                 {
@@ -424,19 +444,78 @@ namespace WinTool.Cli
                 }
             }
 
-            var exit = SaveAndApply(a, settings, quiet: a.Has("json"));
-            if (exit != CliExit.Ok) return exit;
+            if (settings != null)
+            {
+                var exit = SaveAndApply(a, settings, quiet: true);
+                if (exit != CliExit.Ok) return exit;
+            }
+
+            var uninstalled = new List<string>();
+            var failures = new List<string>();
+            foreach (var install in installs)
+            {
+                try
+                {
+                    var code = env.LegacyInstallations.Uninstall(install);
+                    if (LegacyInstallPolicy.Succeeded(code)) uninstalled.Add(install.ToString());
+                    else failures.Add(install + " could not be uninstalled (exit code " + code + ").");
+                }
+                catch (Exception ex) when (!(ex is OutOfMemoryException))
+                {
+                    failures.Add(install + " could not be uninstalled: " + ex.Message);
+                }
+            }
+
+            foreach (var line in failures) env.Log.Write(EventIds.RunFinished, EventLevel.Warning, line);
+            var result = failures.Count == 0 ? CliExit.Ok : CliExit.Failed;
             if (a.Has("json"))
             {
-                Json(new { Result = "Imported", Settings = settings, RemovedTasks = removed, Next = "Uninstall WinUpdate Tool from Settings > Apps." });
+                Json(new
+                {
+                    Result = failures.Count == 0 ? "Migrated" : "Incomplete",
+                    ExitCode = result,
+                    SettingsImported = settings != null,
+                    Settings = settings,
+                    RemovedTasks = removed,
+                    Uninstalled = uninstalled,
+                    Failures = failures
+                });
             }
             else
             {
                 foreach (var path in removed) output.WriteLine("Removed WinUpdate Tool task: " + path);
-                output.WriteLine("WinUpdate Tool settings imported. Uninstall WinUpdate Tool from Settings > Apps so only WinTool updates this computer.");
+                if (settings != null) output.WriteLine("WinUpdate Tool settings imported.");
+                foreach (var item in uninstalled) output.WriteLine("Uninstalled " + item + ".");
+                foreach (var line in failures) error.WriteLine(line);
+                output.WriteLine(failures.Count == 0
+                    ? "WinTool took over from WinUpdate Tool."
+                    : "The takeover is incomplete: uninstall WinUpdate Tool from Settings > Apps, then run this command again.");
             }
 
-            return CliExit.Ok;
+            return result;
+        }
+
+        /// <summary>Waits while another Windows Installer transaction runs (its global mutex exists).</summary>
+        private static void WaitForWindowsInstaller(TimeSpan limit)
+        {
+            var until = DateTime.UtcNow + limit;
+            while (DateTime.UtcNow < until)
+            {
+                try
+                {
+                    using (System.Threading.Mutex.OpenExisting(@"Global\_MSIExecute")) { }
+                }
+                catch (System.Threading.WaitHandleCannotBeOpenedException)
+                {
+                    return;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // It exists but cannot be opened: still busy.
+                }
+
+                System.Threading.Thread.Sleep(2000);
+            }
         }
 
         private int SaveAndApply(Arguments a, WindowsUpdateSettings settings, bool quiet = false)

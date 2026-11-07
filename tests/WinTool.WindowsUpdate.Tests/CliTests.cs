@@ -39,6 +39,8 @@ namespace WinTool.WindowsUpdate.Tests
         public WindowsUpdateReset CreateReset() => new WindowsUpdateReset(new OkServices(), new MemoryFolders(), Log, Path.Combine(Temp, "Windows"), Clock);
         public HealthFacts CollectHealthFacts(bool checkNetwork) => Health;
         public string ReadLegacyConfig() => Legacy;
+        public FakeLegacyInstallations FakeLegacy { get; } = new FakeLegacyInstallations();
+        public WinTool.WindowsUpdate.Migration.ILegacyInstallations LegacyInstallations => FakeLegacy;
 
         public IEnumerable<string> LogSources()
         {
@@ -286,7 +288,7 @@ namespace WinTool.WindowsUpdate.Tests
                 Assert.DoesNotContain(env.FakeTasks.All, t => TaskNames.IsLegacyWinUpdate(t.Name));
                 Assert.NotNull(env.FakeTasks.Get(TaskNames.Main));
                 Assert.Equal(10, env.Memory.Settings.MonthlyDay);
-                Assert.Contains("Uninstall WinUpdate Tool", result.output);
+                Assert.Contains("took over", result.output);
             }
         }
 
@@ -297,7 +299,57 @@ namespace WinTool.WindowsUpdate.Tests
             {
                 var result = Run(env, "schedule", "import-v2");
                 Assert.Equal(CliExit.Failed, result.code);
-                Assert.Contains("No WinUpdate Tool settings", result.error);
+                Assert.Contains("No WinUpdate Tool was found", result.error);
+            }
+        }
+
+        [Fact]
+        public void If_present_with_nothing_to_migrate_succeeds_quietly()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                Assert.Equal(CliExit.Ok, Run(env, "schedule", "import-v2", "--if-present").code);
+            }
+        }
+
+        [Fact]
+        public void Import_v2_uninstalls_the_old_tool_after_taking_its_schedule()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                env.Legacy = "{ \"Enabled\": true, \"Frequency\": \"Weekly\", \"DayOfWeek\": \"Sunday\", \"Time\": \"04:00\" }";
+                env.FakeLegacy.Installed.Add(WinTool.WindowsUpdate.Migration.LegacyInstallPolicy.ForMsi("{AAAAAAAA-0000-0000-0000-000000000001}"));
+                var result = Run(env, "schedule", "import-v2", "--json");
+                Assert.Equal(CliExit.Ok, result.code);
+                Assert.Equal(new[] { "{AAAAAAAA-0000-0000-0000-000000000001}" }, env.FakeLegacy.Uninstalled);
+                Assert.NotNull(env.FakeTasks.Get(TaskNames.Main));
+                Assert.Contains("\"result\": \"Migrated\"", result.output);
+            }
+        }
+
+        [Fact]
+        public void An_installed_old_tool_without_settings_or_tasks_is_still_found_and_removed()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                env.FakeLegacy.Installed.Add(WinTool.WindowsUpdate.Migration.LegacyInstallPolicy.ForMsi("{AAAAAAAA-0000-0000-0000-000000000002}"));
+                Assert.Equal(CliExit.Ok, Run(env, "schedule", "import-v2").code);
+                Assert.Single(env.FakeLegacy.Uninstalled);
+                Assert.Null(env.FakeTasks.Get(TaskNames.Main));
+            }
+        }
+
+        [Fact]
+        public void A_failed_uninstall_is_reported_and_not_called_a_completed_migration()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                env.FakeLegacy.Installed.Add(WinTool.WindowsUpdate.Migration.LegacyInstallPolicy.ForMsi("{AAAAAAAA-0000-0000-0000-000000000003}"));
+                env.FakeLegacy.ExitCode = 1603;
+                var result = Run(env, "schedule", "import-v2", "--json");
+                Assert.Equal(CliExit.Failed, result.code);
+                Assert.Contains("\"result\": \"Incomplete\"", result.output);
+                Assert.Contains("1603", result.output);
             }
         }
 

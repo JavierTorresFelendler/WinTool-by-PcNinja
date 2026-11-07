@@ -545,7 +545,11 @@ namespace WinTool.App.ViewModels
             pending = await Task.Run(() => env.Probe.GetPendingRestart());
             LegacyDetected = await Task.Run(() =>
             {
-                try { return env.ReadLegacyConfig() != null || env.Tasks.Find(TaskNames.IsLegacyWinUpdate).Count > 0; }
+                try
+                {
+                    return env.ReadLegacyConfig() != null || env.Tasks.Find(TaskNames.IsLegacyWinUpdate).Count > 0 ||
+                           env.LegacyInstallations.Find().Count > 0;
+                }
                 catch (Exception ex) when (!(ex is OutOfMemoryException)) { return false; }
             });
             RaiseSummary();

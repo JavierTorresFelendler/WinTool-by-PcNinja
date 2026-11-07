@@ -100,7 +100,18 @@
     <!-- Uninstall (not an upgrade): remove the scheduled tasks while the EXE still exists. -->
     <CustomAction Id="RemoveSchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="schedule remove" />
 
+    <!-- D-025: take over from WinUpdate Tool V1/V2 and uninstall it. One MSI cannot remove another while it
+         runs, so the installed EXE starts asynchronously, waits for Windows Installer to be free, then migrates.
+         With the installer's own schedule (WINTOOL_ENABLE_SCHEDULE), that schedule is kept and only the old
+         tool is removed. Nothing happens when no WinUpdate Tool is present. -->
+    <CustomAction Id="TakeOverLegacy" FileRef="MainExe" Execute="commit" Impersonate="no" Return="asyncNoWait"
+                  ExeCommand="schedule import-v2 --wait-for-installer --if-present" />
+    <CustomAction Id="TakeOverLegacyKeepSchedule" FileRef="MainExe" Execute="commit" Impersonate="no" Return="asyncNoWait"
+                  ExeCommand="schedule import-v2 --wait-for-installer --if-present --keep-schedule" />
+
     <InstallExecuteSequence>
+      <Custom Action="TakeOverLegacy" Before="InstallFinalize" Condition="NOT REMOVE AND NOT (WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;)" />
+      <Custom Action="TakeOverLegacyKeepSchedule" Before="InstallFinalize" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
       <Custom Action="ApplySchedule" After="InstallFiles" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
       <Custom Action="RemoveSchedule" Before="RemoveFiles" Condition="REMOVE = &quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
     </InstallExecuteSequence>

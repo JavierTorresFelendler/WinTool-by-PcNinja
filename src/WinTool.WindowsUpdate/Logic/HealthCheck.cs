@@ -25,6 +25,9 @@ namespace WinTool.WindowsUpdate.Logic
 
         /// <summary>English detail for logs and the CLI.</summary>
         public string Detail { get; }
+
+        /// <summary>Free space in GB for the "disk" item, so the window can word it in its language.</summary>
+        public double? FreeGigabytes { get; set; }
     }
 
     public sealed class HealthFacts
@@ -59,7 +62,10 @@ namespace WinTool.WindowsUpdate.Logic
             {
                 var free = facts.SystemDriveFreeBytes.Value;
                 var gb = (free / (1024.0 * 1024 * 1024)).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + " GB free";
-                items.Add(new HealthItem("disk", free < ProblemBelowBytes ? HealthStatus.Problem : free < WarnBelowBytes ? HealthStatus.Warning : HealthStatus.Ok, gb));
+                items.Add(new HealthItem("disk", free < ProblemBelowBytes ? HealthStatus.Problem : free < WarnBelowBytes ? HealthStatus.Warning : HealthStatus.Ok, gb)
+                {
+                    FreeGigabytes = free / (1024.0 * 1024 * 1024)
+                });
             }
 
             items.Add(facts.PendingRestart.Pending

@@ -30,7 +30,7 @@ namespace WinTool.App.ViewModels
         private bool follow;
         private bool active;
         private int total;
-        private string message;
+        private Func<string> message;
         private bool messageIsError;
         private bool collecting;
         private int reloadVersion;
@@ -78,8 +78,16 @@ namespace WinTool.App.ViewModels
 
         public string CountText => total > MaxEntries ? T.Format("LG_Shown", total, MaxEntries) : T.Format("LG_Count", Entries.Count);
         public bool IsEmpty => Entries.Count == 0;
-        public string Message { get => message; private set { Set(ref message, value); OnPropertyChanged(nameof(HasMessage)); } }
-        public bool HasMessage => !string.IsNullOrEmpty(message);
+        public string Message => message?.Invoke() ?? string.Empty;
+        public bool HasMessage => !string.IsNullOrEmpty(Message);
+
+        private void SetMessage(Func<string> text, bool isError)
+        {
+            message = text;
+            MessageIsError = isError;
+            OnPropertyChanged(nameof(Message));
+            OnPropertyChanged(nameof(HasMessage));
+        }
         public bool MessageIsError { get => messageIsError; private set => Set(ref messageIsError, value); }
 
         public override bool FillsWindow => true;
@@ -146,8 +154,8 @@ namespace WinTool.App.ViewModels
             }
             catch (IOException ex)
             {
-                Message = ex.Message;
-                MessageIsError = true;
+                var error = ex.Message;
+                SetMessage(() => error, true);
                 return;
             }
 
@@ -180,14 +188,13 @@ namespace WinTool.App.ViewModels
 
                 if (code == 0 && zip != null)
                 {
-                    Message = T.Format("LG_Collected", zip);
-                    MessageIsError = false;
+                    SetMessage(() => T.Format("LG_Collected", zip), false);
                     Process.Start(new ProcessStartInfo("explorer.exe", "/select,\"" + zip + "\"") { UseShellExecute = true });
                 }
                 else
                 {
-                    Message = T["LG_CollectFailed"] + " " + output.ToString().Trim();
-                    MessageIsError = true;
+                    var details = output.ToString().Trim();
+                    SetMessage(() => T["LG_CollectFailed"] + " " + details, true);
                 }
             }
             finally
@@ -206,8 +213,8 @@ namespace WinTool.App.ViewModels
             }
             catch (Exception ex) when (!(ex is OutOfMemoryException))
             {
-                Message = ex.Message;
-                MessageIsError = true;
+                var error = ex.Message;
+                SetMessage(() => error, true);
             }
         }
     }

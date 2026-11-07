@@ -68,15 +68,17 @@ namespace WinTool.App.ViewModels
         }
     }
 
-    public sealed class HealthRowViewModel
+    public sealed class HealthRowViewModel : LocalizedObject
     {
-        public HealthRowViewModel(string text, HealthStatus status)
+        private readonly Func<string> text;
+
+        public HealthRowViewModel(Func<string> text, HealthStatus status)
         {
-            Text = text;
+            this.text = text;
             Status = status;
         }
 
-        public string Text { get; }
+        public string Text => text();
         public HealthStatus Status { get; }
         public string StatusName => Status.ToString();
         public bool IsOk => Status == HealthStatus.Ok;
@@ -109,7 +111,7 @@ namespace WinTool.App.ViewModels
         private bool hasScanned;
         private DateTime? lastScan;
         private PendingRestartState pending = PendingRestartState.None;
-        private string message;
+        private Func<string> message;
         private bool messageIsError;
         private string progressText;
         private double progressValue;
@@ -131,7 +133,7 @@ namespace WinTool.App.ViewModels
         private bool rebootPrompt;
         private bool installFirmware;
         private string nextRun;
-        private string scheduleMessage;
+        private Func<string> scheduleMessage;
         private bool scheduleMessageIsError;
 
         public WindowsUpdatePageViewModel(IWindowsUpdateEnvironment env)
@@ -190,8 +192,9 @@ namespace WinTool.App.ViewModels
         public bool RestartPending => pending.Pending;
         public string RestartReason => pending.Pending ? string.Join("; ", pending.Reasons) : string.Empty;
 
-        public string Message { get => message; private set { if (Set(ref message, value)) OnPropertyChanged(nameof(HasMessage)); } }
-        public bool HasMessage => !string.IsNullOrEmpty(message);
+        /// <summary>Re-translated on a language change, like every text on the page.</summary>
+        public string Message => message?.Invoke() ?? string.Empty;
+        public bool HasMessage => !string.IsNullOrEmpty(Message);
         public bool MessageIsError { get => messageIsError; private set => Set(ref messageIsError, value); }
 
         public string ProgressText { get => progressText; private set => Set(ref progressText, value); }
@@ -219,8 +222,8 @@ namespace WinTool.App.ViewModels
         public bool RebootPrompt { get => rebootPrompt; set => Set(ref rebootPrompt, value); }
         public bool InstallFirmware { get => installFirmware; set => Set(ref installFirmware, value); }
         public string NextRun { get => nextRun; private set => Set(ref nextRun, value); }
-        public string ScheduleMessage { get => scheduleMessage; private set { if (Set(ref scheduleMessage, value)) OnPropertyChanged(nameof(HasScheduleMessage)); } }
-        public bool HasScheduleMessage => !string.IsNullOrEmpty(scheduleMessage);
+        public string ScheduleMessage => scheduleMessage?.Invoke() ?? string.Empty;
+        public bool HasScheduleMessage => !string.IsNullOrEmpty(ScheduleMessage);
         public bool ScheduleMessageIsError { get => scheduleMessageIsError; private set => Set(ref scheduleMessageIsError, value); }
         public bool ShowDay => IsWeekly;
         public bool ShowMonthDay => IsMonthly;
@@ -251,11 +254,12 @@ namespace WinTool.App.ViewModels
                 var settings = env.Store.LoadSettings();
                 var scan = await Task.Run(() => new ScanService(env.CreateAgent(), env.Log).Scan(UpdateScope.Default(settings.InstallFirmwareUpdates)));
                 ApplyScan(scan);
-                SetMessage(Rows.Count == 0 ? T["WU_NoUpdates"] : null, false);
+                var none = Rows.Count == 0;
+                SetMessage(none ? () => T["WU_NoUpdates"] : (Func<string>)null, false);
             }
             catch (UpdateAgentException ex)
             {
-                SetMessage(T.Format("WU_ScanFailed", ex.Describe()), true);
+                SetMessage(() => T.Format("WU_ScanFailed", ex.Describe()), true);
             }
             finally
             {
@@ -304,7 +308,7 @@ namespace WinTool.App.ViewModels
                 if (row != null) row.Result = item.Succeeded ? T["WU_Item_Installed"] : T.Format("WU_Item_Failed", HResults.ToHex(item.HResult));
             }
 
-            SetMessage(Explain(outcome), outcome.Result == RunResult.Failed || outcome.Result == RunResult.DownloadFailed || outcome.Result == RunResult.SucceededWithErrors);
+            SetMessage(() => Explain(outcome), outcome.Result == RunResult.Failed || outcome.Result == RunResult.DownloadFailed || outcome.Result == RunResult.SucceededWithErrors);
             pending = await Task.Run(() => env.Probe.GetPendingRestart());
             if (outcome.RebootRequired || pending.Pending)
             {
@@ -339,7 +343,11 @@ namespace WinTool.App.ViewModels
             });
 
             HealthRows.Clear();
-            foreach (var item in items) HealthRows.Add(new HealthRowViewModel(HealthText(item), item.Status));
+            foreach (var item in items)
+            {
+                var row = item;
+                HealthRows.Add(new HealthRowViewModel(() => HealthText(row), row.Status));
+            }
             HealthOverall = HealthCheck.Overall(items);
             HealthSummary = T["WU_Health_" + HealthOverall];
         }
@@ -354,11 +362,11 @@ namespace WinTool.App.ViewModels
             {
                 var path = line.Substring("Log package: ".Length);
                 Process.Start(new ProcessStartInfo("explorer.exe", "/select,\"" + path + "\"") { UseShellExecute = true });
-                SetMessage(T.Format("WU_LogsCollected", path), false);
+                SetMessage(() => T.Format("WU_LogsCollected", path), false);
             }
             else
             {
-                SetMessage(text.Trim(), true);
+                SetMessage(() => text.Trim(), true);
             }
         }
 
@@ -376,8 +384,8 @@ namespace WinTool.App.ViewModels
                     }
                 });
 
-                if (result == null) SetMessage(T["WU_OperationRunning"], true);
-                else SetMessage(result.Succeeded ? T["WU_Reset_Done"] : T.Format("WU_Reset_Warnings", string.Join(" ", result.Warnings)), !result.Succeeded);
+                if (result == null) SetMessage(() => T["WU_OperationRunning"], true);
+                else SetMessage(() => result.Succeeded ? T["WU_Reset_Done"] : T.Format("WU_Reset_Warnings", string.Join(" ", result.Warnings)), !result.Succeeded);
             }
             finally
             {
@@ -400,7 +408,7 @@ namespace WinTool.App.ViewModels
             }
             else
             {
-                SetMessage(output.ToString().Trim(), true);
+                SetMessage(() => output.ToString().Trim(), true);
             }
         }
 
@@ -442,7 +450,7 @@ namespace WinTool.App.ViewModels
             var errors = settings.Validate();
             if (errors.Count > 0)
             {
-                SetScheduleMessage(T["WU_Schedule_Invalid"], true);
+                SetScheduleMessage(() => T["WU_Schedule_Invalid"], true);
                 return;
             }
 
@@ -465,11 +473,11 @@ namespace WinTool.App.ViewModels
             {
                 await Task.Run(() => new ScheduleService(env.Tasks, env.Log, env.ExecutablePath, env.Clock).Apply(settings));
                 env.Store.SaveSettings(settings);
-                SetScheduleMessage(settings.ScheduleEnabled ? T["WU_Schedule_Saved"] : T["WU_Schedule_Off"], false);
+                SetScheduleMessage(() => settings.ScheduleEnabled ? T["WU_Schedule_Saved"] : T["WU_Schedule_Off"], false);
             }
             catch (Exception ex) when (ex is InvalidOperationException || ex is UnauthorizedAccessException || ex is System.Runtime.InteropServices.COMException || ex is ArgumentException)
             {
-                SetScheduleMessage(T.Format("WU_Schedule_Failed", ex.Message), true);
+                SetScheduleMessage(() => T.Format("WU_Schedule_Failed", ex.Message), true);
             }
 
             await RefreshNextRunAsync(env.Store.LoadSettings());
@@ -488,7 +496,7 @@ namespace WinTool.App.ViewModels
                 var status = await Task.Run(() => new ScheduleService(env.Tasks, env.Log, env.ExecutablePath, env.Clock).GetStatus(settings));
                 if (status.Main == null) NextRun = T["WU_Schedule_TaskMissing"];
                 else NextRun = status.Main.NextRunTime.HasValue ? status.Main.NextRunTime.Value.ToString("g", T.Culture) : T["WU_Schedule_AtStartup"];
-                if (status.MatchesSettings == false) SetScheduleMessage(T["WU_Schedule_Mismatch"], true);
+                if (status.MatchesSettings == false) SetScheduleMessage(() => T["WU_Schedule_Mismatch"], true);
             }
             catch (Exception ex) when (ex is System.Runtime.InteropServices.COMException || ex is UnauthorizedAccessException)
             {
@@ -570,7 +578,10 @@ namespace WinTool.App.ViewModels
         {
             var key = "WU_HealthItem_" + item.Id.Replace("-", "_") + "_" + item.Status;
             var text = T[key];
-            return text.StartsWith("!", StringComparison.Ordinal) ? item.Detail : (item.Id == "disk" ? text + " (" + item.Detail + ")" : text);
+            if (text.StartsWith("!", StringComparison.Ordinal)) return item.Detail;
+            return item.FreeGigabytes.HasValue
+                ? text + " (" + T.Format("WU_Health_FreeSpace", item.FreeGigabytes.Value.ToString("N1", T.Culture)) + ")"
+                : text;
         }
 
         private bool IsPortableCopy()
@@ -597,16 +608,20 @@ namespace WinTool.App.ViewModels
             CommandManager.InvalidateRequerySuggested();
         }
 
-        private void SetMessage(string text, bool isError)
+        private void SetMessage(Func<string> text, bool isError)
         {
             MessageIsError = isError;
-            Message = text;
+            message = text;
+            OnPropertyChanged(nameof(Message));
+            OnPropertyChanged(nameof(HasMessage));
         }
 
-        private void SetScheduleMessage(string text, bool isError)
+        private void SetScheduleMessage(Func<string> text, bool isError)
         {
             ScheduleMessageIsError = isError;
-            ScheduleMessage = text;
+            scheduleMessage = text;
+            OnPropertyChanged(nameof(ScheduleMessage));
+            OnPropertyChanged(nameof(HasScheduleMessage));
         }
 
         private void RaiseSummary()

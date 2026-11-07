@@ -7,7 +7,7 @@
     <data name="Nav_Label" xml:space="preserve"><value>Navegación principal</value><comment>needs review (D-023)</comment></data>
   <data name="Nav_Dashboard" xml:space="preserve"><value>Panel</value><comment>needs review (D-023)</comment></data>
   <data name="Nav_WindowsUpdate" xml:space="preserve"><value>Windows Update</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_WindowsUpgrade" xml:space="preserve"><value>Actualización de Windows</value><comment>needs review (D-023)</comment></data>
+  <data name="Nav_WindowsUpgrade" xml:space="preserve"><value>Actualizar Windows</value><comment>needs review (D-023)</comment></data>
   <data name="Nav_Office" xml:space="preserve"><value>Office</value><comment>needs review (D-023)</comment></data>
   <data name="Nav_Logs" xml:space="preserve"><value>Registros</value><comment>needs review (D-023)</comment></data>
   <data name="Nav_Settings" xml:space="preserve"><value>Configuración</value><comment>needs review (D-023)</comment></data>
@@ -402,4 +402,5 @@ No: programar esta copia portable de todos modos (no muevas ni elimines el archi
 Cancelar: no hacer nada.</value><comment>needs review (D-023)</comment></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>No se pudo descargar el instalador de WinTool {0}. Descarga WinTool-by-PcNinja.msi desde {1}.</value><comment>needs review (D-023)</comment></data>
   <data name="Settings_Spanish_Review" xml:space="preserve"><value>El español es una primera traducción, pendiente de revisión por un hablante nativo.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_Health_FreeSpace" xml:space="preserve"><value>{0} GB libres</value><comment>needs review (D-023)</comment></data>
 </root>

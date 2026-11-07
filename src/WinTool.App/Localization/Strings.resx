@@ -402,4 +402,5 @@ No: schedule this portable copy anyway (do not move or delete the file).
 Cancel: do nothing.</value></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>The installer for WinTool {0} could not be downloaded. Download WinTool-by-PcNinja.msi from {1}.</value></data>
   <data name="Settings_Spanish_Review" xml:space="preserve"><value>Spanish is a first translation, waiting for review by a native speaker.</value></data>
+  <data name="WU_Health_FreeSpace" xml:space="preserve"><value>{0} GB free</value></data>
 </root>

@@ -41,6 +41,9 @@ try {
 # Make each transform and embed it in the base MSI as a sub-storage named by its LCID (msi.dll, MsiTransforms.cs).
 Add-Type -Path (Join-Path $here 'MsiTransforms.cs')
 $base = $cultures[0].Msi
+# The English base becomes code page neutral (its text is plain ASCII); otherwise Windows Installer
+# keeps 1252 when a transform is applied and Hebrew (1255) turns into '?'.
+[MsiTransforms]::SetCodepage([string]$base, '0', (Join-Path $work 'neutral'))
 foreach ($c in $cultures) { Write-Host ($c.Culture + " codepage " + [MsiTransforms]::Codepage([string]$c.Msi, (Join-Path $work ("cp-" + $c.Culture)))) }
 foreach ($c in $cultures | Select-Object -Skip 1) {
   $mst = Join-Path $work ([string]$c.Lcid + ".mst")

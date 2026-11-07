@@ -76,6 +76,24 @@ public static class MsiTransforms
         }
     }
 
+    /// <summary>
+    /// Forces the database code page (importing _ForceCodepage). Used to make the English base
+    /// neutral (0), so a language transform can set its own code page (Hebrew needs 1255).
+    /// Safe only while the database holds plain ASCII text.
+    /// </summary>
+    public static void SetCodepage(string msi, string codepage, string folder)
+    {
+        System.IO.Directory.CreateDirectory(folder);
+        System.IO.File.WriteAllText(System.IO.Path.Combine(folder, "_ForceCodepage.idt"), "\r\n\r\n" + codepage + "\t_ForceCodepage\r\n", System.Text.Encoding.ASCII);
+        IntPtr db = Open(msi, 1);
+        try
+        {
+            Check(MsiDatabaseImport(db, folder, "_ForceCodepage.idt"), "import codepage");
+            Check(MsiDatabaseCommit(db), "commit");
+        }
+        finally { MsiCloseHandle(db); }
+    }
+
     /// <summary>The database's ANSI code page (exported _ForceCodepage).</summary>
     public static string Codepage(string msi, string folder)
     {
@@ -117,6 +135,7 @@ public static class MsiTransforms
     [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiGetSummaryInformation(IntPtr db, string path, uint updateCount, out IntPtr summary);
     [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiSummaryInfoSetProperty(IntPtr summary, uint property, uint type, int intValue, IntPtr fileTime, string value);
     [DllImport("msi.dll")] static extern uint MsiSummaryInfoPersist(IntPtr summary);
+    [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiDatabaseImport(IntPtr db, string folder, string file);
     [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiDatabaseExport(IntPtr db, string table, string folder, string file);
     [DllImport("msi.dll")] static extern uint MsiCloseHandle(IntPtr handle);
 }

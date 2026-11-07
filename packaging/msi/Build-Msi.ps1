@@ -41,6 +41,7 @@ try {
 # Make each transform and embed it in the base MSI as a sub-storage named by its LCID (msi.dll, MsiTransforms.cs).
 Add-Type -Path (Join-Path $here 'MsiTransforms.cs')
 $base = $cultures[0].Msi
+foreach ($c in $cultures) { Write-Host ($c.Culture + " codepage " + [MsiTransforms]::Codepage([string]$c.Msi, (Join-Path $work ("cp-" + $c.Culture)))) }
 foreach ($c in $cultures | Select-Object -Skip 1) {
   $mst = Join-Path $work ([string]$c.Lcid + ".mst")
   [MsiTransforms]::Generate([string]$c.Msi, [string]$base, [string]$mst)

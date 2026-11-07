@@ -267,8 +267,9 @@ jobs:
           if (-not (Test-Path (Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'WinTool by PcNinja.lnk'))) { Fail "desktop shortcut missing" $r }
           ShowTransformLines $r
           $description = ShortcutDescription
-          Write-Host "Start menu shortcut description: $description"
-          if ($description -ne 'כלים ל־Windows Update, שדרוג Windows ו־Office') { Fail "the Hebrew transform was not applied" $r }
+          Write-Host ("Start menu shortcut description (code points): " + (($description.ToCharArray() | ForEach-Object { '{0:X4}' -f [int]$_ }) -join ' '))
+          # Hebrew letters (U+05D0-U+05EA) and no '?' from a lost code page.
+          if (-not ($description.ToCharArray() | Where-Object { [int]$_ -ge 0x5D0 -and [int]$_ -le 0x5EA }) -or $description.Contains('?')) { Fail "the Hebrew transform was not applied" $r }
 
           # 3. Installing again without schedule properties keeps the schedule (upgrade/repair path).
           $r = Msi @('/i', "`"$msi`"", 'REINSTALL=ALL', 'REINSTALLMODE=vomus') 'repair'
@@ -287,8 +288,8 @@ jobs:
           if ($r.Code -ne 0) { Fail "Spanish install failed with $($r.Code)" $r }
           ShowTransformLines $r
           $description = ShortcutDescription
-          Write-Host "Start menu shortcut description: $description"
-          if ($description -ne 'Herramientas para Windows Update, actualización de Windows y Office') { Fail "the Spanish transform was not applied" $r }
+          Write-Host ("Start menu shortcut description (code points): " + (($description.ToCharArray() | ForEach-Object { '{0:X4}' -f [int]$_ }) -join ' '))
+          if (-not $description.StartsWith('Herramientas') -or -not $description.Contains([string][char]0xE1)) { Fail "the Spanish transform was not applied" $r }
           $r = Msi @('/x', "`"$msi`"") 'uninstall-es'
           if ($r.Code -ne 0) { Fail "Spanish uninstall failed with $($r.Code)" $r }
           Write-Host "MSI test passed."

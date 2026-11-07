@@ -76,6 +76,20 @@ public static class MsiTransforms
         }
     }
 
+    /// <summary>The database's ANSI code page (exported _ForceCodepage).</summary>
+    public static string Codepage(string msi, string folder)
+    {
+        IntPtr db = Open(msi, 0);
+        try
+        {
+            System.IO.Directory.CreateDirectory(folder);
+            Check(MsiDatabaseExport(db, "_ForceCodepage", folder, "codepage.idt"), "export codepage");
+            var lines = System.IO.File.ReadAllLines(System.IO.Path.Combine(folder, "codepage.idt"));
+            return lines.Length > 2 ? lines[2].Split('\t')[0] : "?";
+        }
+        finally { MsiCloseHandle(db); }
+    }
+
     static IntPtr Open(string path, int mode)
     {
         IntPtr handle;
@@ -103,5 +117,6 @@ public static class MsiTransforms
     [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiGetSummaryInformation(IntPtr db, string path, uint updateCount, out IntPtr summary);
     [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiSummaryInfoSetProperty(IntPtr summary, uint property, uint type, int intValue, IntPtr fileTime, string value);
     [DllImport("msi.dll")] static extern uint MsiSummaryInfoPersist(IntPtr summary);
+    [DllImport("msi.dll", CharSet = CharSet.Unicode)] static extern uint MsiDatabaseExport(IntPtr db, string table, string folder, string file);
     [DllImport("msi.dll")] static extern uint MsiCloseHandle(IntPtr handle);
 }

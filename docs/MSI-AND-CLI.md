@@ -25,6 +25,13 @@
 6. Ready to install
 7. Finish, with the option **Launch WinTool**
 
+The WiX wizard uses `packaging/msi/PcNinjaDialog.bmp` (493x312) and
+`PcNinjaBanner.bmp` (493x58), both 24-bit BMPs composed from the approved
+`src/WinTool.App/Assets/pcninja-mascot.png`. The dialog keeps artwork in the
+left 164 pixels; the banner keeps the left title area light and puts the
+mascot on the right. These replace wizard artwork; the existing shortcut
+and installed-product icon remains `PcNinja.ico`.
+
 ## Public properties (silent install)
 
 Every option on the setup pages has a property. Defaults match the

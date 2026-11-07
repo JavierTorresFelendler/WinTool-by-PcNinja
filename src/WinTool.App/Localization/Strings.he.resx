@@ -185,6 +185,13 @@
   <data name="WU_Legacy_TakeOver" xml:space="preserve"><value>קבלת התזמון</value></data>
   <data name="WU_Legacy_Confirm" xml:space="preserve"><value>לייבא את ההגדרות של WinUpdate Tool, למחוק את המשימות המתוזמנות שלו ולהסיר אותו?</value></data>
   <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool קיבל את התפקיד מ־WinUpdate Tool והסיר אותו.</value></data>
+  <data name="WU_When_Daily" xml:space="preserve"><value>כל יום בשעה {0}</value></data>
+  <data name="WU_When_Weekly" xml:space="preserve"><value>כל יום {0} בשעה {1}</value></data>
+  <data name="WU_When_Monthly" xml:space="preserve"><value>ב־{0} בכל חודש בשעה {1}</value></data>
+  <data name="WU_When_Startup" xml:space="preserve"><value>בהפעלת המחשב</value></data>
+  <data name="WU_Takeover_Imported" xml:space="preserve"><value>WinTool לקח את התזמון של WinUpdate Tool ({0}) והסיר את הכלי הישן. אפשר לשנות אותו במסך Windows Update.</value></data>
+  <data name="WU_Takeover_Kept" xml:space="preserve"><value>WinTool הסיר את WinUpdate Tool ושמר את התזמון שנבחר בהתקנה ({0}). אפשר לשנות אותו במסך Windows Update.</value></data>
+  <data name="WU_Takeover_Removed" xml:space="preserve"><value>WinTool הסיר את WinUpdate Tool. אפשר לקבוע תזמון במסך Windows Update.</value></data>
   <data name="WU_RunAtStartup" xml:space="preserve"><value>להריץ גם אחרי הפעלת המחשב (5 דק׳)</value></data>
   <data name="UP_Warning" xml:space="preserve"><value>שיטת תאימות ניסיונית. גבה קבצים חשובים לפני השדרוג.</value></data>
   <data name="UP_ThisComputer" xml:space="preserve"><value>המחשב הזה</value></data>

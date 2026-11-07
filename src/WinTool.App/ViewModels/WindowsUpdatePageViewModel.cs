@@ -427,6 +427,7 @@ namespace WinTool.App.ViewModels
             var code = await Task.Run(() => new CommandRunner(env, output, output).Run(new[] { "schedule", "import-v2" }));
             if (code == 0)
             {
+                TakeoverNotice.Clear(env);
                 LegacyDetected = false;
                 LoadSchedule();
                 Dialogs.Info(T["WU_Legacy_Done"]);

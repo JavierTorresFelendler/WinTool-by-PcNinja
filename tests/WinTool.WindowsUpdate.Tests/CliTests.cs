@@ -329,6 +329,7 @@ namespace WinTool.WindowsUpdate.Tests
                 Assert.True(env.ListLog.Contains("WinUpdate Tool takeover: importing its schedule: "));
                 Assert.True(env.ListLog.Contains("WinUpdate Tool takeover: uninstalled "));
                 Assert.True(env.ListLog.Contains("WinUpdate Tool takeover: completed: 0 task(s) removed, 1 installation(s) uninstalled."));
+                Assert.Equal(TakeoverNotices.Imported, env.Store.LoadState().PendingTakeoverNotice);
             }
         }
 
@@ -342,6 +343,7 @@ namespace WinTool.WindowsUpdate.Tests
                 Assert.Equal(CliExit.Ok, Run(env, "schedule", "import-v2", "--keep-schedule", "--if-present").code);
                 Assert.Null(env.FakeTasks.Get(TaskNames.Main));
                 Assert.True(env.ListLog.Contains("keeping the schedule chosen in the WinTool installer"));
+                Assert.Equal(TakeoverNotices.Kept, env.Store.LoadState().PendingTakeoverNotice);
             }
         }
 
@@ -352,6 +354,7 @@ namespace WinTool.WindowsUpdate.Tests
             {
                 Assert.Equal(CliExit.Ok, Run(env, "schedule", "import-v2", "--if-present").code);
                 Assert.True(env.ListLog.Contains("WinUpdate Tool takeover: nothing to migrate"));
+                Assert.Null(env.Store.LoadState().PendingTakeoverNotice);
             }
         }
 
@@ -379,6 +382,7 @@ namespace WinTool.WindowsUpdate.Tests
                 Assert.Contains("\"result\": \"Incomplete\"", result.output);
                 Assert.Contains("1603", result.output);
                 Assert.True(env.ListLog.Contains("WinUpdate Tool takeover: incomplete: 1 installation(s) could not be uninstalled."));
+                Assert.Null(env.Store.LoadState().PendingTakeoverNotice);
             }
         }
 

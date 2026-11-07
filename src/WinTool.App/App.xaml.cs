@@ -35,7 +35,11 @@ namespace WinTool.App
             var settingsPage = new SettingsPageViewModel(settings, SaveSettings, ApplyTheme, updates);
             var windowsUpdate = new WinTool.WindowsUpdate.Platform.WindowsUpdateEnvironment(exePath);
             var window = new MainWindow { DataContext = new MainViewModel(settingsPage, windowsUpdate, updates) };
-            window.ContentRendered += (sender, e) => updates.CheckAtStartup();
+            window.ContentRendered += (sender, e) =>
+            {
+                TakeoverNotice.ShowOnce(windowsUpdate);
+                updates.CheckAtStartup();
+            };
             MainWindow = window;
             AppLog.Current.Info("App", "Window opened; theme " + ThemeManager.Current + ", language " + Loc.Instance.Language + ".");
             return Run(window);

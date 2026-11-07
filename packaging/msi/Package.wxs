@@ -151,7 +151,7 @@
 
       <Dialog Id="WinToolScheduleDlg" Width="370" Height="270" Title="[ProductName] Setup">
         <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Windows Update schedule" />
-        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="Optional. Off unless checked; an existing schedule is kept." />
+        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="Optional. Off unless checked. An existing schedule is kept, also one from WinUpdate Tool, which is then removed." />
         <Control Id="TopLine" Type="Line" X="0" Y="50" Width="370" Height="0" />
         <Control Id="EnableSchedule" Type="CheckBox" X="25" Y="58" Width="320" Height="17" Property="WINTOOL_ENABLE_SCHEDULE" CheckBoxValue="1" Text="Run Windows Update on a schedule" />
         <Control Id="FrequencyLabel" Type="Text" X="40" Y="84" Width="65" Height="15" Text="Frequency:" />

@@ -185,6 +185,13 @@ Si el archivo se mueve o se elimina, la programación deja de funcionar. ¿Conti
   <data name="WU_Legacy_TakeOver" xml:space="preserve"><value>Asumir</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Legacy_Confirm" xml:space="preserve"><value>¿Importar la configuración de WinUpdate Tool, quitar sus tareas programadas y desinstalarlo?</value><comment>needs review (D-023)</comment></data>
   <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool asumió el trabajo de WinUpdate Tool y lo desinstaló.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_When_Daily" xml:space="preserve"><value>cada día a las {0}</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_When_Weekly" xml:space="preserve"><value>cada {0} a las {1}</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_When_Monthly" xml:space="preserve"><value>el día {0} de cada mes a las {1}</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_When_Startup" xml:space="preserve"><value>al iniciar el equipo</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_Takeover_Imported" xml:space="preserve"><value>WinTool tomó la programación de WinUpdate Tool ({0}) y desinstaló la herramienta anterior. Puedes cambiarla en Windows Update.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_Takeover_Kept" xml:space="preserve"><value>WinTool desinstaló WinUpdate Tool y mantuvo la programación elegida durante la instalación ({0}). Puedes cambiarla en Windows Update.</value><comment>needs review (D-023)</comment></data>
+  <data name="WU_Takeover_Removed" xml:space="preserve"><value>WinTool desinstaló WinUpdate Tool. Puedes programar las actualizaciones en Windows Update.</value><comment>needs review (D-023)</comment></data>
   <data name="WU_RunAtStartup" xml:space="preserve"><value>Ejecutar también tras el inicio (5 min)</value><comment>needs review (D-023)</comment></data>
   <data name="UP_Warning" xml:space="preserve"><value>Método de compatibilidad experimental. Haz una copia de seguridad de los archivos importantes antes de actualizar.</value><comment>needs review (D-023)</comment></data>
   <data name="UP_ThisComputer" xml:space="preserve"><value>Este equipo</value><comment>needs review (D-023)</comment></data>

@@ -337,8 +337,13 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
     because one MSI cannot remove another while it runs). When the installer
     is given its own schedule, that schedule is kept (`--keep-schedule`);
     otherwise the old tool's schedule is imported.
+  - The user is told (owner, after VM round A′): the MSI's schedule page says
+    an existing WinUpdate Tool schedule is kept and the tool removed; after a
+    background takeover, the next window start shows once what happened and
+    the schedule now in use. Each step and the result are in the log.
 - **Consequences:** The upstream repositories are not changed. CI covers the
-  rules with fakes; a real V1/V2 removal is a VM check.
+  rules with fakes. VM rounds 2 and A′ (2026-11-07) removed V2 and V1.2 for
+  real and imported the V2 schedule.
 
 ---
 

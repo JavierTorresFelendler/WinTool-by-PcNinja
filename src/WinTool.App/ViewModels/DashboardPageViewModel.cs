@@ -69,7 +69,7 @@ namespace WinTool.App.ViewModels
         // Windows Update card
         public string UpdatesText => windowsUpdate.CountText;
         public bool RestartPending => windowsUpdate.RestartPending;
-        public string ScheduleText => settings.ScheduleEnabled ? ScheduleService.Describe(settings) : T["Dash_ScheduleOff"];
+        public string ScheduleText => WinTool.App.Localization.ScheduleWords.Describe(settings, T);
         public string LastRunText => string.IsNullOrEmpty(state.LastRunFinished)
             ? T["Dash_Never"]
             : FormatStamp(state.LastRunFinished) + " · " + (state.LastResult ?? string.Empty);

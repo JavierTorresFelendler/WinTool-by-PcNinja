@@ -491,6 +491,7 @@ namespace WinTool.Cli
                 ? "completed: " + removed.Count + " task(s) removed, " + uninstalled.Count + " installation(s) uninstalled."
                 : "incomplete: " + failures.Count + " installation(s) could not be uninstalled.");
             var result = failures.Count == 0 ? CliExit.Ok : CliExit.Failed;
+            if (failures.Count == 0) RememberTakeoverNotice(settings != null ? TakeoverNotices.Imported : a.Has("keep-schedule") ? TakeoverNotices.Kept : TakeoverNotices.Removed);
             if (a.Has("json"))
             {
                 Json(new
@@ -516,6 +517,21 @@ namespace WinTool.Cli
             }
 
             return result;
+        }
+
+        /// <summary>The window tells the user once, at its next start, what the takeover did (owner request).</summary>
+        private void RememberTakeoverNotice(string kind)
+        {
+            try
+            {
+                var state = env.Store.LoadState();
+                state.PendingTakeoverNotice = kind;
+                env.Store.SaveState(state);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                env.Log.Write(EventIds.LegacyTakeover, EventLevel.Warning, "WinUpdate Tool takeover: the notice for the window could not be saved: " + ex.Message);
+            }
         }
 
         /// <summary>Waits while another Windows Installer transaction runs (its global mutex exists).</summary>

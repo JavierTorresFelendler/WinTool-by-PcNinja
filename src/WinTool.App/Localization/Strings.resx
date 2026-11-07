@@ -185,6 +185,13 @@ If the file is moved or deleted, the schedule stops working. Continue?</value></
   <data name="WU_Legacy_TakeOver" xml:space="preserve"><value>Take Over</value></data>
   <data name="WU_Legacy_Confirm" xml:space="preserve"><value>Import the WinUpdate Tool settings, remove its scheduled tasks and uninstall it?</value></data>
   <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool took over from WinUpdate Tool and uninstalled it.</value></data>
+  <data name="WU_When_Daily" xml:space="preserve"><value>every day at {0}</value></data>
+  <data name="WU_When_Weekly" xml:space="preserve"><value>every {0} at {1}</value></data>
+  <data name="WU_When_Monthly" xml:space="preserve"><value>on day {0} of each month at {1}</value></data>
+  <data name="WU_When_Startup" xml:space="preserve"><value>at computer startup</value></data>
+  <data name="WU_Takeover_Imported" xml:space="preserve"><value>WinTool took over the schedule of WinUpdate Tool ({0}) and removed the old tool. You can change it in Windows Update.</value></data>
+  <data name="WU_Takeover_Kept" xml:space="preserve"><value>WinTool removed WinUpdate Tool and kept the schedule chosen during installation ({0}). You can change it in Windows Update.</value></data>
+  <data name="WU_Takeover_Removed" xml:space="preserve"><value>WinTool removed WinUpdate Tool. You can set a schedule in Windows Update.</value></data>
   <data name="WU_RunAtStartup" xml:space="preserve"><value>Also run after startup (5 min)</value></data>
   <data name="UP_Warning" xml:space="preserve"><value>Experimental compatibility method. Back up important files before upgrading.</value></data>
   <data name="UP_ThisComputer" xml:space="preserve"><value>This computer</value></data>

@@ -18,6 +18,12 @@ namespace WinTool.WindowsUpdate.Storage
         [DataMember(Name = "retryCount", Order = 8)] public int RetryCount { get; set; }
         [DataMember(Name = "lastRebootRequired", Order = 9)] public bool LastRebootRequired { get; set; }
 
+        /// <summary>
+        /// Set when the installer took over from WinUpdate Tool in the background; the window shows a
+        /// one-time notice and clears it. Values: <see cref="TakeoverNotices"/>.
+        /// </summary>
+        [DataMember(Name = "pendingTakeoverNotice", Order = 10, EmitDefaultValue = false)] public string PendingTakeoverNotice { get; set; }
+
         public static string Stamp(DateTime time) => time.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
 
         public static DateTime? Parse(string value)
@@ -27,5 +33,16 @@ namespace WinTool.WindowsUpdate.Storage
                 ? parsed
                 : (DateTime?)null;
         }
+    }
+
+    /// <summary>What the one-time notice after a background takeover says.</summary>
+    public static class TakeoverNotices
+    {
+        /// <summary>The old tool's schedule was imported.</summary>
+        public const string Imported = "imported";
+        /// <summary>The schedule chosen in WinTool's installer was kept.</summary>
+        public const string Kept = "kept";
+        /// <summary>The old tool was removed; it had no settings to import.</summary>
+        public const string Removed = "removed";
     }
 }

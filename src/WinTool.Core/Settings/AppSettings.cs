@@ -39,10 +39,6 @@ namespace WinTool.Core.Settings
         [DataMember(Name = "logsFollow", Order = 5, EmitDefaultValue = false)]
         public bool? LogsFollow { get; set; }
 
-        /// <summary>Copies (full paths) whose user chose Run portable at first launch (D-026); not asked again.</summary>
-        [DataMember(Name = "portableCopies", Order = 6, EmitDefaultValue = false)]
-        public System.Collections.Generic.List<string> PortableCopies { get; set; }
-
         public ThemePreference ThemePreference
         {
             get

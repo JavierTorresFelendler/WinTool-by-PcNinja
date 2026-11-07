@@ -354,9 +354,13 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   - The release page keeps **one main EXE** for people, and keeps the MSI
     beside it for IT and silent deployment. The update feed does not change.
   - The EXE **carries the MSI**, so installing works fully offline.
-  - A downloaded copy started without arguments **asks once**: Install or
-    Run portable. The choice is remembered for that copy; Settings can still
-    install later. The command line never asks.
+  - A downloaded copy started without arguments asks: Install or Run
+    portable. The command line never asks.
+  - **Amended (owner, after T-011):** the question is asked at **every**
+    manual launch of the downloaded universal EXE, not remembered. It is asked
+    once per launch: the answer travels to the elevated restart as the
+    internal argument `--portable-chosen`, which only skips the question. A
+    self-update restart and an installed copy never ask.
   - **Prototype first:** antivirus risk (D-009, the WinUpdate V2.2.5 lesson)
     is measured before anything replaces today's packaging.
 - **Build (acyclic, T-008):** app EXE → MSI → universal EXE carrying that
@@ -364,7 +368,8 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - **Prototype acceptance:** built by CI as a separate artifact; Windows
   Defender scan and VirusTotal results compared with today's EXE; offline
   install, Run portable, and the chooser not shown for CLI use, checked on a
-  VM. The owner decides with those results.
+  VM. The owner decides with those results. T-011 (2026-11-07): Defender and
+  VirusTotal 0/71 for both the regular and the universal EXE.
 
 ---
 

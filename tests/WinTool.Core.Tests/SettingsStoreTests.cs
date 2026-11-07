@@ -20,6 +20,24 @@ namespace WinTool.Core.Tests
         }
 
         [Fact]
+        public void The_retired_portableCopies_field_is_ignored_and_other_values_kept()
+        {
+            using (var temp = new TempDirectory())
+            {
+                var path = temp.File("settings.json");
+                File.WriteAllText(path, "{\"theme\":\"Dark\",\"language\":\"he\",\"includeTestVersions\":true,\"logsFollow\":false,\"portableCopies\":[\"C:\\\\x\\\\WinTool-by-PcNinja.exe\"]}");
+                var store = new SettingsStore(path);
+                var settings = store.Load();
+                Assert.Equal(ThemePreference.Dark, settings.ThemePreference);
+                Assert.Equal("he", settings.Language);
+                Assert.True(settings.IncludeTestVersions);
+                Assert.False(settings.LogsFollow);
+                store.Save(settings);
+                Assert.DoesNotContain("portableCopies", File.ReadAllText(path));
+            }
+        }
+
+        [Fact]
         public void Round_trips_all_values()
         {
             using (var temp = new TempDirectory())

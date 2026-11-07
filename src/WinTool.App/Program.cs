@@ -38,10 +38,12 @@ namespace WinTool.App
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static int Run(string[] args)
         {
-            AppLog.Current.Info("App", ProductInfo.Name + " " + ProductInfo.InformationalVersion + "; mode: " + (args.Length > 0 ? "CLI" : "GUI"));
+            // The elevated restart of a launch whose user already answered Install / Run portable (D-026).
+            var portableChosen = args.Length == 1 && args[0] == PortableChosenArgument;
+            AppLog.Current.Info("App", ProductInfo.Name + " " + ProductInfo.InformationalVersion + "; mode: " + (args.Length > 0 && !portableChosen ? "CLI" : "GUI"));
             if (WinToolPaths.DataRootOverride != null)
                 AppLog.Current.Info("App", "Data folders redirected to " + WinToolPaths.DataRootOverride + " (" + WinToolPaths.DataRootVariable + ").");
-            if (args.Length > 0)
+            if (args.Length > 0 && !portableChosen)
             {
                 return CommandLine.Run(args);
             }
@@ -67,7 +69,7 @@ namespace WinTool.App
                 if (probe == PcNinjaSingleInstanceOutcome.ActivatedExisting) return ExitOk;
                 if (probe == PcNinjaSingleInstanceOutcome.ExistingNotResponding) return ShowNotResponding();
                 // Asked before elevation: installing runs the MSI, which asks for administrator rights itself.
-                if (!AskInstallOrPortable(settings)) return ExitOk;
+                if (!portableChosen && !AskInstallOrPortable()) return ExitOk;
                 if (TestOverridesSet())
                 {
                     // Windows does not pass this process's environment to the elevated copy, and
@@ -77,10 +79,11 @@ namespace WinTool.App
                     ShowMessage(Loc.Instance["Startup_TestOverridesNeedAdmin"], MessageBoxImage.Warning);
                     return ExitElevationCancelled;
                 }
-                return RestartElevated();
+                return RestartElevated(EmbeddedInstaller.IsPresent ? PortableChosenArgument : null);
             }
 
-            if (!AskInstallOrPortable(settings)) return ExitOk;
+            // A self-update restart (WaitForPid) is not a manual launch: it never asks.
+            var askHere = !portableChosen && string.IsNullOrEmpty(Environment.GetEnvironmentVariable(ViewModels.AppUpdateViewModel.WaitForPidVariable));
             WaitForReplacedCopy();
 
             PcNinjaSingleInstanceOutcome outcome;
@@ -92,6 +95,9 @@ namespace WinTool.App
                 {
                     return ExitOk;
                 }
+
+                // Started with administrator rights already: asked here, after a running window was activated instead.
+                if (askHere && !AskInstallOrPortable()) return ExitOk;
 
                 var app = new App();
                 app.InitializeComponent();
@@ -151,17 +157,19 @@ namespace WinTool.App
             !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinToolPaths.DataRootVariable)) ||
             !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinTool.Core.Updates.AppUpdater.FeedVariable));
 
+        /// <summary>Internal: the elevated restart after the user chose Run portable; not a command.</summary>
+        internal const string PortableChosenArgument = "--portable-chosen";
+
         /// <summary>
-        /// D-026: a downloaded universal EXE asks once whether to install or run portable. Returns false
-        /// when this process should end (the installer was started, or the user closed the question).
-        /// Never asked for the command line, an installed copy, or a copy that already chose portable.
+        /// D-026 (owner, after T-011): each manual launch of a downloaded universal EXE asks Install or
+        /// Run portable. Returns false when this process should end (the installer was started, or the
+        /// user closed the question). Never asked for the command line or an installed copy.
         /// </summary>
-        private static bool AskInstallOrPortable(AppSettings settings)
+        private static bool AskInstallOrPortable()
         {
             if (!EmbeddedInstaller.IsPresent) return true;
             var exe = Process.GetCurrentProcess().MainModule.FileName;
             if (exe.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase)) return true;
-            if (settings.PortableCopies != null && settings.PortableCopies.Exists(p => string.Equals(p, exe, StringComparison.OrdinalIgnoreCase))) return true;
 
             var options = Loc.Instance.FlowDirection == FlowDirection.RightToLeft
                 ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
@@ -171,10 +179,7 @@ namespace WinTool.App
             if (answer == MessageBoxResult.Cancel) return false;
             if (answer == MessageBoxResult.No)
             {
-                settings.PortableCopies = settings.PortableCopies ?? new System.Collections.Generic.List<string>();
-                settings.PortableCopies.Add(exe);
-                new SettingsStore(SettingsStore.DefaultPath).Save(settings);
-                AppLog.Current.Info("App", "Run portable chosen for " + exe + ".");
+                AppLog.Current.Info("App", "Run portable chosen.");
                 return true;
             }
 
@@ -191,14 +196,15 @@ namespace WinTool.App
             return false;
         }
 
-        private static int RestartElevated()
+        private static int RestartElevated(string argument)
         {
             try
             {
                 var start = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName)
                 {
                     UseShellExecute = true,
-                    Verb = "runas"
+                    Verb = "runas",
+                    Arguments = argument ?? string.Empty
                 };
                 Process.Start(start);
                 AppLog.Current.Info("App", "Restarted with administrator rights.");

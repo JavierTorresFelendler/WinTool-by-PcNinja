@@ -48,7 +48,7 @@
   <data name="Startup_InstallOrPortable" xml:space="preserve"><value>להתקין את WinTool במחשב הזה?
 
 כן: התקנה (תפריט התחל, עדכונים, תזמון Windows Update). אשף ההתקנה ייפתח.
-לא: הפעלת העותק הזה בלי התקנה. WinTool לא ישאל שוב עבור העותק הזה.
+לא: הפעלת העותק הזה בלי התקנה.
 ביטול: סגירה.</value></data>
   <data name="Startup_InstallFailed" xml:space="preserve"><value>לא ניתן היה להפעיל את ההתקנה:
 {0}</value></data>

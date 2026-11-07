@@ -48,7 +48,7 @@ This computer runs {0}.</value></data>
   <data name="Startup_InstallOrPortable" xml:space="preserve"><value>Install WinTool on this computer?
 
 Yes: install it (Start menu, updates, scheduled Windows Update). The installer opens.
-No: run this copy without installing. WinTool will not ask again for this copy.
+No: run this copy without installing.
 Cancel: close.</value></data>
   <data name="Startup_InstallFailed" xml:space="preserve"><value>The installer could not start:
 {0}</value></data>

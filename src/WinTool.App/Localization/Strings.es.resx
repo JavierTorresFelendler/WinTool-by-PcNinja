@@ -48,7 +48,7 @@ Este equipo tiene {0}.</value><comment>needs review (D-023)</comment></data>
   <data name="Startup_InstallOrPortable" xml:space="preserve"><value>¿Instalar WinTool en este equipo?
 
 Sí: instalarlo (menú Inicio, actualizaciones, programación de Windows Update). Se abre el instalador.
-No: usar esta copia sin instalar. WinTool no volverá a preguntar para esta copia.
+No: usar esta copia sin instalar.
 Cancelar: cerrar.</value><comment>needs review (D-023)</comment></data>
   <data name="Startup_InstallFailed" xml:space="preserve"><value>No se pudo iniciar el instalador:
 {0}</value><comment>needs review (D-023)</comment></data>

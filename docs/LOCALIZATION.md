@@ -3,11 +3,9 @@
 Languages: English (`en`, default), Hebrew (`he`, right-to-left), Spanish (`es`).
 
 English and Hebrew ship from the first build. Spanish ships from phase 6 as a
-first translation by Claude (D-023): every entry in `Strings.es.resx` carries
-the comment `needs review (D-023)`. A Spanish speaker chosen by the owner
-reviews them before 1.0 and removes the comment from each entry checked;
-`grep -c "needs review" src/WinTool.App/Localization/Strings.es.resx` shows
-what is left. Style: informal "tú", Windows terminology (Windows Update,
+first translation by Claude (D-023). The owner, a native Spanish speaker,
+reviewed it on 2026-11-07 for 1.0.1. New Spanish strings get the comment
+`needs review` until the owner checks them. Style: informal "tú", Windows terminology (Windows Update,
 Hacer clic y ejecutar, Arranque seguro), product names untranslated.
 
 ## Rules from the first screen

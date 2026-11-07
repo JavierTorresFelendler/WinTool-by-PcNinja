@@ -303,6 +303,8 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
     includes beta and release-candidate builds.
   - Spanish: Claude translates now; the strings are marked "needs review"
     until a Spanish speaker chosen by the owner checks them before 1.0.
+    **Done (2026-11-07):** the owner, a native speaker, reviewed the
+    Spanish; the markers were removed for 1.0.1.
   - Order in phase 6: the Logs and Drivers & Links pages first, then
     self-update and the release workflow.
 

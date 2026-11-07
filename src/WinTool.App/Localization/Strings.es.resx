@@ -4,423 +4,423 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-    <data name="Nav_Label" xml:space="preserve"><value>Navegación principal</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_Dashboard" xml:space="preserve"><value>Panel</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_WindowsUpdate" xml:space="preserve"><value>Windows Update</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_WindowsUpgrade" xml:space="preserve"><value>Actualizar Windows</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_Office" xml:space="preserve"><value>Office</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_Logs" xml:space="preserve"><value>Registros</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_Settings" xml:space="preserve"><value>Configuración</value><comment>needs review (D-023)</comment></data>
-  <data name="Nav_Links" xml:space="preserve"><value>Enlaces útiles</value><comment>needs review (D-023)</comment></data>
-  <data name="Footer_Installed" xml:space="preserve"><value>Versión {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="Footer_CheckToolUpdate" xml:space="preserve"><value>Buscar actualización</value><comment>needs review (D-023)</comment></data>
-  <data name="Footer_CheckToolUpdate_Later" xml:space="preserve"><value>Las actualizaciones de la aplicación llegarán en una versión posterior.</value><comment>needs review (D-023)</comment></data>
-  <data name="Footer_Help" xml:space="preserve"><value>Ayuda</value><comment>needs review (D-023)</comment></data>
-  <data name="Page_Dashboard_Subtitle" xml:space="preserve"><value>Resumen de este equipo.</value><comment>needs review (D-023)</comment></data>
-  <data name="Page_WindowsUpdate_Subtitle" xml:space="preserve"><value>Actualizaciones, estado y programación en una sola pantalla.</value><comment>needs review (D-023)</comment></data>
-  <data name="Page_WindowsUpgrade_Subtitle" xml:space="preserve"><value>Actualiza Windows 10 o Windows 11 conservando tus aplicaciones y archivos.</value><comment>needs review (D-023)</comment></data>
-  <data name="Page_Office_Subtitle" xml:space="preserve"><value>Instala, empaqueta o quita Office con la Herramienta de implementación de Office de Microsoft.</value><comment>needs review (D-023)</comment></data>
-  <data name="Page_Logs_Subtitle" xml:space="preserve"><value>Los registros solo se cargan mientras esta página está abierta.</value><comment>needs review (D-023)</comment></data>
-  <data name="Page_Links_Subtitle" xml:space="preserve"><value>Herramientas útiles de PcNinja, ayuda y recursos de fabricantes.</value><comment>needs review (D-023)</comment></data>
-  <data name="Placeholder_Title" xml:space="preserve"><value>Próximamente</value><comment>needs review (D-023)</comment></data>
-  <data name="Placeholder_Body" xml:space="preserve"><value>Esta pantalla se crea en la fase {0} de la hoja de ruta.</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Appearance" xml:space="preserve"><value>Apariencia</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Theme" xml:space="preserve"><value>Tema</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Theme_System" xml:space="preserve"><value>Sistema</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Theme_Light" xml:space="preserve"><value>Claro</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Theme_Dark" xml:space="preserve"><value>Oscuro</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Theme_Hint" xml:space="preserve"><value>Sistema sigue el modo de aplicaciones de Windows y cambia con él.</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Language" xml:space="preserve"><value>Idioma</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Spanish_Soon" xml:space="preserve"><value>El español llega antes de la versión 1.0.</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_About" xml:space="preserve"><value>Acerca de</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_License" xml:space="preserve"><value>Freeware · Licencia de uso gratuito de PcNinja</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Repository" xml:space="preserve"><value>Código fuente en GitHub</value><comment>needs review (D-023)</comment></data>
-  <data name="Caption_Minimize" xml:space="preserve"><value>Minimizar</value><comment>needs review (D-023)</comment></data>
-  <data name="Caption_Maximize" xml:space="preserve"><value>Maximizar</value><comment>needs review (D-023)</comment></data>
-  <data name="Caption_Restore" xml:space="preserve"><value>Restaurar</value><comment>needs review (D-023)</comment></data>
-  <data name="Caption_Close" xml:space="preserve"><value>Cerrar</value><comment>needs review (D-023)</comment></data>
+    <data name="Nav_Label" xml:space="preserve"><value>Navegación principal</value></data>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Panel</value></data>
+  <data name="Nav_WindowsUpdate" xml:space="preserve"><value>Windows Update</value></data>
+  <data name="Nav_WindowsUpgrade" xml:space="preserve"><value>Actualizar Windows</value></data>
+  <data name="Nav_Office" xml:space="preserve"><value>Office</value></data>
+  <data name="Nav_Logs" xml:space="preserve"><value>Registros</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Configuración</value></data>
+  <data name="Nav_Links" xml:space="preserve"><value>Enlaces útiles</value></data>
+  <data name="Footer_Installed" xml:space="preserve"><value>Versión {0}</value></data>
+  <data name="Footer_CheckToolUpdate" xml:space="preserve"><value>Buscar actualización</value></data>
+  <data name="Footer_CheckToolUpdate_Later" xml:space="preserve"><value>Las actualizaciones de la aplicación llegarán en una versión posterior.</value></data>
+  <data name="Footer_Help" xml:space="preserve"><value>Ayuda</value></data>
+  <data name="Page_Dashboard_Subtitle" xml:space="preserve"><value>Resumen de este equipo.</value></data>
+  <data name="Page_WindowsUpdate_Subtitle" xml:space="preserve"><value>Actualizaciones, estado y programación en una sola pantalla.</value></data>
+  <data name="Page_WindowsUpgrade_Subtitle" xml:space="preserve"><value>Actualiza Windows 10 o Windows 11 conservando tus aplicaciones y archivos.</value></data>
+  <data name="Page_Office_Subtitle" xml:space="preserve"><value>Instala, empaqueta o quita Office con la Herramienta de implementación de Office de Microsoft.</value></data>
+  <data name="Page_Logs_Subtitle" xml:space="preserve"><value>Los registros solo se cargan mientras esta página está abierta.</value></data>
+  <data name="Page_Links_Subtitle" xml:space="preserve"><value>Herramientas útiles de PcNinja, ayuda y recursos de fabricantes.</value></data>
+  <data name="Placeholder_Title" xml:space="preserve"><value>Próximamente</value></data>
+  <data name="Placeholder_Body" xml:space="preserve"><value>Esta pantalla se crea en la fase {0} de la hoja de ruta.</value></data>
+  <data name="Settings_Appearance" xml:space="preserve"><value>Apariencia</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Tema</value></data>
+  <data name="Settings_Theme_System" xml:space="preserve"><value>Sistema</value></data>
+  <data name="Settings_Theme_Light" xml:space="preserve"><value>Claro</value></data>
+  <data name="Settings_Theme_Dark" xml:space="preserve"><value>Oscuro</value></data>
+  <data name="Settings_Theme_Hint" xml:space="preserve"><value>Sistema sigue el modo de aplicaciones de Windows y cambia con él.</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Settings_Spanish_Soon" xml:space="preserve"><value>El español llega antes de la versión 1.0.</value></data>
+  <data name="Settings_About" xml:space="preserve"><value>Acerca de</value></data>
+  <data name="Settings_License" xml:space="preserve"><value>Freeware · Licencia de uso gratuito de PcNinja</value></data>
+  <data name="Settings_Repository" xml:space="preserve"><value>Código fuente en GitHub</value></data>
+  <data name="Caption_Minimize" xml:space="preserve"><value>Minimizar</value></data>
+  <data name="Caption_Maximize" xml:space="preserve"><value>Maximizar</value></data>
+  <data name="Caption_Restore" xml:space="preserve"><value>Restaurar</value></data>
+  <data name="Caption_Close" xml:space="preserve"><value>Cerrar</value></data>
   <data name="Startup_Unsupported" xml:space="preserve"><value>WinTool necesita Windows 10 de 64 bits, versión 1903 o posterior, o Windows 11.
 
-Este equipo tiene {0}.</value><comment>needs review (D-023)</comment></data>
-  <data name="Startup_AlreadyRunning" xml:space="preserve"><value>WinTool ya está abierto pero no responde. Ciérralo e inténtalo de nuevo.</value><comment>needs review (D-023)</comment></data>
-  <data name="Startup_ElevationCancelled" xml:space="preserve"><value>WinTool necesita permisos de administrador para gestionar Windows Update, las actualizaciones de Windows y Office. Ábrelo de nuevo y elige Sí.</value><comment>needs review (D-023)</comment></data>
-  <data name="Startup_TestOverridesNeedAdmin" xml:space="preserve"><value>Hay ajustes de prueba de WinTool (WINTOOL_DATA_ROOT o WINTOOL_UPDATE_FEED), pero Windows no los transmite cuando WinTool se reinicia con permisos de administrador. Para que la prueba no toque los datos reales, WinTool se detiene aquí. Ábrelo desde un símbolo del sistema abierto como administrador.</value><comment>needs review (D-023)</comment></data>
+Este equipo tiene {0}.</value></data>
+  <data name="Startup_AlreadyRunning" xml:space="preserve"><value>WinTool ya está abierto pero no responde. Ciérralo e inténtalo de nuevo.</value></data>
+  <data name="Startup_ElevationCancelled" xml:space="preserve"><value>WinTool necesita permisos de administrador para gestionar Windows Update, las actualizaciones de Windows y Office. Ábrelo de nuevo y elige Sí.</value></data>
+  <data name="Startup_TestOverridesNeedAdmin" xml:space="preserve"><value>Hay ajustes de prueba de WinTool (WINTOOL_DATA_ROOT o WINTOOL_UPDATE_FEED), pero Windows no los transmite cuando WinTool se reinicia con permisos de administrador. Para que la prueba no toque los datos reales, WinTool se detiene aquí. Ábrelo desde un símbolo del sistema abierto como administrador.</value></data>
   <data name="Startup_InstallOrPortable" xml:space="preserve"><value>¿Instalar WinTool en este equipo?
 
 Sí: instalarlo (menú Inicio, actualizaciones, programación de Windows Update). Se abre el instalador.
 No: usar esta copia sin instalar.
-Cancelar: cerrar.</value><comment>needs review (D-023)</comment></data>
+Cancelar: cerrar.</value></data>
   <data name="Startup_InstallFailed" xml:space="preserve"><value>No se pudo iniciar el instalador:
-{0}</value><comment>needs review (D-023)</comment></data>
+{0}</value></data>
   <data name="Error_Unexpected" xml:space="preserve"><value>Algo salió mal. Los detalles están en el registro:
-{0}</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Refresh" xml:space="preserve"><value>Actualizar</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_OpenWindowsUpdate" xml:space="preserve"><value>Abrir Windows Update</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_OpenUpgrade" xml:space="preserve"><value>Abrir Actualización de Windows</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_OpenOffice" xml:space="preserve"><value>Abrir Office</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Windows" xml:space="preserve"><value>Windows</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Build" xml:space="preserve"><value>Compilación {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Win10Eol" xml:space="preserve"><value>El soporte de Windows 10 terminó en octubre de 2025.</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_NoOffice" xml:space="preserve"><value>No hay ningún Office Hacer clic y ejecutar instalado.</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_OfficeEol" xml:space="preserve"><value>El soporte de esta versión de Office ha terminado.</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_VolumeLicense" xml:space="preserve"><value>Licencia por volumen</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_ScheduleOff" xml:space="preserve"><value>Desactivada</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_LastRun" xml:space="preserve"><value>Última ejecución</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Never" xml:space="preserve"><value>Nunca</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_ThisComputer" xml:space="preserve"><value>Este equipo</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_ComputerName" xml:space="preserve"><value>Nombre del equipo</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_User" xml:space="preserve"><value>Usuario</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Lan" xml:space="preserve"><value>IP de LAN</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Wan" xml:space="preserve"><value>IP de WAN</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Processor" xml:space="preserve"><value>Procesador</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Threads" xml:space="preserve"><value>{0} hilos</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Memory" xml:space="preserve"><value>Memoria</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_StorageLabel" xml:space="preserve"><value>Almacenamiento</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Storage" xml:space="preserve"><value>{0} · {1} libres</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Graphics" xml:space="preserve"><value>Gráficos</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Motherboard" xml:space="preserve"><value>Placa base</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Bios" xml:space="preserve"><value>BIOS</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_SecureBoot" xml:space="preserve"><value>Arranque seguro</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_On" xml:space="preserve"><value>Activado</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Off" xml:space="preserve"><value>Desactivado</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_LastRestart" xml:space="preserve"><value>Último reinicio</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_DaysAgo" xml:space="preserve"><value>hace {0} día(s)</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_HoursAgo" xml:space="preserve"><value>hace {0} hora(s)</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_MinutesAgo" xml:space="preserve"><value>hace {0} minuto(s)</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_NotConnected" xml:space="preserve"><value>Sin conexión</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Checking" xml:space="preserve"><value>Comprobando…</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Version" xml:space="preserve"><value>Versión</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_InstallType" xml:space="preserve"><value>Instalación</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Installed" xml:space="preserve"><value>Instalado</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Portable" xml:space="preserve"><value>Portable</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_RunningOperation" xml:space="preserve"><value>Operación en curso</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_None" xml:space="preserve"><value>Ninguna</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_CheckForUpdates" xml:space="preserve"><value>Buscar actualizaciones</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_LastCheck" xml:space="preserve"><value>Última búsqueda: {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_NotChecked" xml:space="preserve"><value>Aún no se ha buscado</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Counts" xml:space="preserve"><value>{0} importantes · {1} otras</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_RestartPending" xml:space="preserve"><value>Reinicio pendiente</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_NoRestart" xml:space="preserve"><value>No hace falta reiniciar</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_RestartNow" xml:space="preserve"><value>Reiniciar ahora</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Restart_Confirm" xml:space="preserve"><value>¿Reiniciar el equipo ahora? Guarda antes el trabajo abierto.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_RestartPrompt" xml:space="preserve"><value>La instalación de las actualizaciones terminó. Reinicia el equipo para completarla; puede que aparezcan más actualizaciones después del reinicio.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_InstallSelected" xml:space="preserve"><value>Instalar seleccionadas</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Cancel" xml:space="preserve"><value>Cancelar</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Available" xml:space="preserve"><value>Actualizaciones disponibles</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_PressCheck" xml:space="preserve"><value>Pulsa «Buscar actualizaciones» para ver qué hay disponible.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_NoUpdates" xml:space="preserve"><value>No hay actualizaciones disponibles. Este equipo está al día.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_ScanFailed" xml:space="preserve"><value>La búsqueda de actualizaciones falló: {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Kind_Important" xml:space="preserve"><value>Importante</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Kind_Optional" xml:space="preserve"><value>Opcional</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Kind_Driver" xml:space="preserve"><value>Controlador</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Kind_Firmware" xml:space="preserve"><value>BIOS / firmware</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Item_Installed" xml:space="preserve"><value>Instalada</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Item_Failed" xml:space="preserve"><value>Error ({0})</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Progress_Starting" xml:space="preserve"><value>Preparando…</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Progress_Searching" xml:space="preserve"><value>Buscando actualizaciones…</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Progress_SearchingPass" xml:space="preserve"><value>Buscando actualizaciones (pasada {0})…</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Progress_Downloading" xml:space="preserve"><value>Descargando {0} de {1}: {2}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Progress_Installing" xml:space="preserve"><value>Instalando {0} actualización(es). Puede tardar un rato…</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Progress_Verifying" xml:space="preserve"><value>Comprobando qué queda…</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Progress_Resetting" xml:space="preserve"><value>Restableciendo Windows Update…</value><comment>needs review (D-023)</comment></data>
+{0}</value></data>
+  <data name="Dash_Refresh" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="Dash_OpenWindowsUpdate" xml:space="preserve"><value>Abrir Windows Update</value></data>
+  <data name="Dash_OpenUpgrade" xml:space="preserve"><value>Abrir Actualización de Windows</value></data>
+  <data name="Dash_OpenOffice" xml:space="preserve"><value>Abrir Office</value></data>
+  <data name="Dash_Windows" xml:space="preserve"><value>Windows</value></data>
+  <data name="Dash_Build" xml:space="preserve"><value>Compilación {0}</value></data>
+  <data name="Dash_Win10Eol" xml:space="preserve"><value>El soporte de Windows 10 terminó en octubre de 2025.</value></data>
+  <data name="Dash_NoOffice" xml:space="preserve"><value>No hay ningún Office Hacer clic y ejecutar instalado.</value></data>
+  <data name="Dash_OfficeEol" xml:space="preserve"><value>El soporte de esta versión de Office ha terminado.</value></data>
+  <data name="Dash_VolumeLicense" xml:space="preserve"><value>Licencia por volumen</value></data>
+  <data name="Dash_ScheduleOff" xml:space="preserve"><value>Desactivada</value></data>
+  <data name="Dash_LastRun" xml:space="preserve"><value>Última ejecución</value></data>
+  <data name="Dash_Never" xml:space="preserve"><value>Nunca</value></data>
+  <data name="Dash_ThisComputer" xml:space="preserve"><value>Este equipo</value></data>
+  <data name="Dash_ComputerName" xml:space="preserve"><value>Nombre del equipo</value></data>
+  <data name="Dash_User" xml:space="preserve"><value>Usuario</value></data>
+  <data name="Dash_Lan" xml:space="preserve"><value>IP de LAN</value></data>
+  <data name="Dash_Wan" xml:space="preserve"><value>IP de WAN</value></data>
+  <data name="Dash_Processor" xml:space="preserve"><value>Procesador</value></data>
+  <data name="Dash_Threads" xml:space="preserve"><value>{0} hilos</value></data>
+  <data name="Dash_Memory" xml:space="preserve"><value>Memoria</value></data>
+  <data name="Dash_StorageLabel" xml:space="preserve"><value>Almacenamiento</value></data>
+  <data name="Dash_Storage" xml:space="preserve"><value>{0} · {1} libres</value></data>
+  <data name="Dash_Graphics" xml:space="preserve"><value>Gráficos</value></data>
+  <data name="Dash_Motherboard" xml:space="preserve"><value>Placa base</value></data>
+  <data name="Dash_Bios" xml:space="preserve"><value>BIOS</value></data>
+  <data name="Dash_SecureBoot" xml:space="preserve"><value>Arranque seguro</value></data>
+  <data name="Dash_On" xml:space="preserve"><value>Activado</value></data>
+  <data name="Dash_Off" xml:space="preserve"><value>Desactivado</value></data>
+  <data name="Dash_LastRestart" xml:space="preserve"><value>Último reinicio</value></data>
+  <data name="Dash_DaysAgo" xml:space="preserve"><value>hace {0} día(s)</value></data>
+  <data name="Dash_HoursAgo" xml:space="preserve"><value>hace {0} hora(s)</value></data>
+  <data name="Dash_MinutesAgo" xml:space="preserve"><value>hace {0} minuto(s)</value></data>
+  <data name="Dash_NotConnected" xml:space="preserve"><value>Sin conexión</value></data>
+  <data name="Dash_Checking" xml:space="preserve"><value>Comprobando…</value></data>
+  <data name="Dash_Version" xml:space="preserve"><value>Versión</value></data>
+  <data name="Dash_InstallType" xml:space="preserve"><value>Instalación</value></data>
+  <data name="Dash_Installed" xml:space="preserve"><value>Instalado</value></data>
+  <data name="Dash_Portable" xml:space="preserve"><value>Portable</value></data>
+  <data name="Dash_RunningOperation" xml:space="preserve"><value>Operación en curso</value></data>
+  <data name="Dash_None" xml:space="preserve"><value>Ninguna</value></data>
+  <data name="WU_CheckForUpdates" xml:space="preserve"><value>Buscar actualizaciones</value></data>
+  <data name="WU_LastCheck" xml:space="preserve"><value>Última búsqueda: {0}</value></data>
+  <data name="WU_NotChecked" xml:space="preserve"><value>Aún no se ha buscado</value></data>
+  <data name="WU_Counts" xml:space="preserve"><value>{0} importantes · {1} otras</value></data>
+  <data name="WU_RestartPending" xml:space="preserve"><value>Reinicio pendiente</value></data>
+  <data name="WU_NoRestart" xml:space="preserve"><value>No hace falta reiniciar</value></data>
+  <data name="WU_RestartNow" xml:space="preserve"><value>Reiniciar ahora</value></data>
+  <data name="WU_Restart_Confirm" xml:space="preserve"><value>¿Reiniciar el equipo ahora? Guarda antes el trabajo abierto.</value></data>
+  <data name="WU_RestartPrompt" xml:space="preserve"><value>La instalación de las actualizaciones terminó. Reinicia el equipo para completarla; puede que aparezcan más actualizaciones después del reinicio.</value></data>
+  <data name="WU_InstallSelected" xml:space="preserve"><value>Instalar seleccionadas</value></data>
+  <data name="WU_Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="WU_Available" xml:space="preserve"><value>Actualizaciones disponibles</value></data>
+  <data name="WU_PressCheck" xml:space="preserve"><value>Pulsa «Buscar actualizaciones» para ver qué hay disponible.</value></data>
+  <data name="WU_NoUpdates" xml:space="preserve"><value>No hay actualizaciones disponibles. Este equipo está al día.</value></data>
+  <data name="WU_ScanFailed" xml:space="preserve"><value>La búsqueda de actualizaciones falló: {0}</value></data>
+  <data name="WU_Kind_Important" xml:space="preserve"><value>Importante</value></data>
+  <data name="WU_Kind_Optional" xml:space="preserve"><value>Opcional</value></data>
+  <data name="WU_Kind_Driver" xml:space="preserve"><value>Controlador</value></data>
+  <data name="WU_Kind_Firmware" xml:space="preserve"><value>BIOS / firmware</value></data>
+  <data name="WU_Item_Installed" xml:space="preserve"><value>Instalada</value></data>
+  <data name="WU_Item_Failed" xml:space="preserve"><value>Error ({0})</value></data>
+  <data name="WU_Progress_Starting" xml:space="preserve"><value>Preparando…</value></data>
+  <data name="WU_Progress_Searching" xml:space="preserve"><value>Buscando actualizaciones…</value></data>
+  <data name="WU_Progress_SearchingPass" xml:space="preserve"><value>Buscando actualizaciones (pasada {0})…</value></data>
+  <data name="WU_Progress_Downloading" xml:space="preserve"><value>Descargando {0} de {1}: {2}</value></data>
+  <data name="WU_Progress_Installing" xml:space="preserve"><value>Instalando {0} actualización(es). Puede tardar un rato…</value></data>
+  <data name="WU_Progress_Verifying" xml:space="preserve"><value>Comprobando qué queda…</value></data>
+  <data name="WU_Progress_Resetting" xml:space="preserve"><value>Restableciendo Windows Update…</value></data>
   <data name="WU_Busy_Question" xml:space="preserve"><value>{0}
 
-¿Detener Windows Update por ahora y continuar con WinTool? Elige No para cancelar.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Result_Succeeded" xml:space="preserve"><value>Las actualizaciones se instalaron.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Result_SomeFailed" xml:space="preserve"><value>Algunas actualizaciones no se pudieron instalar. Consulta la lista para ver los detalles.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Result_Restart" xml:space="preserve"><value>La instalación de las actualizaciones terminó. Reinicia el equipo para completarla.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Result_Cancelled" xml:space="preserve"><value>Cancelado. No se instaló nada más.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Result_Other" xml:space="preserve"><value>La ejecución no terminó: {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_OperationRunning" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Inténtalo de nuevo cuando termine.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Firmware_Warning" xml:space="preserve"><value>Seleccionaste una actualización de BIOS / firmware. Continúa solo si el equipo tiene alimentación fiable y no se apagará durante la actualización.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Firmware_Schedule_Warning" xml:space="preserve"><value>Las ejecuciones programadas instalarán actualizaciones de BIOS / firmware sin preguntar. Continúa solo en equipos con alimentación fiable.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Health" xml:space="preserve"><value>Estado</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Health_Ok" xml:space="preserve"><value>Todo bien</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Health_Warning" xml:space="preserve"><value>Requiere atención</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Health_Problem" xml:space="preserve"><value>Se encontró un problema</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_services_Ok" xml:space="preserve"><value>Los servicios de actualización están disponibles</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_services_Problem" xml:space="preserve"><value>Un servicio de actualización está deshabilitado o falta</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_disk_Ok" xml:space="preserve"><value>Suficiente espacio libre en disco</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_disk_Warning" xml:space="preserve"><value>Poco espacio libre en disco</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_disk_Problem" xml:space="preserve"><value>No hay suficiente espacio libre en disco</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_restart_Ok" xml:space="preserve"><value>No hay reinicios pendientes</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_restart_Warning" xml:space="preserve"><value>Hay un reinicio pendiente</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_activity_Ok" xml:space="preserve"><value>Windows Update está inactivo</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_activity_Warning" xml:space="preserve"><value>Windows Update está trabajando en segundo plano</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_network_Ok" xml:space="preserve"><value>Los servidores de actualización están accesibles</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_network_Problem" xml:space="preserve"><value>No se puede acceder a los servidores de actualización</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_microsoft_update_Ok" xml:space="preserve"><value>Microsoft Update está habilitado</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_microsoft_update_Warning" xml:space="preserve"><value>Microsoft Update no está habilitado</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_schedule_Ok" xml:space="preserve"><value>La tarea programada coincide con la configuración</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_HealthItem_schedule_Problem" xml:space="preserve"><value>La tarea programada falta o es distinta</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_RunHealthCheck" xml:space="preserve"><value>Comprobar estado</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_CollectLogs" xml:space="preserve"><value>Recopilar registros</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_LogsCollected" xml:space="preserve"><value>Paquete de registros guardado: {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Reset" xml:space="preserve"><value>Restablecer Windows Update</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Reset_Confirm" xml:space="preserve"><value>¿Restablecer Windows Update? Se detienen los servicios de actualización, se reconstruyen la caché de actualizaciones y la base de datos de firmas, y se vuelven a iniciar los servicios. Windows buscará actualizaciones desde el principio.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Reset_Done" xml:space="preserve"><value>Windows Update se restableció.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Reset_Warnings" xml:space="preserve"><value>Windows Update se restableció con advertencias: {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule" xml:space="preserve"><value>Programación</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_On" xml:space="preserve"><value>Activada</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Daily" xml:space="preserve"><value>Diaria</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Weekly" xml:space="preserve"><value>Semanal</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Monthly" xml:space="preserve"><value>Mensual</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Startup" xml:space="preserve"><value>Al iniciar</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Day" xml:space="preserve"><value>Día</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_MonthDay" xml:space="preserve"><value>Día del mes</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Time" xml:space="preserve"><value>Hora</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_RunIfMissed" xml:space="preserve"><value>Ejecutar si se pasó la hora</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Wake" xml:space="preserve"><value>Activar el equipo</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_AutoRetry" xml:space="preserve"><value>Reintentar tras un error</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_RebootPrompt" xml:space="preserve"><value>Preguntar antes de reiniciar</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Firmware" xml:space="preserve"><value>Permitir actualizaciones de BIOS / firmware</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_NextRun" xml:space="preserve"><value>Próxima ejecución</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Save" xml:space="preserve"><value>Guardar</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_Saved" xml:space="preserve"><value>La programación se guardó.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_Off" xml:space="preserve"><value>La programación está desactivada.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_Invalid" xml:space="preserve"><value>Revisa la hora (HH:mm) y el día.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_Failed" xml:space="preserve"><value>La programación no se guardó: {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_NotScheduled" xml:space="preserve"><value>Sin programar</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_TaskMissing" xml:space="preserve"><value>Falta la tarea programada</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_AtStartup" xml:space="preserve"><value>En el próximo inicio</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Schedule_Mismatch" xml:space="preserve"><value>La tarea programada no coincide con esta configuración. Pulsa Guardar para repararla.</value><comment>needs review (D-023)</comment></data>
+¿Detener Windows Update por ahora y continuar con WinTool? Elige No para cancelar.</value></data>
+  <data name="WU_Result_Succeeded" xml:space="preserve"><value>Las actualizaciones se instalaron.</value></data>
+  <data name="WU_Result_SomeFailed" xml:space="preserve"><value>Algunas actualizaciones no se pudieron instalar. Consulta la lista para ver los detalles.</value></data>
+  <data name="WU_Result_Restart" xml:space="preserve"><value>La instalación de las actualizaciones terminó. Reinicia el equipo para completarla.</value></data>
+  <data name="WU_Result_Cancelled" xml:space="preserve"><value>Cancelado. No se instaló nada más.</value></data>
+  <data name="WU_Result_Other" xml:space="preserve"><value>La ejecución no terminó: {0}</value></data>
+  <data name="WU_OperationRunning" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Inténtalo de nuevo cuando termine.</value></data>
+  <data name="WU_Firmware_Warning" xml:space="preserve"><value>Seleccionaste una actualización de BIOS / firmware. Continúa solo si el equipo tiene alimentación fiable y no se apagará durante la actualización.</value></data>
+  <data name="WU_Firmware_Schedule_Warning" xml:space="preserve"><value>Las ejecuciones programadas instalarán actualizaciones de BIOS / firmware sin preguntar. Continúa solo en equipos con alimentación fiable.</value></data>
+  <data name="WU_Health" xml:space="preserve"><value>Estado</value></data>
+  <data name="WU_Health_Ok" xml:space="preserve"><value>Todo bien</value></data>
+  <data name="WU_Health_Warning" xml:space="preserve"><value>Requiere atención</value></data>
+  <data name="WU_Health_Problem" xml:space="preserve"><value>Se encontró un problema</value></data>
+  <data name="WU_HealthItem_services_Ok" xml:space="preserve"><value>Los servicios de actualización están disponibles</value></data>
+  <data name="WU_HealthItem_services_Problem" xml:space="preserve"><value>Un servicio de actualización está deshabilitado o falta</value></data>
+  <data name="WU_HealthItem_disk_Ok" xml:space="preserve"><value>Suficiente espacio libre en disco</value></data>
+  <data name="WU_HealthItem_disk_Warning" xml:space="preserve"><value>Poco espacio libre en disco</value></data>
+  <data name="WU_HealthItem_disk_Problem" xml:space="preserve"><value>No hay suficiente espacio libre en disco</value></data>
+  <data name="WU_HealthItem_restart_Ok" xml:space="preserve"><value>No hay reinicios pendientes</value></data>
+  <data name="WU_HealthItem_restart_Warning" xml:space="preserve"><value>Hay un reinicio pendiente</value></data>
+  <data name="WU_HealthItem_activity_Ok" xml:space="preserve"><value>Windows Update está inactivo</value></data>
+  <data name="WU_HealthItem_activity_Warning" xml:space="preserve"><value>Windows Update está trabajando en segundo plano</value></data>
+  <data name="WU_HealthItem_network_Ok" xml:space="preserve"><value>Los servidores de actualización están accesibles</value></data>
+  <data name="WU_HealthItem_network_Problem" xml:space="preserve"><value>No se puede acceder a los servidores de actualización</value></data>
+  <data name="WU_HealthItem_microsoft_update_Ok" xml:space="preserve"><value>Microsoft Update está habilitado</value></data>
+  <data name="WU_HealthItem_microsoft_update_Warning" xml:space="preserve"><value>Microsoft Update no está habilitado</value></data>
+  <data name="WU_HealthItem_schedule_Ok" xml:space="preserve"><value>La tarea programada coincide con la configuración</value></data>
+  <data name="WU_HealthItem_schedule_Problem" xml:space="preserve"><value>La tarea programada falta o es distinta</value></data>
+  <data name="WU_RunHealthCheck" xml:space="preserve"><value>Comprobar estado</value></data>
+  <data name="WU_CollectLogs" xml:space="preserve"><value>Recopilar registros</value></data>
+  <data name="WU_LogsCollected" xml:space="preserve"><value>Paquete de registros guardado: {0}</value></data>
+  <data name="WU_Reset" xml:space="preserve"><value>Restablecer Windows Update</value></data>
+  <data name="WU_Reset_Confirm" xml:space="preserve"><value>¿Restablecer Windows Update? Se detienen los servicios de actualización, se reconstruyen la caché de actualizaciones y la base de datos de firmas, y se vuelven a iniciar los servicios. Windows buscará actualizaciones desde el principio.</value></data>
+  <data name="WU_Reset_Done" xml:space="preserve"><value>Windows Update se restableció.</value></data>
+  <data name="WU_Reset_Warnings" xml:space="preserve"><value>Windows Update se restableció con advertencias: {0}</value></data>
+  <data name="WU_Schedule" xml:space="preserve"><value>Programación</value></data>
+  <data name="WU_Schedule_On" xml:space="preserve"><value>Activada</value></data>
+  <data name="WU_Daily" xml:space="preserve"><value>Diaria</value></data>
+  <data name="WU_Weekly" xml:space="preserve"><value>Semanal</value></data>
+  <data name="WU_Monthly" xml:space="preserve"><value>Mensual</value></data>
+  <data name="WU_Startup" xml:space="preserve"><value>Al iniciar</value></data>
+  <data name="WU_Day" xml:space="preserve"><value>Día</value></data>
+  <data name="WU_MonthDay" xml:space="preserve"><value>Día del mes</value></data>
+  <data name="WU_Time" xml:space="preserve"><value>Hora</value></data>
+  <data name="WU_RunIfMissed" xml:space="preserve"><value>Ejecutar si se pasó la hora</value></data>
+  <data name="WU_Wake" xml:space="preserve"><value>Activar el equipo</value></data>
+  <data name="WU_AutoRetry" xml:space="preserve"><value>Reintentar tras un error</value></data>
+  <data name="WU_RebootPrompt" xml:space="preserve"><value>Preguntar antes de reiniciar</value></data>
+  <data name="WU_Firmware" xml:space="preserve"><value>Permitir actualizaciones de BIOS / firmware</value></data>
+  <data name="WU_NextRun" xml:space="preserve"><value>Próxima ejecución</value></data>
+  <data name="WU_Save" xml:space="preserve"><value>Guardar</value></data>
+  <data name="WU_Schedule_Saved" xml:space="preserve"><value>La programación se guardó.</value></data>
+  <data name="WU_Schedule_Off" xml:space="preserve"><value>La programación está desactivada.</value></data>
+  <data name="WU_Schedule_Invalid" xml:space="preserve"><value>Revisa la hora (HH:mm) y el día.</value></data>
+  <data name="WU_Schedule_Failed" xml:space="preserve"><value>La programación no se guardó: {0}</value></data>
+  <data name="WU_Schedule_NotScheduled" xml:space="preserve"><value>Sin programar</value></data>
+  <data name="WU_Schedule_TaskMissing" xml:space="preserve"><value>Falta la tarea programada</value></data>
+  <data name="WU_Schedule_AtStartup" xml:space="preserve"><value>En el próximo inicio</value></data>
+  <data name="WU_Schedule_Mismatch" xml:space="preserve"><value>La tarea programada no coincide con esta configuración. Pulsa Guardar para repararla.</value></data>
   <data name="WU_Schedule_Portable" xml:space="preserve"><value>Esta es una copia portable. La tarea programada la ejecutará desde:
 {0}
 
-Si el archivo se mueve o se elimina, la programación deja de funcionar. ¿Continuar?</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Legacy_Found" xml:space="preserve"><value>WinUpdate Tool está instalado en este equipo. Para evitar que dos herramientas actualicen el mismo equipo, deja que WinTool asuma su programación y lo desinstale.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Legacy_TakeOver" xml:space="preserve"><value>Asumir</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Legacy_Confirm" xml:space="preserve"><value>¿Importar la configuración de WinUpdate Tool, quitar sus tareas programadas y desinstalarlo?</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool asumió el trabajo de WinUpdate Tool y lo desinstaló.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_When_Daily" xml:space="preserve"><value>cada día a las {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_When_Weekly" xml:space="preserve"><value>cada {0} a las {1}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_When_Monthly" xml:space="preserve"><value>el día {0} de cada mes a las {1}</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_When_Startup" xml:space="preserve"><value>al iniciar el equipo</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Takeover_Imported" xml:space="preserve"><value>WinTool tomó la programación de WinUpdate Tool ({0}) y desinstaló la herramienta anterior. Puedes cambiarla en Windows Update.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Takeover_Kept" xml:space="preserve"><value>WinTool desinstaló WinUpdate Tool y mantuvo la programación elegida durante la instalación ({0}). Puedes cambiarla en Windows Update.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Takeover_Removed" xml:space="preserve"><value>WinTool desinstaló WinUpdate Tool. Puedes programar las actualizaciones en Windows Update.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_RunAtStartup" xml:space="preserve"><value>Ejecutar también tras el inicio (5 min)</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Warning" xml:space="preserve"><value>Método de compatibilidad experimental. Haz una copia de seguridad de los archivos importantes antes de actualizar.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ThisComputer" xml:space="preserve"><value>Este equipo</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Windows" xml:space="preserve"><value>Windows</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Processor" xml:space="preserve"><value>Procesador</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Memory" xml:space="preserve"><value>Memoria</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_FreeSpace" xml:space="preserve"><value>Espacio libre</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SecureBoot" xml:space="preserve"><value>Arranque seguro</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Eligibility" xml:space="preserve"><value>Actualización</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Eligible" xml:space="preserve"><value>Disponible</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Blocked" xml:space="preserve"><value>No disponible</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ServerGuidance" xml:space="preserve"><value>Solo instrucciones manuales</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_NextAction" xml:space="preserve"><value>Siguiente paso recomendado</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Next_Download" xml:space="preserve"><value>Descarga Windows 11 automáticamente y luego inicia la actualización comprobada.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Next_Media" xml:space="preserve"><value>Elige un medio de Windows adecuado y luego compruébalo.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Next_Image" xml:space="preserve"><value>Elige una imagen de Windows y luego inicia la actualización.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Next_Start" xml:space="preserve"><value>Todo está comprobado. Inicia la actualización cuando quieras.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Next_Server" xml:space="preserve"><value>Comprueba el medio de Server y luego copia el comando manual. El programa de instalación de Windows no se ejecuta aquí.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Next_Blocked" xml:space="preserve"><value>No se puede actualizar este equipo. Consulta el motivo arriba.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Previous" xml:space="preserve"><value>Actualización anterior</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ChooseSource" xml:space="preserve"><value>Elige el origen de instalación</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SrcDownload" xml:space="preserve"><value>Descargar Windows 11 automáticamente</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SrcDownloadHint" xml:space="preserve"><value>Idioma {0}. La ISO se comprueba antes de que empiece la actualización.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SrcDownloadUnavailable" xml:space="preserve"><value>La descarga automática no está disponible para este equipo. Usa una ISO, una unidad o una carpeta.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_DownloadTo" xml:space="preserve"><value>Descargar en</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SrcLocal" xml:space="preserve"><value>Usar una ISO, una unidad o una carpeta</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SrcLocalHint" xml:space="preserve"><value>Cuando es posible, se elige automáticamente una imagen adecuada.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Iso" xml:space="preserve"><value>ISO…</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Folder" xml:space="preserve"><value>Carpeta…</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Refresh" xml:space="preserve"><value>Actualizar</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_IsoLinks" xml:space="preserve"><value>ISO:</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_FindIso" xml:space="preserve"><value>Buscar ISO adecuada</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_PcNinjaIso" xml:space="preserve"><value>Descargas de PcNinja</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_MicrosoftIso" xml:space="preserve"><value>Microsoft</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Image" xml:space="preserve"><value>Imagen de Windows</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ImageValidateFirst" xml:space="preserve"><value>Primero comprueba un origen</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Silent" xml:space="preserve"><value>Ejecutar el programa de instalación de Windows en silencio</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_AutoRestart" xml:space="preserve"><value>Reiniciar automáticamente cuando haga falta</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_AutoRestartQuiet" xml:space="preserve"><value>El modo silencioso reinicia automáticamente. Desactívalo para reiniciar tú mismo.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Ready" xml:space="preserve"><value>Listo.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ViewLog" xml:space="preserve"><value>Ver registro</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Validate" xml:space="preserve"><value>Comprobar medio</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Start" xml:space="preserve"><value>Iniciar actualización</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Cancel" xml:space="preserve"><value>Cancelar</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SetupRunning" xml:space="preserve"><value>El programa de instalación de Windows está en curso</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_CopyCommand" xml:space="preserve"><value>Copiar comando de actualización</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Reading" xml:space="preserve"><value>Leyendo este equipo…</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Downloading" xml:space="preserve"><value>Descargando {0}… {1}</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Validating" xml:space="preserve"><value>Comprobando el medio de instalación y sus imágenes…</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Starting" xml:space="preserve"><value>Comprobando de nuevo la seguridad e iniciando el programa de instalación de Windows…</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Finding" xml:space="preserve"><value>Buscando una descarga de Windows adecuada…</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Cancelling" xml:space="preserve"><value>Cancelando…</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Cancelled" xml:space="preserve"><value>Cancelado. El programa de instalación de Windows no se inició.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Validated" xml:space="preserve"><value>Medio comprobado: {0} imágenes.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_ImageSelected" xml:space="preserve"><value>Imagen {0} seleccionada. Inicia la actualización cuando quieras.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_ChooseImage" xml:space="preserve"><value>Elige una imagen de Windows y luego inicia la actualización.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_NoImage" xml:space="preserve"><value>Ninguna imagen coincide con este equipo ({0}, {1}). Elige un medio de Windows adecuado.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_SourceChanged" xml:space="preserve"><value>El origen cambió. Compruébalo de nuevo.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_ManualRestart" xml:space="preserve"><value>La preparación de la actualización terminó. Reinicia el equipo para continuar la actualización.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_StageDone" xml:space="preserve"><value>El programa de instalación de Windows terminó esta fase. Comprueba el resultado después del reinicio.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Unconfirmed" xml:space="preserve"><value>El programa de instalación de Windows se cerró durante la transición. Abre WinTool después del reinicio para comprobar el resultado.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_PageOpened" xml:space="preserve"><value>La página de descarga está abierta. Cuando termine la descarga, elige el archivo con ISO… y compruébalo.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_PageOpenedNoMatch" xml:space="preserve"><value>No se confirmó una descarga exacta. Elige tú un medio adecuado y luego compruébalo.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_ServerInspected" xml:space="preserve"><value>Medio de Server comprobado. Elige la imagen adecuada y copia el comando. La instalación no se ejecuta aquí.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_CommandCopied" xml:space="preserve"><value>El comando se copió, no se ejecutó. Revísalo antes de ejecutarlo tú.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Status_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Espera a que termine e inténtalo de nuevo.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Failed" xml:space="preserve"><value>La actualización se detuvo:</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SetupFailed" xml:space="preserve"><value>El programa de instalación de Windows se detuvo con el código {0}. El equipo no se reinició.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_DownloadFailed" xml:space="preserve"><value>La descarga automática no terminó. Se abrió la página de descargas de PcNinja: descarga allí la ISO y luego elígela con ISO…</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_UnsafeMedia" xml:space="preserve"><value>Actualización bloqueada por un medio de instalación que interfiere. Quítalo y pulsa Actualizar.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_NoSource" xml:space="preserve"><value>Primero elige un archivo ISO, una unidad o una carpeta.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_NoDestination" xml:space="preserve"><value>Elige dónde descargar. Conecta una unidad y pulsa Actualizar si hace falta.</value><comment>needs review (D-023)</comment></data>
+Si el archivo se mueve o se elimina, la programación deja de funcionar. ¿Continuar?</value></data>
+  <data name="WU_Legacy_Found" xml:space="preserve"><value>WinUpdate Tool está instalado en este equipo. Para evitar que dos herramientas actualicen el mismo equipo, deja que WinTool asuma su programación y lo desinstale.</value></data>
+  <data name="WU_Legacy_TakeOver" xml:space="preserve"><value>Asumir</value></data>
+  <data name="WU_Legacy_Confirm" xml:space="preserve"><value>¿Importar la configuración de WinUpdate Tool, quitar sus tareas programadas y desinstalarlo?</value></data>
+  <data name="WU_Legacy_Done" xml:space="preserve"><value>WinTool asumió el trabajo de WinUpdate Tool y lo desinstaló.</value></data>
+  <data name="WU_When_Daily" xml:space="preserve"><value>cada día a las {0}</value></data>
+  <data name="WU_When_Weekly" xml:space="preserve"><value>cada {0} a las {1}</value></data>
+  <data name="WU_When_Monthly" xml:space="preserve"><value>el día {0} de cada mes a las {1}</value></data>
+  <data name="WU_When_Startup" xml:space="preserve"><value>al iniciar el equipo</value></data>
+  <data name="WU_Takeover_Imported" xml:space="preserve"><value>WinTool tomó la programación de WinUpdate Tool ({0}) y desinstaló la herramienta anterior. Puedes cambiarla en Windows Update.</value></data>
+  <data name="WU_Takeover_Kept" xml:space="preserve"><value>WinTool desinstaló WinUpdate Tool y mantuvo la programación elegida durante la instalación ({0}). Puedes cambiarla en Windows Update.</value></data>
+  <data name="WU_Takeover_Removed" xml:space="preserve"><value>WinTool desinstaló WinUpdate Tool. Puedes programar las actualizaciones en Windows Update.</value></data>
+  <data name="WU_RunAtStartup" xml:space="preserve"><value>Ejecutar también tras el inicio (5 min)</value></data>
+  <data name="UP_Warning" xml:space="preserve"><value>Método de compatibilidad experimental. Haz una copia de seguridad de los archivos importantes antes de actualizar.</value></data>
+  <data name="UP_ThisComputer" xml:space="preserve"><value>Este equipo</value></data>
+  <data name="UP_Windows" xml:space="preserve"><value>Windows</value></data>
+  <data name="UP_Processor" xml:space="preserve"><value>Procesador</value></data>
+  <data name="UP_Memory" xml:space="preserve"><value>Memoria</value></data>
+  <data name="UP_FreeSpace" xml:space="preserve"><value>Espacio libre</value></data>
+  <data name="UP_SecureBoot" xml:space="preserve"><value>Arranque seguro</value></data>
+  <data name="UP_Eligibility" xml:space="preserve"><value>Actualización</value></data>
+  <data name="UP_Eligible" xml:space="preserve"><value>Disponible</value></data>
+  <data name="UP_Blocked" xml:space="preserve"><value>No disponible</value></data>
+  <data name="UP_ServerGuidance" xml:space="preserve"><value>Solo instrucciones manuales</value></data>
+  <data name="UP_NextAction" xml:space="preserve"><value>Siguiente paso recomendado</value></data>
+  <data name="UP_Next_Download" xml:space="preserve"><value>Descarga Windows 11 automáticamente y luego inicia la actualización comprobada.</value></data>
+  <data name="UP_Next_Media" xml:space="preserve"><value>Elige un medio de Windows adecuado y luego compruébalo.</value></data>
+  <data name="UP_Next_Image" xml:space="preserve"><value>Elige una imagen de Windows y luego inicia la actualización.</value></data>
+  <data name="UP_Next_Start" xml:space="preserve"><value>Todo está comprobado. Inicia la actualización cuando quieras.</value></data>
+  <data name="UP_Next_Server" xml:space="preserve"><value>Comprueba el medio de Server y luego copia el comando manual. El programa de instalación de Windows no se ejecuta aquí.</value></data>
+  <data name="UP_Next_Blocked" xml:space="preserve"><value>No se puede actualizar este equipo. Consulta el motivo arriba.</value></data>
+  <data name="UP_Previous" xml:space="preserve"><value>Actualización anterior</value></data>
+  <data name="UP_ChooseSource" xml:space="preserve"><value>Elige el origen de instalación</value></data>
+  <data name="UP_SrcDownload" xml:space="preserve"><value>Descargar Windows 11 automáticamente</value></data>
+  <data name="UP_SrcDownloadHint" xml:space="preserve"><value>Idioma {0}. La ISO se comprueba antes de que empiece la actualización.</value></data>
+  <data name="UP_SrcDownloadUnavailable" xml:space="preserve"><value>La descarga automática no está disponible para este equipo. Usa una ISO, una unidad o una carpeta.</value></data>
+  <data name="UP_DownloadTo" xml:space="preserve"><value>Descargar en</value></data>
+  <data name="UP_SrcLocal" xml:space="preserve"><value>Usar una ISO, una unidad o una carpeta</value></data>
+  <data name="UP_SrcLocalHint" xml:space="preserve"><value>Cuando es posible, se elige automáticamente una imagen adecuada.</value></data>
+  <data name="UP_Iso" xml:space="preserve"><value>ISO…</value></data>
+  <data name="UP_Folder" xml:space="preserve"><value>Carpeta…</value></data>
+  <data name="UP_Refresh" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="UP_IsoLinks" xml:space="preserve"><value>ISO:</value></data>
+  <data name="UP_FindIso" xml:space="preserve"><value>Buscar ISO adecuada</value></data>
+  <data name="UP_PcNinjaIso" xml:space="preserve"><value>Descargas de PcNinja</value></data>
+  <data name="UP_MicrosoftIso" xml:space="preserve"><value>Microsoft</value></data>
+  <data name="UP_Image" xml:space="preserve"><value>Imagen de Windows</value></data>
+  <data name="UP_ImageValidateFirst" xml:space="preserve"><value>Primero comprueba un origen</value></data>
+  <data name="UP_Silent" xml:space="preserve"><value>Ejecutar el programa de instalación de Windows en silencio</value></data>
+  <data name="UP_AutoRestart" xml:space="preserve"><value>Reiniciar automáticamente cuando haga falta</value></data>
+  <data name="UP_AutoRestartQuiet" xml:space="preserve"><value>El modo silencioso reinicia automáticamente. Desactívalo para reiniciar tú mismo.</value></data>
+  <data name="UP_Ready" xml:space="preserve"><value>Listo.</value></data>
+  <data name="UP_ViewLog" xml:space="preserve"><value>Ver registro</value></data>
+  <data name="UP_Validate" xml:space="preserve"><value>Comprobar medio</value></data>
+  <data name="UP_Start" xml:space="preserve"><value>Iniciar actualización</value></data>
+  <data name="UP_Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="UP_SetupRunning" xml:space="preserve"><value>El programa de instalación de Windows está en curso</value></data>
+  <data name="UP_CopyCommand" xml:space="preserve"><value>Copiar comando de actualización</value></data>
+  <data name="UP_Status_Reading" xml:space="preserve"><value>Leyendo este equipo…</value></data>
+  <data name="UP_Status_Downloading" xml:space="preserve"><value>Descargando {0}… {1}</value></data>
+  <data name="UP_Status_Validating" xml:space="preserve"><value>Comprobando el medio de instalación y sus imágenes…</value></data>
+  <data name="UP_Status_Starting" xml:space="preserve"><value>Comprobando de nuevo la seguridad e iniciando el programa de instalación de Windows…</value></data>
+  <data name="UP_Status_Finding" xml:space="preserve"><value>Buscando una descarga de Windows adecuada…</value></data>
+  <data name="UP_Status_Cancelling" xml:space="preserve"><value>Cancelando…</value></data>
+  <data name="UP_Status_Cancelled" xml:space="preserve"><value>Cancelado. El programa de instalación de Windows no se inició.</value></data>
+  <data name="UP_Status_Validated" xml:space="preserve"><value>Medio comprobado: {0} imágenes.</value></data>
+  <data name="UP_Status_ImageSelected" xml:space="preserve"><value>Imagen {0} seleccionada. Inicia la actualización cuando quieras.</value></data>
+  <data name="UP_Status_ChooseImage" xml:space="preserve"><value>Elige una imagen de Windows y luego inicia la actualización.</value></data>
+  <data name="UP_Status_NoImage" xml:space="preserve"><value>Ninguna imagen coincide con este equipo ({0}, {1}). Elige un medio de Windows adecuado.</value></data>
+  <data name="UP_Status_SourceChanged" xml:space="preserve"><value>El origen cambió. Compruébalo de nuevo.</value></data>
+  <data name="UP_Status_ManualRestart" xml:space="preserve"><value>La preparación de la actualización terminó. Reinicia el equipo para continuar la actualización.</value></data>
+  <data name="UP_Status_StageDone" xml:space="preserve"><value>El programa de instalación de Windows terminó esta fase. Comprueba el resultado después del reinicio.</value></data>
+  <data name="UP_Status_Unconfirmed" xml:space="preserve"><value>El programa de instalación de Windows se cerró durante la transición. Abre WinTool después del reinicio para comprobar el resultado.</value></data>
+  <data name="UP_Status_PageOpened" xml:space="preserve"><value>La página de descarga está abierta. Cuando termine la descarga, elige el archivo con ISO… y compruébalo.</value></data>
+  <data name="UP_Status_PageOpenedNoMatch" xml:space="preserve"><value>No se confirmó una descarga exacta. Elige tú un medio adecuado y luego compruébalo.</value></data>
+  <data name="UP_Status_ServerInspected" xml:space="preserve"><value>Medio de Server comprobado. Elige la imagen adecuada y copia el comando. La instalación no se ejecuta aquí.</value></data>
+  <data name="UP_Status_CommandCopied" xml:space="preserve"><value>El comando se copió, no se ejecutó. Revísalo antes de ejecutarlo tú.</value></data>
+  <data name="UP_Status_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Espera a que termine e inténtalo de nuevo.</value></data>
+  <data name="UP_Failed" xml:space="preserve"><value>La actualización se detuvo:</value></data>
+  <data name="UP_SetupFailed" xml:space="preserve"><value>El programa de instalación de Windows se detuvo con el código {0}. El equipo no se reinició.</value></data>
+  <data name="UP_DownloadFailed" xml:space="preserve"><value>La descarga automática no terminó. Se abrió la página de descargas de PcNinja: descarga allí la ISO y luego elígela con ISO…</value></data>
+  <data name="UP_UnsafeMedia" xml:space="preserve"><value>Actualización bloqueada por un medio de instalación que interfiere. Quítalo y pulsa Actualizar.</value></data>
+  <data name="UP_NoSource" xml:space="preserve"><value>Primero elige un archivo ISO, una unidad o una carpeta.</value></data>
+  <data name="UP_NoDestination" xml:space="preserve"><value>Elige dónde descargar. Conecta una unidad y pulsa Actualizar si hace falta.</value></data>
   <data name="UP_Confirm_Download" xml:space="preserve"><value>Descargar (o reutilizar) la ISO de Windows en:
 {0}
 
 Luego comprobarla e iniciar la actualización en el mismo equipo, conservando aplicaciones y archivos personales.
 {1}{2}
 
-Método de compatibilidad experimental. Haz una copia de seguridad de los archivos importantes y guarda tu trabajo. ¿Continuar?</value><comment>needs review (D-023)</comment></data>
+Método de compatibilidad experimental. Haz una copia de seguridad de los archivos importantes y guarda tu trabajo. ¿Continuar?</value></data>
   <data name="UP_Confirm_Start" xml:space="preserve"><value>{0} (imagen {1})
 {2}{3}{4}
 
-Guarda tu trabajo. ¿Iniciar la actualización?</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Confirm_Restart" xml:space="preserve"><value>Es posible que Windows se reinicie automáticamente.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_Confirm_NoRestart" xml:space="preserve"><value>Reinicia tú cuando la instalación esté lista.</value><comment>needs review (D-023)</comment></data>
+Guarda tu trabajo. ¿Iniciar la actualización?</value></data>
+  <data name="UP_Confirm_Restart" xml:space="preserve"><value>Es posible que Windows se reinicie automáticamente.</value></data>
+  <data name="UP_Confirm_NoRestart" xml:space="preserve"><value>Reinicia tú cuando la instalación esté lista.</value></data>
   <data name="UP_Confirm_Silent" xml:space="preserve"><value>
-El programa de instalación de Windows se ejecutará en silencio.</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ChooseIsoTitle" xml:space="preserve"><value>Elige un archivo ISO de Windows</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ChooseFolderTitle" xml:space="preserve"><value>Elige una unidad o una carpeta con los archivos extraídos del instalador de Windows</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_ChooseDownloadFolderTitle" xml:space="preserve"><value>Elige la carpeta de descarga</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_SelectedFolder" xml:space="preserve"><value>Carpeta seleccionada</value><comment>needs review (D-023)</comment></data>
-  <data name="UP_IsoFilter" xml:space="preserve"><value>Archivos ISO</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Family" xml:space="preserve"><value>Familia de productos</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Mode" xml:space="preserve"><value>Modo</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_ModeInstall" xml:space="preserve"><value>Instalar en este equipo</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_ModePackage" xml:space="preserve"><value>Paquete sin conexión</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_ModeRemove" xml:space="preserve"><value>Quitar todo Office</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Channel" xml:space="preserve"><value>Canal de actualización</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_ChannelLtsc" xml:space="preserve"><value>Fijo en Office LTSC 2024</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Ch_Current" xml:space="preserve"><value>Canal actual</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Ch_MonthlyEnterprise" xml:space="preserve"><value>Canal mensual para empresas</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Ch_SemiAnnual" xml:space="preserve"><value>Canal semestral para empresas</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Arch" xml:space="preserve"><value>Arquitectura</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Arch64" xml:space="preserve"><value>64 bits</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Arch32" xml:space="preserve"><value>32 bits</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Apps" xml:space="preserve"><value>Aplicaciones incluidas</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Languages" xml:space="preserve"><value>Idiomas</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_LanguagesHint" xml:space="preserve"><value>El primer idioma es el principal.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_AddLanguage" xml:space="preserve"><value>Agregar idioma</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_SearchLanguage" xml:space="preserve"><value>Buscar idiomas</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_RemoveLanguage" xml:space="preserve"><value>Quitar {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Addons" xml:space="preserve"><value>Productos adicionales</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_AutoActivate" xml:space="preserve"><value>Activar la licencia por volumen durante la instalación</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Silent" xml:space="preserve"><value>Instalación silenciosa (sin la ventana de instalación de Office)</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_RemoveExisting" xml:space="preserve"><value>Quitar primero el Office instalado</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_PackageFolder" xml:space="preserve"><value>Carpeta del paquete</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_PackageHint" xml:space="preserve"><value>Office se guarda en una carpeta OFFICE-OFFLINE dentro de la carpeta que elijas.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_ChooseFolder" xml:space="preserve"><value>Elegir…</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_ChoosePackageFolderTitle" xml:space="preserve"><value>Elige dónde crear el paquete sin conexión</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_RemoveWarning" xml:space="preserve"><value>Se quitarán todos los productos Office Hacer clic y ejecutar de este equipo.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Summary" xml:space="preserve"><value>Resumen</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Current" xml:space="preserve"><value>Instalado ahora</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_NoneInstalled" xml:space="preserve"><value>Sin Office</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Reading" xml:space="preserve"><value>Leyendo…</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_WillReplace" xml:space="preserve"><value>Se quitará antes de la nueva instalación.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_AppsCount" xml:space="preserve"><value>{0} de {1}</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_LicenseNote" xml:space="preserve"><value>Se necesita una licencia válida de Microsoft. No se incluyen herramientas de activación.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Install" xml:space="preserve"><value>Instalar Office</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_CreatePackage" xml:space="preserve"><value>Crear paquete</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Remove" xml:space="preserve"><value>Quitar Office</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Cancel" xml:space="preserve"><value>Cancelar</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Log" xml:space="preserve"><value>Detalles</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_FindingTool" xml:space="preserve"><value>Buscando la última Herramienta de implementación de Office…</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_DownloadingTool" xml:space="preserve"><value>Descargando la Herramienta de implementación de Office…</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_CheckingTool" xml:space="preserve"><value>Comprobando la firma de Microsoft…</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_ExtractingTool" xml:space="preserve"><value>Extrayendo la Herramienta de implementación de Office…</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_Installing" xml:space="preserve"><value>Instalando Office. Puede tardar entre 10 y 30 minutos.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_DownloadingOffice" xml:space="preserve"><value>Descargando Office: {0} MB. Puede tardar entre 20 y 40 minutos.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_Removing" xml:space="preserve"><value>Quitando Office. Puede tardar varios minutos.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_WritingPackage" xml:space="preserve"><value>Escribiendo los archivos del paquete…</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Stage_CleaningUp" xml:space="preserve"><value>Limpiando…</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Done_Install" xml:space="preserve"><value>Office se instaló.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Done_Remove" xml:space="preserve"><value>Office se quitó.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Done_Package" xml:space="preserve"><value>El paquete está listo. Copia toda la carpeta al equipo de destino y ejecuta Install-Office.bat como administrador.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_OpenPackage" xml:space="preserve"><value>Abrir carpeta</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Cancelled" xml:space="preserve"><value>Cancelado. Office no cambió.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Espera a que termine e inténtalo de nuevo.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_ToolUnavailable" xml:space="preserve"><value>No se pudo descargar la Herramienta de implementación de Office de Microsoft.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_ToolNotTrusted" xml:space="preserve"><value>La herramienta descargada no está firmada por Microsoft. No se ejecutó nada.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_SetupFailed" xml:space="preserve"><value>El instalador de Office se detuvo con el código {0}.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Failed" xml:space="preserve"><value>La operación se detuvo:</value><comment>needs review (D-023)</comment></data>
+El programa de instalación de Windows se ejecutará en silencio.</value></data>
+  <data name="UP_ChooseIsoTitle" xml:space="preserve"><value>Elige un archivo ISO de Windows</value></data>
+  <data name="UP_ChooseFolderTitle" xml:space="preserve"><value>Elige una unidad o una carpeta con los archivos extraídos del instalador de Windows</value></data>
+  <data name="UP_ChooseDownloadFolderTitle" xml:space="preserve"><value>Elige la carpeta de descarga</value></data>
+  <data name="UP_SelectedFolder" xml:space="preserve"><value>Carpeta seleccionada</value></data>
+  <data name="UP_IsoFilter" xml:space="preserve"><value>Archivos ISO</value></data>
+  <data name="OF_Family" xml:space="preserve"><value>Familia de productos</value></data>
+  <data name="OF_Mode" xml:space="preserve"><value>Modo</value></data>
+  <data name="OF_ModeInstall" xml:space="preserve"><value>Instalar en este equipo</value></data>
+  <data name="OF_ModePackage" xml:space="preserve"><value>Paquete sin conexión</value></data>
+  <data name="OF_ModeRemove" xml:space="preserve"><value>Quitar todo Office</value></data>
+  <data name="OF_Channel" xml:space="preserve"><value>Canal de actualización</value></data>
+  <data name="OF_ChannelLtsc" xml:space="preserve"><value>Fijo en Office LTSC 2024</value></data>
+  <data name="OF_Ch_Current" xml:space="preserve"><value>Canal actual</value></data>
+  <data name="OF_Ch_MonthlyEnterprise" xml:space="preserve"><value>Canal mensual para empresas</value></data>
+  <data name="OF_Ch_SemiAnnual" xml:space="preserve"><value>Canal semestral para empresas</value></data>
+  <data name="OF_Arch" xml:space="preserve"><value>Arquitectura</value></data>
+  <data name="OF_Arch64" xml:space="preserve"><value>64 bits</value></data>
+  <data name="OF_Arch32" xml:space="preserve"><value>32 bits</value></data>
+  <data name="OF_Apps" xml:space="preserve"><value>Aplicaciones incluidas</value></data>
+  <data name="OF_Languages" xml:space="preserve"><value>Idiomas</value></data>
+  <data name="OF_LanguagesHint" xml:space="preserve"><value>El primer idioma es el principal.</value></data>
+  <data name="OF_AddLanguage" xml:space="preserve"><value>Agregar idioma</value></data>
+  <data name="OF_SearchLanguage" xml:space="preserve"><value>Buscar idiomas</value></data>
+  <data name="OF_RemoveLanguage" xml:space="preserve"><value>Quitar {0}</value></data>
+  <data name="OF_Addons" xml:space="preserve"><value>Productos adicionales</value></data>
+  <data name="OF_AutoActivate" xml:space="preserve"><value>Activar la licencia por volumen durante la instalación</value></data>
+  <data name="OF_Silent" xml:space="preserve"><value>Instalación silenciosa (sin la ventana de instalación de Office)</value></data>
+  <data name="OF_RemoveExisting" xml:space="preserve"><value>Quitar primero el Office instalado</value></data>
+  <data name="OF_PackageFolder" xml:space="preserve"><value>Carpeta del paquete</value></data>
+  <data name="OF_PackageHint" xml:space="preserve"><value>Office se guarda en una carpeta OFFICE-OFFLINE dentro de la carpeta que elijas.</value></data>
+  <data name="OF_ChooseFolder" xml:space="preserve"><value>Elegir…</value></data>
+  <data name="OF_ChoosePackageFolderTitle" xml:space="preserve"><value>Elige dónde crear el paquete sin conexión</value></data>
+  <data name="OF_RemoveWarning" xml:space="preserve"><value>Se quitarán todos los productos Office Hacer clic y ejecutar de este equipo.</value></data>
+  <data name="OF_Summary" xml:space="preserve"><value>Resumen</value></data>
+  <data name="OF_Current" xml:space="preserve"><value>Instalado ahora</value></data>
+  <data name="OF_NoneInstalled" xml:space="preserve"><value>Sin Office</value></data>
+  <data name="OF_Reading" xml:space="preserve"><value>Leyendo…</value></data>
+  <data name="OF_WillReplace" xml:space="preserve"><value>Se quitará antes de la nueva instalación.</value></data>
+  <data name="OF_AppsCount" xml:space="preserve"><value>{0} de {1}</value></data>
+  <data name="OF_LicenseNote" xml:space="preserve"><value>Se necesita una licencia válida de Microsoft. No se incluyen herramientas de activación.</value></data>
+  <data name="OF_Install" xml:space="preserve"><value>Instalar Office</value></data>
+  <data name="OF_CreatePackage" xml:space="preserve"><value>Crear paquete</value></data>
+  <data name="OF_Remove" xml:space="preserve"><value>Quitar Office</value></data>
+  <data name="OF_Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="OF_Log" xml:space="preserve"><value>Detalles</value></data>
+  <data name="OF_Stage_FindingTool" xml:space="preserve"><value>Buscando la última Herramienta de implementación de Office…</value></data>
+  <data name="OF_Stage_DownloadingTool" xml:space="preserve"><value>Descargando la Herramienta de implementación de Office…</value></data>
+  <data name="OF_Stage_CheckingTool" xml:space="preserve"><value>Comprobando la firma de Microsoft…</value></data>
+  <data name="OF_Stage_ExtractingTool" xml:space="preserve"><value>Extrayendo la Herramienta de implementación de Office…</value></data>
+  <data name="OF_Stage_Installing" xml:space="preserve"><value>Instalando Office. Puede tardar entre 10 y 30 minutos.</value></data>
+  <data name="OF_Stage_DownloadingOffice" xml:space="preserve"><value>Descargando Office: {0} MB. Puede tardar entre 20 y 40 minutos.</value></data>
+  <data name="OF_Stage_Removing" xml:space="preserve"><value>Quitando Office. Puede tardar varios minutos.</value></data>
+  <data name="OF_Stage_WritingPackage" xml:space="preserve"><value>Escribiendo los archivos del paquete…</value></data>
+  <data name="OF_Stage_CleaningUp" xml:space="preserve"><value>Limpiando…</value></data>
+  <data name="OF_Done_Install" xml:space="preserve"><value>Office se instaló.</value></data>
+  <data name="OF_Done_Remove" xml:space="preserve"><value>Office se quitó.</value></data>
+  <data name="OF_Done_Package" xml:space="preserve"><value>El paquete está listo. Copia toda la carpeta al equipo de destino y ejecuta Install-Office.bat como administrador.</value></data>
+  <data name="OF_OpenPackage" xml:space="preserve"><value>Abrir carpeta</value></data>
+  <data name="OF_Cancelled" xml:space="preserve"><value>Cancelado. Office no cambió.</value></data>
+  <data name="OF_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Espera a que termine e inténtalo de nuevo.</value></data>
+  <data name="OF_ToolUnavailable" xml:space="preserve"><value>No se pudo descargar la Herramienta de implementación de Office de Microsoft.</value></data>
+  <data name="OF_ToolNotTrusted" xml:space="preserve"><value>La herramienta descargada no está firmada por Microsoft. No se ejecutó nada.</value></data>
+  <data name="OF_SetupFailed" xml:space="preserve"><value>El instalador de Office se detuvo con el código {0}.</value></data>
+  <data name="OF_Failed" xml:space="preserve"><value>La operación se detuvo:</value></data>
   <data name="OF_Confirm_Remove" xml:space="preserve"><value>¿Quitar todos los productos Office Hacer clic y ejecutar de este equipo?
 
-No se puede deshacer desde WinTool.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>Se quitarán todos los productos de Office instalados con Hacer clic y ejecutar antes de la nueva instalación. ¿Continuar?</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_NeedApp" xml:space="preserve"><value>Elige al menos una aplicación.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_NeedLanguage" xml:space="preserve"><value>Elige al menos un idioma.</value><comment>needs review (D-023)</comment></data>
-  <data name="OF_NeedFolder" xml:space="preserve"><value>Elige la carpeta del paquete.</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_UpgradeRunning" xml:space="preserve"><value>Actualización en curso…</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_UpgradeLast" xml:space="preserve"><value>Última actualización: {0} ({1})</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Upgrade_SetupStarting" xml:space="preserve"><value>instalación de Windows iniciada</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Upgrade_PreparationCompleted" xml:space="preserve"><value>preparada, reinicia para continuar</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Upgrade_OutcomeUnconfirmed" xml:space="preserve"><value>resultado sin confirmar</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Upgrade_RollbackObserved" xml:space="preserve"><value>Windows volvió a la versión anterior</value><comment>needs review (D-023)</comment></data>
-  <data name="Dash_Upgrade_TargetWindowsObserved" xml:space="preserve"><value>completada</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_Follow" xml:space="preserve"><value>Seguir</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_Collect" xml:space="preserve"><value>Recopilar registros</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_OpenFolder" xml:space="preserve"><value>Abrir carpeta</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_All" xml:space="preserve"><value>Todo</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_Day" xml:space="preserve"><value>Día</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_Empty" xml:space="preserve"><value>No hay entradas para este día y filtro.</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_Shown" xml:space="preserve"><value>{0} entradas (se muestran las últimas {1})</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_Count" xml:space="preserve"><value>{0} entradas</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_Collected" xml:space="preserve"><value>Paquete de registros creado: {0}</value><comment>needs review (D-023)</comment></data>
-  <data name="LG_CollectFailed" xml:space="preserve"><value>No se pudo crear el paquete de registros.</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_HelpTitle" xml:space="preserve"><value>¿Necesitas ayuda?</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_HelpBody" xml:space="preserve"><value>Guías paso a paso para cada pantalla de WinTool en el sitio de ayuda de PcNinja.</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_FreeTools" xml:space="preserve"><value>Herramientas gratuitas de PcNinja</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_FreeToolsSub" xml:space="preserve"><value>Enlaces de descarga y contraseña compartida de los archivos.</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_Activation" xml:space="preserve"><value>Activación de Windows y Office</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_Repo" xml:space="preserve"><value>WinTool en GitHub</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_FilePassword" xml:space="preserve"><value>Contraseña de los archivos</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_Copy" xml:space="preserve"><value>Copiar</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_Copied" xml:space="preserve"><value>Copiada</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_Vendors" xml:space="preserve"><value>Recursos de fabricantes (solo de referencia)</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_VendorsSub" xml:space="preserve"><value>Usa estos recursos como referencia y para buscar manualmente. WinTool no instala paquetes de fabricantes desde estos enlaces.</value><comment>needs review (D-023)</comment></data>
-  <data name="LK_VendorsNote" xml:space="preserve"><value>La instalación de controladores queda a cargo de Windows Update.</value><comment>needs review (D-023)</comment></data>
-  <data name="UPD_Checking" xml:space="preserve"><value>Buscando una versión más reciente de WinTool…</value><comment>needs review (D-023)</comment></data>
-  <data name="UPD_UpToDate" xml:space="preserve"><value>WinTool {0} está al día.</value><comment>needs review (D-023)</comment></data>
-  <data name="UPD_CheckFailed" xml:space="preserve"><value>No se pudo buscar una versión más reciente de WinTool.</value><comment>needs review (D-023)</comment></data>
+No se puede deshacer desde WinTool.</value></data>
+  <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>Se quitarán todos los productos de Office instalados con Hacer clic y ejecutar antes de la nueva instalación. ¿Continuar?</value></data>
+  <data name="OF_NeedApp" xml:space="preserve"><value>Elige al menos una aplicación.</value></data>
+  <data name="OF_NeedLanguage" xml:space="preserve"><value>Elige al menos un idioma.</value></data>
+  <data name="OF_NeedFolder" xml:space="preserve"><value>Elige la carpeta del paquete.</value></data>
+  <data name="Dash_UpgradeRunning" xml:space="preserve"><value>Actualización en curso…</value></data>
+  <data name="Dash_UpgradeLast" xml:space="preserve"><value>Última actualización: {0} ({1})</value></data>
+  <data name="Dash_Upgrade_SetupStarting" xml:space="preserve"><value>instalación de Windows iniciada</value></data>
+  <data name="Dash_Upgrade_PreparationCompleted" xml:space="preserve"><value>preparada, reinicia para continuar</value></data>
+  <data name="Dash_Upgrade_OutcomeUnconfirmed" xml:space="preserve"><value>resultado sin confirmar</value></data>
+  <data name="Dash_Upgrade_RollbackObserved" xml:space="preserve"><value>Windows volvió a la versión anterior</value></data>
+  <data name="Dash_Upgrade_TargetWindowsObserved" xml:space="preserve"><value>completada</value></data>
+  <data name="LG_Follow" xml:space="preserve"><value>Seguir</value></data>
+  <data name="LG_Collect" xml:space="preserve"><value>Recopilar registros</value></data>
+  <data name="LG_OpenFolder" xml:space="preserve"><value>Abrir carpeta</value></data>
+  <data name="LG_All" xml:space="preserve"><value>Todo</value></data>
+  <data name="LG_Day" xml:space="preserve"><value>Día</value></data>
+  <data name="LG_Empty" xml:space="preserve"><value>No hay entradas para este día y filtro.</value></data>
+  <data name="LG_Shown" xml:space="preserve"><value>{0} entradas (se muestran las últimas {1})</value></data>
+  <data name="LG_Count" xml:space="preserve"><value>{0} entradas</value></data>
+  <data name="LG_Collected" xml:space="preserve"><value>Paquete de registros creado: {0}</value></data>
+  <data name="LG_CollectFailed" xml:space="preserve"><value>No se pudo crear el paquete de registros.</value></data>
+  <data name="LK_HelpTitle" xml:space="preserve"><value>¿Necesitas ayuda?</value></data>
+  <data name="LK_HelpBody" xml:space="preserve"><value>Guías paso a paso para cada pantalla de WinTool en el sitio de ayuda de PcNinja.</value></data>
+  <data name="LK_FreeTools" xml:space="preserve"><value>Herramientas gratuitas de PcNinja</value></data>
+  <data name="LK_FreeToolsSub" xml:space="preserve"><value>Enlaces de descarga y contraseña compartida de los archivos.</value></data>
+  <data name="LK_Activation" xml:space="preserve"><value>Activación de Windows y Office</value></data>
+  <data name="LK_Repo" xml:space="preserve"><value>WinTool en GitHub</value></data>
+  <data name="LK_FilePassword" xml:space="preserve"><value>Contraseña de los archivos</value></data>
+  <data name="LK_Copy" xml:space="preserve"><value>Copiar</value></data>
+  <data name="LK_Copied" xml:space="preserve"><value>Copiada</value></data>
+  <data name="LK_Vendors" xml:space="preserve"><value>Recursos de fabricantes (solo de referencia)</value></data>
+  <data name="LK_VendorsSub" xml:space="preserve"><value>Usa estos recursos como referencia y para buscar manualmente. WinTool no instala paquetes de fabricantes desde estos enlaces.</value></data>
+  <data name="LK_VendorsNote" xml:space="preserve"><value>La instalación de controladores queda a cargo de Windows Update.</value></data>
+  <data name="UPD_Checking" xml:space="preserve"><value>Buscando una versión más reciente de WinTool…</value></data>
+  <data name="UPD_UpToDate" xml:space="preserve"><value>WinTool {0} está al día.</value></data>
+  <data name="UPD_CheckFailed" xml:space="preserve"><value>No se pudo buscar una versión más reciente de WinTool.</value></data>
   <data name="UPD_Available" xml:space="preserve"><value>WinTool {0} está disponible (tienes {1}).
 
 {2}
 
-¿Actualizar ahora?</value><comment>needs review (D-023)</comment></data>
+¿Actualizar ahora?</value></data>
   <data name="UPD_AvailableTest" xml:space="preserve"><value>La versión de prueba WinTool {0} está disponible (tienes {1}).
 
 {2}
 
-¿Actualizar ahora?</value><comment>needs review (D-023)</comment></data>
-  <data name="UPD_Downloading" xml:space="preserve"><value>Descargando la actualización… {0} MB</value><comment>needs review (D-023)</comment></data>
-  <data name="UPD_Failed" xml:space="preserve"><value>La actualización no terminó. WinTool no cambió.</value><comment>needs review (D-023)</comment></data>
-  <data name="UPD_WaitForOperation" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Actualiza cuando termine.</value><comment>needs review (D-023)</comment></data>
-  <data name="UPD_Done" xml:space="preserve"><value>WinTool se actualizó de {0} a {1}.</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Updates" xml:space="preserve"><value>Actualizaciones de la aplicación</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_CheckAtStartup" xml:space="preserve"><value>Buscar actualizaciones de WinTool al iniciar</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_TestVersions" xml:space="preserve"><value>Recibir también versiones de prueba (beta y candidatas a versión final)</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_CheckNow" xml:space="preserve"><value>Buscar ahora</value><comment>needs review (D-023)</comment></data>
+¿Actualizar ahora?</value></data>
+  <data name="UPD_Downloading" xml:space="preserve"><value>Descargando la actualización… {0} MB</value></data>
+  <data name="UPD_Failed" xml:space="preserve"><value>La actualización no terminó. WinTool no cambió.</value></data>
+  <data name="UPD_WaitForOperation" xml:space="preserve"><value>Hay otra operación de WinTool en curso. Actualiza cuando termine.</value></data>
+  <data name="UPD_Done" xml:space="preserve"><value>WinTool se actualizó de {0} a {1}.</value></data>
+  <data name="Settings_Updates" xml:space="preserve"><value>Actualizaciones de la aplicación</value></data>
+  <data name="Settings_CheckAtStartup" xml:space="preserve"><value>Buscar actualizaciones de WinTool al iniciar</value></data>
+  <data name="Settings_TestVersions" xml:space="preserve"><value>Recibir también versiones de prueba (beta y candidatas a versión final)</value></data>
+  <data name="Settings_CheckNow" xml:space="preserve"><value>Buscar ahora</value></data>
   <data name="Close_OperationRunning" xml:space="preserve"><value>{0} sigue en curso.
 
-¿Cancelar lo que se pueda y cerrar WinTool cuando se haya detenido? Un instalador que ya está en marcha nunca se interrumpe: WinTool se cierra cuando termina.</value><comment>needs review (D-023)</comment></data>
+¿Cancelar lo que se pueda y cerrar WinTool cuando se haya detenido? Un instalador que ya está en marcha nunca se interrumpe: WinTool se cierra cuando termina.</value></data>
   <data name="WU_Schedule_InstallOffer" xml:space="preserve"><value>Una programación necesita WinTool en un lugar fijo, y esta copia es portable:
 {0}
 
 Sí: instalar WinTool ahora; el instalador crea esta programación y esta ventana se cierra.
 No: programar esta copia portable de todos modos (no muevas ni elimines el archivo).
-Cancelar: no hacer nada.</value><comment>needs review (D-023)</comment></data>
-  <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>No se pudo descargar el instalador de WinTool {0}. Descarga WinTool-by-PcNinja.msi desde {1}.</value><comment>needs review (D-023)</comment></data>
-  <data name="Settings_Spanish_Review" xml:space="preserve"><value>El español es una primera traducción, pendiente de revisión por un hablante nativo.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Health_FreeSpace" xml:space="preserve"><value>{0} GB libres</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Result_RestartBlocking" xml:space="preserve"><value>Hace falta reiniciar el equipo para continuar con las actualizaciones. Guarda el trabajo abierto y pulsa «Reiniciar ahora». Puede que aparezcan más actualizaciones después del reinicio.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Reinicia primero el equipo y luego vuelve a buscar e instalar.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Restart_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso, quizá una actualización programada. Reinicia cuando termine.</value><comment>needs review (D-023)</comment></data>
-  <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows sigue instalando una actualización en segundo plano. Reiniciar ahora puede hacer que el reinicio tarde más. ¿Reiniciar de todos modos?</value><comment>needs review (D-023)</comment></data>
+Cancelar: no hacer nada.</value></data>
+  <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>No se pudo descargar el instalador de WinTool {0}. Descarga WinTool-by-PcNinja.msi desde {1}.</value></data>
+  <data name="Settings_Spanish_Review" xml:space="preserve"><value>El español es una primera traducción, pendiente de revisión por un hablante nativo.</value></data>
+  <data name="WU_Health_FreeSpace" xml:space="preserve"><value>{0} GB libres</value></data>
+  <data name="WU_Result_RestartBlocking" xml:space="preserve"><value>Hace falta reiniciar el equipo para continuar con las actualizaciones. Guarda el trabajo abierto y pulsa «Reiniciar ahora». Puede que aparezcan más actualizaciones después del reinicio.</value></data>
+  <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Reinicia primero el equipo y luego vuelve a buscar e instalar.</value></data>
+  <data name="WU_Restart_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso, quizá una actualización programada. Reinicia cuando termine.</value></data>
+  <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows sigue instalando una actualización en segundo plano. Reiniciar ahora puede hacer que el reinicio tarde más. ¿Reiniciar de todos modos?</value></data>
 </root>

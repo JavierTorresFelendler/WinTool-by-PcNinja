@@ -46,6 +46,27 @@ public sealed class DeploymentTests : IDisposable
         Assert.Empty(Directory.GetFileSystemEntries(Work));
     }
 
+    private sealed class Collect : IProgress<OfficeProgress>
+    {
+        public List<string> Messages { get; } = new List<string>();
+        public void Report(OfficeProgress value) { lock (Messages) Messages.Add(value.Message); }
+    }
+
+    [Fact]
+    public async Task A_running_installation_reports_elapsed_time_and_folder_growth()
+    {
+        tools.ConfigureDelay = TimeSpan.FromMilliseconds(400);
+        var deployment = Create();
+        deployment.InstallHeartbeat = TimeSpan.FromMilliseconds(50);
+        long bytes = 0;
+        deployment.OfficeFolderBytes = () => bytes += 10 * 1048576;
+        var progress = new Collect();
+        await deployment.InstallAsync(new OfficeRequest { Silent = true }, progress, CancellationToken.None);
+        Assert.Contains(progress.Messages, m => m.StartsWith("Installing Office silently", StringComparison.Ordinal));
+        Assert.Contains(progress.Messages, m => m.StartsWith("Office setup is running (0:00); Microsoft Office folder", StringComparison.Ordinal) && m.Contains("MB since the start"));
+        Assert.Contains(progress.Messages, m => m.StartsWith("Office setup finished after", StringComparison.Ordinal));
+    }
+
     [Fact]
     public async Task An_unsigned_tool_never_runs()
     {

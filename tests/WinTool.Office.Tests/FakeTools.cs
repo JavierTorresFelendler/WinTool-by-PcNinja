@@ -38,6 +38,8 @@ internal sealed class FakeTools : IOfficeTools
         return ok;
     }
 
+    public TimeSpan ConfigureDelay { get; set; }
+
     public Task<int> RunAsync(string file, string arguments, string workingDirectory, bool killOnCancel, CancellationToken token)
     {
         Calls.Add("run " + Path.GetFileName(file) + " " + arguments.Split(' ')[0] + (killOnCancel ? " cancellable" : " uninterruptible"));
@@ -50,6 +52,8 @@ internal sealed class FakeTools : IOfficeTools
 
         var config = arguments.Substring(arguments.IndexOf('"')).Trim('"');
         Configurations.Add(File.ReadAllText(config));
+        if (arguments.StartsWith("/configure", StringComparison.Ordinal) && ConfigureDelay > TimeSpan.Zero)
+            return Task.Delay(ConfigureDelay).ContinueWith(_ => SetupExit);
         if (arguments.StartsWith("/download", StringComparison.Ordinal) && DownloadCreatesData && SetupExit == 0)
         {
             var data = Path.Combine(workingDirectory, "Office", "Data", "16.0.1");

@@ -125,9 +125,11 @@ public sealed class OfficeDeployment
         {
             var config = Path.Combine(work.Folder, "configuration.xml");
             WriteText(config, OfficeConfiguration.Build(request));
-            report(52, OfficeStage.Installing, "Installing Office. This can take 10-30 minutes.");
+            report(52, OfficeStage.Installing, "Installing Office" + (request.Silent ? " silently (no Office window)" : "") + ". This can take 10-30 minutes.");
             // Once the Office installer runs it is never stopped: cancelling it can leave Office half installed.
-            var exit = await tools.RunAsync(work.Setup, "/configure \"" + config + "\"", work.Folder, false, CancellationToken.None).ConfigureAwait(false);
+            var run = tools.RunAsync(work.Setup, "/configure \"" + config + "\"", work.Folder, false, CancellationToken.None);
+            await MonitorInstallAsync(run, report).ConfigureAwait(false);
+            var exit = await run.ConfigureAwait(false);
             if (exit != 0) throw SetupFailed("Office setup", exit);
             return new OfficeOutcome("Office was installed.", null, work.ToolUrl);
         });
@@ -315,6 +317,40 @@ public sealed class OfficeDeployment
     }
 
     /// <summary>The original tool's download meter: folder size every second, a report at least every 10 seconds.</summary>
+    /// <summary>How often a running Office installation writes a progress line (tests shorten it).</summary>
+    internal TimeSpan InstallHeartbeat { get; set; } = TimeSpan.FromSeconds(15);
+
+    /// <summary>Bytes in the Microsoft Office folders, which Click-to-Run fills while it installs (tests replace it).</summary>
+    internal Func<long> OfficeFolderBytes { get; set; } = () =>
+        FolderSize(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Microsoft Office")) +
+        (Environment.Is64BitOperatingSystem
+            ? FolderSize(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft Office"))
+            : 0);
+
+    /// <summary>
+    /// Office setup gives no progress of its own (none at all when silent), so while it runs a line
+    /// goes to the window and the WinTool log every <see cref="InstallHeartbeat"/>: elapsed time and
+    /// how much the Microsoft Office folders grew since the start.
+    /// </summary>
+    private async Task MonitorInstallAsync(Task run, Reporter report)
+    {
+        var started = DateTime.UtcNow;
+        var startBytes = OfficeFolderBytes();
+        var percent = 52;
+        while (await Task.WhenAny(run, Task.Delay(InstallHeartbeat)).ConfigureAwait(false) != run)
+        {
+            var elapsed = DateTime.UtcNow - started;
+            var bytes = OfficeFolderBytes();
+            percent = Math.Min(88, Math.Max(percent, 52 + (int)Math.Floor(elapsed.TotalMinutes * 1.5)));
+            report(percent, OfficeStage.Installing, string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                "Office setup is running ({0}:{1:00}); Microsoft Office folder {2:N0} MB ({3:+#,0;-#,0;0} MB since the start).",
+                (int)elapsed.TotalMinutes, elapsed.Seconds, bytes / 1048576.0, (bytes - startBytes) / 1048576.0));
+        }
+
+        report(90, OfficeStage.Installing, string.Format(System.Globalization.CultureInfo.InvariantCulture,
+            "Office setup finished after {0:N0} minute(s).", (DateTime.UtcNow - started).TotalMinutes));
+    }
+
     private static async Task MonitorDownloadAsync(Task run, string officeFolder, Reporter report)
     {
         var started = DateTime.UtcNow;

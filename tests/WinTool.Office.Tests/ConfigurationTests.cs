@@ -6,7 +6,7 @@ public class ConfigurationTests
 {
     private static string Lines(params string[] lines) => string.Join("\r\n", lines) + "\r\n";
 
-    /// <summary>Byte for byte what Smart Office Installer v3.3.15 writes with its defaults (Microsoft 365, Current).</summary>
+    /// <summary>Byte for byte what Smart Office Installer v3.3.15 writes with its defaults (Microsoft 365, Current, English + Hebrew).</summary>
     [Fact]
     public void Defaults_match_the_original_tool()
     {
@@ -25,7 +25,26 @@ public class ConfigurationTests
             "  </Add>",
             "  <Display Level=\"Full\" AcceptEULA=\"TRUE\" />",
             "  <RemoveMSI All=\"True\" />",
-            "</Configuration>"), OfficeConfiguration.Build(new OfficeRequest()));
+            "</Configuration>"), OfficeConfiguration.Build(new OfficeRequest { Languages = new List<string> { "en-us", "he-il" } }));
+    }
+
+    [Theory]
+    [InlineData("he-IL", "he-il,en-us")]
+    [InlineData("en-US", "en-us")]
+    [InlineData("es-ES", "es-es")]
+    [InlineData("es-AR", "es-es")]
+    [InlineData("fr-BE", "fr-fr")]
+    [InlineData("en-AU", "en-us")]
+    [InlineData("en-GB", "en-gb")]
+    [InlineData("zh-HK", "zh-tw")]
+    [InlineData("zh-CN", "zh-cn")]
+    [InlineData("nb-NO", "nb-no")]
+    [InlineData("ca-ES", "en-us")]
+    [InlineData("", "en-us")]
+    [InlineData(null, "en-us")]
+    public void Default_languages_follow_the_Windows_display_language(string windows, string expected)
+    {
+        Assert.Equal(expected, string.Join(",", OfficeCatalog.DefaultLanguagesFor(windows)));
     }
 
     [Fact]

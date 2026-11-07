@@ -119,7 +119,7 @@ Enterprise; `ltsc`: Office LTSC Professional Plus 2024),
 `--channel Current|MonthlyEnterprise|SemiAnnual` (Microsoft 365 only),
 `--apps Word,Excel,PowerPoint,Outlook,OneNote,Access,Publisher,Teams,OneDrive`
 (default the first five), `--languages en-us,he-il,...` (the first is the
-primary language; default `en-us,he-il`), `--visio`, `--project`, `--x86`
+primary language; default Windows' display language, and on Hebrew Windows `he-il,en-us`), `--visio`, `--project`, `--x86`
 (32-bit), `--no-activate` (LTSC: do not activate the volume license during
 installation). `--quiet` hides the Office installer window.
 

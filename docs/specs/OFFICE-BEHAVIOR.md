@@ -17,7 +17,7 @@ Line numbers refer to `InstallerForm.cs` at `381a08e`.
 | OF-02 | Visio and Project as extra products: `VisioPro2024Volume`/`ProjectPro2024Volume` (LTSC), `VisioProRetail`/`ProjectProRetail` (Microsoft 365). (2019) | **Keep** (D-022: no more products for now). |
 | OF-03 | Apps Word, Excel, PowerPoint, Outlook, OneNote (on by default), Access, Publisher, Teams, OneDrive (off by default); unchecked apps are excluded; Lync always excluded. (991, 1413) | **Keep**. **Change**: at least one app must be chosen (the original allowed none). |
 | OF-04 | Channels Current (default), Monthly Enterprise, Semi-Annual Enterprise; Microsoft 365 only. (1338) | **Keep**. |
-| OF-05 | Languages: English (en-us) and Hebrew (he-il), both on. (1140) | **Change** (D-022): the 44 full language packs from Microsoft's table, with search; English and Hebrew stay the default. The first language chosen is the primary one. |
+| OF-05 | Languages: English (en-us) and Hebrew (he-il), both on. (1140) | **Change** (D-022): the 44 full language packs from Microsoft's table, with search. The first language chosen is the primary one. **Change** (owner, VM testing 2026-11-07): the default is Windows' display language (another variant of it when Office lacks that one, e.g. fr-BE → fr-fr; else English); on Hebrew Windows, Hebrew then English (`ConfigurationTests`). |
 | OF-06 | 64-bit by default, 32-bit option. (1985) | **Keep**. |
 | OF-07 | LTSC: activate the volume license during installation (`AUTOACTIVATE`), on by default. (1213) | **Keep**. No keys and no activation tools are included. |
 | OF-08 | Remove previous Office before installing (`<Remove All="True" />`), off by default. (1221) | **Keep**. On the command line it needs `--confirm`. |

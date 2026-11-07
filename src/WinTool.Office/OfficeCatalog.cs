@@ -93,7 +93,34 @@ public static class OfficeCatalog
 
     public const string DefaultChannel = "Current";
 
-    public static IReadOnlyList<string> DefaultLanguages { get; } = new[] { "en-us", "he-il" };
+    /// <summary>The default languages for this computer: Windows' display language (OF-05).</summary>
+    public static IReadOnlyList<string> DefaultLanguages => DefaultLanguagesFor(System.Globalization.CultureInfo.CurrentUICulture.Name);
+
+    /// <summary>
+    /// Windows' display language as the primary language; Hebrew also gets English, which many
+    /// Hebrew users still want in Office. A language Office does not offer falls back to
+    /// another variant of it (fr-BE to fr-fr), then to English.
+    /// </summary>
+    public static IReadOnlyList<string> DefaultLanguagesFor(string? windowsLanguage)
+    {
+        var primary = MatchWindowsLanguage(windowsLanguage) ?? "en-us";
+        return primary == "he-il" ? new[] { "he-il", "en-us" } : new[] { primary };
+    }
+
+    private static string? MatchWindowsLanguage(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return null;
+        var id = name!.Trim().ToLowerInvariant();
+        if (FindLanguage(id) is OfficeLanguage exact) return exact.Id;
+        // Traditional Chinese variants (Hong Kong, Macao, zh-Hant).
+        if (id.StartsWith("zh-", StringComparison.Ordinal) && (id.Contains("hant") || id.EndsWith("-hk") || id.EndsWith("-mo"))) return "zh-tw";
+        var dash = id.IndexOf('-');
+        var language = dash > 0 ? id.Substring(0, dash) : id;
+        if (language == "no" || language == "nb") return "nb-no";
+        if (language == "iw") language = "he";
+        var sameLanguage = Languages.FirstOrDefault(l => l.Id.StartsWith(language + "-", StringComparison.Ordinal));
+        return sameLanguage?.Id;
+    }
 
     /// <summary>The full language packs of Microsoft's table (languages with companion proofing).</summary>
     public static IReadOnlyList<OfficeLanguage> Languages { get; } = new[]

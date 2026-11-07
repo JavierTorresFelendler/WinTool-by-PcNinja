@@ -45,6 +45,13 @@ This computer runs {0}.</value></data>
   <data name="Startup_AlreadyRunning" xml:space="preserve"><value>WinTool is already open but is not responding. Close it and try again.</value></data>
   <data name="Startup_ElevationCancelled" xml:space="preserve"><value>WinTool needs administrator rights to manage Windows Update, upgrades and Office. Open it again and choose Yes.</value></data>
   <data name="Startup_TestOverridesNeedAdmin" xml:space="preserve"><value>WinTool test settings (WINTOOL_DATA_ROOT or WINTOOL_UPDATE_FEED) are set, but Windows does not pass them on when WinTool restarts with administrator rights. To keep the test away from real data, WinTool stops here. Start it from a command prompt opened as administrator.</value></data>
+  <data name="Startup_InstallOrPortable" xml:space="preserve"><value>Install WinTool on this computer?
+
+Yes: install it (Start menu, updates, scheduled Windows Update). The installer opens.
+No: run this copy without installing. WinTool will not ask again for this copy.
+Cancel: close.</value></data>
+  <data name="Startup_InstallFailed" xml:space="preserve"><value>The installer could not start:
+{0}</value></data>
   <data name="Error_Unexpected" xml:space="preserve"><value>Something went wrong. The details are in the log:
 {0}</value></data>
   <data name="Dash_Refresh" xml:space="preserve"><value>Refresh</value></data>

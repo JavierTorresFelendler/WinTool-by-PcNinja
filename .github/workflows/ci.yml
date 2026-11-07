@@ -306,3 +306,36 @@ jobs:
           name: WinTool-by-PcNinja-portable-unsigned
           path: src/WinTool.App/bin/Release/net48/WinTool-by-PcNinja.exe
           if-no-files-found: error
+
+      # D-026 prototype: the universal EXE carries the MSI built above (app EXE -> MSI -> universal EXE).
+      # A separate artifact for testing only; releases still ship the EXE and MSI as before.
+      - name: Universal EXE prototype (D-026)
+        if: matrix.configuration == 'Release'
+        shell: pwsh
+        run: |
+          $msi = Join-Path $env:RUNNER_TEMP "msi/WinTool-by-PcNinja.msi"
+          $out = Join-Path $env:RUNNER_TEMP "universal/"
+          $build = @("build", "src/WinTool.App/WinTool.App.csproj", "-c", "Release", "--no-restore", "-v", "minimal",
+                     "-p:EmbeddedMsi=$msi", "-p:OutDir=$out")
+          if ($env:WINTOOL_VERSION_ARGS) { $build += $env:WINTOOL_VERSION_ARGS.Split(' ') }
+          & dotnet @build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $exe = Join-Path $out "WinTool-by-PcNinja.exe"
+          # Alone in an empty folder, the command line works and never asks Install / Run portable.
+          $alone = Join-Path $env:RUNNER_TEMP "universal-alone"
+          New-Item -ItemType Directory -Force $alone | Out-Null
+          Copy-Item $exe $alone
+          $p = Start-Process -FilePath (Join-Path $alone "WinTool-by-PcNinja.exe") -ArgumentList "--self-test" -Wait -PassThru -NoNewWindow
+          if ($p.ExitCode -ne 0) { Write-Host "::error title=universal::self-test exit $($p.ExitCode)"; exit 1 }
+          $plain = (Get-Item "src/WinTool.App/bin/Release/net48/WinTool-by-PcNinja.exe").Length
+          $size = (Get-Item $exe).Length
+          Write-Host ("Universal EXE {0:N0} bytes (app-only EXE {1:N0}, MSI {2:N0})" -f $size, $plain, (Get-Item $msi).Length)
+          if ($size -le (Get-Item $msi).Length) { Write-Host "::error title=universal::the EXE does not contain the MSI"; exit 1 }
+
+      - name: Upload universal EXE prototype
+        if: matrix.configuration == 'Release'
+        uses: actions/upload-artifact@v6
+        with:
+          name: WinTool-by-PcNinja-universal-prototype
+          path: ${{ runner.temp }}/universal/WinTool-by-PcNinja.exe
+          if-no-files-found: error

@@ -46,4 +46,20 @@
       </EmbeddedResource>
     </ItemGroup>
   </Target>
+
+  <!--
+    D-026 prototype: the universal EXE carries the MSI (built from the app-only EXE first, so the
+    build is acyclic). CI passes -p:EmbeddedMsi=<path to the MSI>; normal builds embed nothing.
+  -->
+  <Target Name="EmbedInstaller" AfterTargets="ResolveAssemblyReferences" Condition="'$(EmbeddedMsi)' != ''">
+    <Error Condition="!Exists('$(EmbeddedMsi)')" Text="EmbeddedMsi not found: $(EmbeddedMsi)" />
+    <GetFileHash Files="$(EmbeddedMsi)" Algorithm="SHA256">
+      <Output TaskParameter="Hash" PropertyName="EmbeddedMsiHash" />
+    </GetFileHash>
+    <WriteLinesToFile File="$(IntermediateOutputPath)EmbeddedMsi.sha256" Lines="$(EmbeddedMsiHash)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <EmbeddedResource Include="$(EmbeddedMsi)" LogicalName="WinTool.Installer.msi" />
+      <EmbeddedResource Include="$(IntermediateOutputPath)EmbeddedMsi.sha256" LogicalName="WinTool.Installer.msi.sha256" />
+    </ItemGroup>
+  </Target>
 </Project>

@@ -45,6 +45,13 @@
   <data name="Startup_AlreadyRunning" xml:space="preserve"><value>WinTool כבר פתוח אבל לא מגיב. סגור אותו ונסה שוב.</value></data>
   <data name="Startup_ElevationCancelled" xml:space="preserve"><value>WinTool צריך הרשאות מנהל כדי לנהל עדכונים, שדרוגים ו־Office. פתח אותו שוב ובחר 'כן'.</value></data>
   <data name="Startup_TestOverridesNeedAdmin" xml:space="preserve"><value>הגדרות בדיקה של WinTool (WINTOOL_DATA_ROOT או WINTOOL_UPDATE_FEED) מוגדרות, אבל Windows לא מעביר אותן כש־WinTool מופעל מחדש עם הרשאות מנהל. כדי שהבדיקה לא תיגע בנתונים האמיתיים, WinTool עוצר כאן. הפעל אותו משורת פקודה שנפתחה כמנהל.</value></data>
+  <data name="Startup_InstallOrPortable" xml:space="preserve"><value>להתקין את WinTool במחשב הזה?
+
+כן: התקנה (תפריט התחל, עדכונים, תזמון Windows Update). אשף ההתקנה ייפתח.
+לא: הפעלת העותק הזה בלי התקנה. WinTool לא ישאל שוב עבור העותק הזה.
+ביטול: סגירה.</value></data>
+  <data name="Startup_InstallFailed" xml:space="preserve"><value>לא ניתן היה להפעיל את ההתקנה:
+{0}</value></data>
   <data name="Error_Unexpected" xml:space="preserve"><value>משהו השתבש. הפרטים נמצאים ביומן:
 {0}</value></data>
   <data name="Dash_Refresh" xml:space="preserve"><value>רענון</value></data>

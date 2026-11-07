@@ -66,6 +66,8 @@ namespace WinTool.App
                 PcNinjaSingleInstance.TryActivateExisting(ProductInfo.SingleInstanceAppId, options, out probe);
                 if (probe == PcNinjaSingleInstanceOutcome.ActivatedExisting) return ExitOk;
                 if (probe == PcNinjaSingleInstanceOutcome.ExistingNotResponding) return ShowNotResponding();
+                // Asked before elevation: installing runs the MSI, which asks for administrator rights itself.
+                if (!AskInstallOrPortable(settings)) return ExitOk;
                 if (TestOverridesSet())
                 {
                     // Windows does not pass this process's environment to the elevated copy, and
@@ -78,6 +80,7 @@ namespace WinTool.App
                 return RestartElevated();
             }
 
+            if (!AskInstallOrPortable(settings)) return ExitOk;
             WaitForReplacedCopy();
 
             PcNinjaSingleInstanceOutcome outcome;
@@ -147,6 +150,46 @@ namespace WinTool.App
         private static bool TestOverridesSet() =>
             !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinToolPaths.DataRootVariable)) ||
             !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinTool.Core.Updates.AppUpdater.FeedVariable));
+
+        /// <summary>
+        /// D-026: a downloaded universal EXE asks once whether to install or run portable. Returns false
+        /// when this process should end (the installer was started, or the user closed the question).
+        /// Never asked for the command line, an installed copy, or a copy that already chose portable.
+        /// </summary>
+        private static bool AskInstallOrPortable(AppSettings settings)
+        {
+            if (!EmbeddedInstaller.IsPresent) return true;
+            var exe = Process.GetCurrentProcess().MainModule.FileName;
+            if (exe.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase)) return true;
+            if (settings.PortableCopies != null && settings.PortableCopies.Exists(p => string.Equals(p, exe, StringComparison.OrdinalIgnoreCase))) return true;
+
+            var options = Loc.Instance.FlowDirection == FlowDirection.RightToLeft
+                ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
+                : MessageBoxOptions.None;
+            var answer = MessageBox.Show(Loc.Instance["Startup_InstallOrPortable"], ProductInfo.Name,
+                MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes, options);
+            if (answer == MessageBoxResult.Cancel) return false;
+            if (answer == MessageBoxResult.No)
+            {
+                settings.PortableCopies = settings.PortableCopies ?? new System.Collections.Generic.List<string>();
+                settings.PortableCopies.Add(exe);
+                new SettingsStore(SettingsStore.DefaultPath).Save(settings);
+                AppLog.Current.Info("App", "Run portable chosen for " + exe + ".");
+                return true;
+            }
+
+            try
+            {
+                EmbeddedInstaller.StartInstall();
+            }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is System.IO.InvalidDataException || ex is InvalidOperationException || ex is Win32Exception || ex is UnauthorizedAccessException)
+            {
+                AppLog.Current.Error("App", "The embedded installer could not start.", ex);
+                ShowMessage(Loc.Instance.Format("Startup_InstallFailed", ex.Message), MessageBoxImage.Error);
+            }
+
+            return false;
+        }
 
         private static int RestartElevated()
         {

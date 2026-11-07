@@ -12,6 +12,8 @@
    update question), then **Publish**. Only published releases reach users.
 5. Self-update only works while the repository is public (D-017). Before
    that, set `WINTOOL_UPDATE_FEED` to a local copy of the releases JSON to test.
+   Add `WINTOOL_DATA_ROOT` (`docs/CLI.md`) so the test does not touch the
+   machine's real WinTool data.
 
 Also with each release: update `OdtSource.FallbackUrl` to the newest Office
 Deployment Tool (`office tool-check` shows it; OF-20).

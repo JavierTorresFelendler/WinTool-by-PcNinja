@@ -39,6 +39,8 @@ namespace WinTool.App
         private static int Run(string[] args)
         {
             AppLog.Current.Info("App", ProductInfo.Name + " " + ProductInfo.InformationalVersion + "; mode: " + (args.Length > 0 ? "CLI" : "GUI"));
+            if (WinToolPaths.DataRootOverride != null)
+                AppLog.Current.Info("App", "Data folders redirected to " + WinToolPaths.DataRootOverride + " (" + WinToolPaths.DataRootVariable + ").");
             if (args.Length > 0)
             {
                 return CommandLine.Run(args);

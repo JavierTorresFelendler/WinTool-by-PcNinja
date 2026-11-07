@@ -64,8 +64,7 @@ namespace WinTool.Core.Updates
             this.readVersion = readVersion;
         }
 
-        public static string DefaultDownloadFolder => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "PcNinja", "WinTool", "Updates");
+        public static string DefaultDownloadFolder => Path.Combine(WinToolPaths.MachineData, "Updates");
 
         /// <summary>
         /// Where releases are read from. The environment variable WINTOOL_UPDATE_FEED may point to

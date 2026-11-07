@@ -143,6 +143,15 @@ start /wait WinTool-by-PcNinja.exe office install --family ltsc --languages he-i
 | `logs collect [--output folder\|file.zip]` | Zip with logs, settings, state, task XML and status. Default: `%ProgramData%\PcNinja\WinTool\LogPackages`. |
 | `version`, `help`, `--self-test` | Version, this summary, completeness check of the EXE. |
 
+## Test environment variables
+
+For testing only; WinTool works without them.
+
+| Variable | Effect |
+| --- | --- |
+| `WINTOOL_DATA_ROOT` | An absolute folder. WinTool keeps its machine data (logs, Windows Update and upgrade state, downloaded updates, log packages) in `<root>\ProgramData` and its user settings in `<root>\User`, instead of `%ProgramData%\PcNinja\WinTool` and `%LocalAppData%\PcNinja\WinTool`. The log's first line says so. A relative or empty value is ignored. It does not move the old WinUpdate Tool's configuration, scheduled tasks, the registry or the installed program. |
+| `WINTOOL_UPDATE_FEED` | Another releases JSON (https or a local file) for `app-update` and the update question; files beside a local JSON are used as the downloads. |
+
 ## Exit codes
 
 | Code | `update run` | Other commands |

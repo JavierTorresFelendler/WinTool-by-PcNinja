@@ -36,9 +36,7 @@ namespace WinTool.Core.Diagnostics
         {
             get
             {
-                return Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                    "PcNinja", "WinTool", "Logs");
+                return Path.Combine(WinToolPaths.MachineData, "Logs");
             }
         }
 

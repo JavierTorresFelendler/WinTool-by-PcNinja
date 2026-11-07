@@ -28,7 +28,7 @@ namespace WinTool.WindowsUpdate.Storage
         public string Folder { get; }
 
         public static string DefaultFolder =>
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "PcNinja", "WinTool", "WindowsUpdate");
+            Path.Combine(WinTool.Core.WinToolPaths.MachineData, "WindowsUpdate");
 
         public WindowsUpdateSettings LoadSettings() => settings.LoadOrNull() ?? new WindowsUpdateSettings();
         public void SaveSettings(WindowsUpdateSettings value) => settings.Save(value);

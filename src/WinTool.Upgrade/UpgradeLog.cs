@@ -9,8 +9,7 @@ namespace WinTool.Upgrade;
 /// </summary>
 public static class AppLog
 {
-    public static string Folder { get; } = System.IO.Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "PcNinja", "WinTool", "Upgrade");
+    public static string Folder => System.IO.Path.Combine(WinTool.Core.WinToolPaths.MachineData, "Upgrade");
 
     public static string Path => WinTool.Core.Diagnostics.AppLog.Current.CurrentFilePath;
 

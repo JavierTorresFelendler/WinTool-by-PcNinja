@@ -22,9 +22,7 @@ namespace WinTool.Core.Settings
         {
             get
             {
-                return System.IO.Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "PcNinja", "WinTool", "settings.json");
+                return System.IO.Path.Combine(WinToolPaths.UserData, "settings.json");
             }
         }
 

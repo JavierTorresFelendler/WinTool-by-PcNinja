@@ -49,8 +49,7 @@ namespace WinTool.WindowsUpdate.Platform
             }
         }
 
-        public string DataFolder =>
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "PcNinja", "WinTool");
+        public string DataFolder => WinTool.Core.WinToolPaths.MachineData;
 
         public bool IsAdministrator
         {

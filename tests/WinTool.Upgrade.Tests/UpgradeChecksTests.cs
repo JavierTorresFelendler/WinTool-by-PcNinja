@@ -45,6 +45,9 @@ public class UpgradeChecksTests
         if (OnWindows) await IsoValidationSessionChecks.RunAsync();
     }
 
+    [Fact] public void Iso_mount_command_text() => IsoMountCommandChecks.RunCommandText();
+
+    /// <summary>Runs the generated script in real Windows PowerShell 5.1 against mock Storage cmdlets.</summary>
     [Fact]
     public async Task Iso_mount_command()
     {

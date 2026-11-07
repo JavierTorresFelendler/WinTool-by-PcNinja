@@ -83,5 +83,35 @@
                 <TextBlock Text="{loc:Loc LK_VendorsNote}" Style="{StaticResource Text.Label}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
             </StackPanel>
         </Border>
+
+        <!-- PcNinja branding, as on Smart Office Installer's first screen: logo and website, both open www.PcNinja.Pro. -->
+        <StackPanel HorizontalAlignment="Center" Margin="0,28,0,8">
+            <Button Command="{Binding OpenCommand}" CommandParameter="{Binding WebsiteUrl}" Cursor="Hand" Focusable="False"
+                    AutomationProperties.Name="www.PcNinja.Pro" ToolTip="www.PcNinja.Pro">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter />
+                    </ControlTemplate>
+                </Button.Template>
+                <Image Source="/WinTool-by-PcNinja;component/Assets/pcninja-mascot.png" Width="180" Height="180"
+                       RenderOptions.BitmapScalingMode="HighQuality" />
+            </Button>
+            <Button Command="{Binding OpenCommand}" CommandParameter="{Binding WebsiteUrl}" Cursor="Hand" HorizontalAlignment="Center" Margin="0,8,0,0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock x:Name="Text" Text="www.PcNinja.Pro" FlowDirection="LeftToRight" FontSize="14" FontWeight="Bold"
+                                   Foreground="{DynamicResource Brush.Accent}" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Text" Property="TextDecorations" Value="Underline" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Text" Property="TextDecorations" Value="Underline" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
     </StackPanel>
 </UserControl>

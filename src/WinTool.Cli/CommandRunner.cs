@@ -417,8 +417,11 @@ namespace WinTool.Cli
             var legacy = env.ReadLegacyConfig();
             var tasks = env.Tasks.Find(TaskNames.IsLegacyWinUpdate);
             var installs = env.LegacyInstallations.Find();
+            // The MSI starts this command without a console, so the log is the only durable record of the result.
+            void Note(EventLevel level, string text) => env.Log.Write(EventIds.LegacyTakeover, level, "WinUpdate Tool takeover: " + text);
             if (legacy == null && tasks.Count == 0 && installs.Count == 0)
             {
+                Note(EventLevel.Information, "nothing to migrate (no settings file, scheduled task or installation found).");
                 if (a.Has("if-present"))
                 {
                     if (a.Has("json")) Json(new { Result = "NothingToMigrate", ExitCode = CliExit.Ok });
@@ -430,6 +433,13 @@ namespace WinTool.Cli
 
             // --keep-schedule: the WinTool installer was given its own schedule, which wins over the old tool's.
             var settings = legacy == null || a.Has("keep-schedule") ? null : LegacyWinUpdateConfig.Import(legacy);
+            Note(EventLevel.Information, "found " + (legacy != null ? "its settings file" : "no settings file") + ", " +
+                tasks.Count + " scheduled task(s) and " + installs.Count + " installation(s)" +
+                (installs.Count > 0 ? " (" + string.Join("; ", installs.Select(i => i.ToString())) + ")" : "") + ".");
+            Note(EventLevel.Information, settings != null
+                ? "importing its schedule: " + (settings.ScheduleEnabled ? ScheduleService.Describe(settings) : "off") + "."
+                : a.Has("keep-schedule") ? "keeping the schedule chosen in the WinTool installer; the old tool's schedule is not imported."
+                : "no settings to import; WinTool's schedule is unchanged.");
             var removed = new List<string>();
             foreach (var task in tasks)
             {
@@ -437,9 +447,11 @@ namespace WinTool.Cli
                 {
                     env.Tasks.Delete(task.Folder, task.Name);
                     removed.Add(task.FullPath);
+                    Note(EventLevel.Information, "removed scheduled task " + task.FullPath + ".");
                 }
                 catch (Exception ex) when (!(ex is OutOfMemoryException))
                 {
+                    Note(EventLevel.Error, "incomplete: task " + task.FullPath + " could not be removed: " + ex.Message);
                     return Fail(a, "The WinUpdate Tool task " + task.FullPath + " could not be removed: " + ex.Message);
                 }
             }
@@ -447,7 +459,11 @@ namespace WinTool.Cli
             if (settings != null)
             {
                 var exit = SaveAndApply(a, settings, quiet: true);
-                if (exit != CliExit.Ok) return exit;
+                if (exit != CliExit.Ok)
+                {
+                    Note(EventLevel.Error, "incomplete: the imported schedule could not be applied (exit code " + exit + ").");
+                    return exit;
+                }
             }
 
             var uninstalled = new List<string>();
@@ -457,7 +473,11 @@ namespace WinTool.Cli
                 try
                 {
                     var code = env.LegacyInstallations.Uninstall(install);
-                    if (LegacyInstallPolicy.Succeeded(code)) uninstalled.Add(install.ToString());
+                    if (LegacyInstallPolicy.Succeeded(code))
+                    {
+                        uninstalled.Add(install.ToString());
+                        Note(EventLevel.Information, "uninstalled " + install + " (exit code " + code + ").");
+                    }
                     else failures.Add(install + " could not be uninstalled (exit code " + code + ").");
                 }
                 catch (Exception ex) when (!(ex is OutOfMemoryException))
@@ -466,7 +486,10 @@ namespace WinTool.Cli
                 }
             }
 
-            foreach (var line in failures) env.Log.Write(EventIds.RunFinished, EventLevel.Warning, line);
+            foreach (var line in failures) Note(EventLevel.Warning, line);
+            Note(failures.Count == 0 ? EventLevel.Information : EventLevel.Error, failures.Count == 0
+                ? "completed: " + removed.Count + " task(s) removed, " + uninstalled.Count + " installation(s) uninstalled."
+                : "incomplete: " + failures.Count + " installation(s) could not be uninstalled.");
             var result = failures.Count == 0 ? CliExit.Ok : CliExit.Failed;
             if (a.Has("json"))
             {

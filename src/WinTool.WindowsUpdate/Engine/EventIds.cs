@@ -30,5 +30,6 @@ namespace WinTool.WindowsUpdate.Engine
         public const int ScheduleSaved = 2070;
         public const int ScheduleRemoved = 2071;
         public const int ScheduleFailed = 2072;
+        public const int LegacyTakeover = 2080;
     }
 }

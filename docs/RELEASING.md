@@ -5,7 +5,8 @@
    `-beta.1` or `-alpha.1` for a test version (D-023, D-024), and push the tag.
 3. The **Release** workflow runs the whole CI with that version stamped in.
    Nothing is attached unless every step passed. It then creates a **draft**
-   GitHub release with `WinTool-by-PcNinja.exe`, `WinTool-by-PcNinja.msi` and
+   GitHub release with `WinTool-by-PcNinja.exe` (the universal EXE carrying
+   the MSI, D-026), `WinTool-by-PcNinja.msi` and
    `SHA256SUMS.txt`; test versions are marked pre-release.
 4. Download the draft's files, test them on a VM (checklist in
    `docs/ROADMAP.md`, phase 6), edit the notes (they are shown in WinTool's

@@ -101,6 +101,9 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   `docs/MSI-AND-CLI.md`.
 - **Consequences:** The MSI gets a new UpgradeCode and does not upgrade the
   WinUpdate Tool V2 MSI in place (see open question Q-2).
+- **Amended by D-026 (2026-11-07):** the released EXE is the universal EXE,
+  which carries the MSI and asks Install / Run portable when opened by hand.
+  The MSI is still published beside it for IT and silent deployment.
 
 ## D-008 Freeware license
 
@@ -182,6 +185,8 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - **Decision:** A scheduled task needs a stable path. When the portable EXE is
   asked to create a Windows Update schedule, it offers to install WinTool
   (run the MSI) and creates the schedule from the installed copy.
+- **Amended by D-026:** the universal EXE runs the MSI it carries (offline)
+  instead of downloading it.
 
 ## D-015 WinTool takes over from WinUpdate Tool V2
 
@@ -221,6 +226,9 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   - **MSI:** standard Windows Installer behavior. A newer version upgrades
     in place. The same version opens maintenance (Repair or Remove). An
     older version is blocked with a message. See `docs/MSI-AND-CLI.md`.
+  - **D-026:** `WinTool-by-PcNinja.exe` in a release is the universal EXE.
+    A portable update downloads it like before; the restarted copy never
+    asks Install / Run portable. The feed and asset names are unchanged.
 
 ## D-019 Works on small screens down to 1024x768
 
@@ -347,9 +355,9 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ## D-026 One downloadable EXE that runs portable or installs (prototype first)
 
-- **Status:** Direction accepted (2026-11-07, owner, after Codex's T-008
-  report); implementation waits for the prototype below. Will amend D-007,
-  D-014 and D-018 when it ships.
+- **Status:** Accepted (2026-11-07). The owner approved going ahead after the
+  prototype passed antivirus and VM checks (T-011). Amends D-007, D-014 and
+  D-018.
 - **Decision (owner):**
   - The release page keeps **one main EXE** for people, and keeps the MSI
     beside it for IT and silent deployment. The update feed does not change.

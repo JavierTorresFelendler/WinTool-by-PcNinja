@@ -20,7 +20,7 @@ are still maintained in their own repositories.
 | Runtime | .NET Framework 4.8 (built into Windows) |
 | UI | WPF, follows the Windows dark/light setting; based on the PcNinja Dashboard design |
 | Languages | English and Hebrew; Spanish before 1.0 |
-| Packages | MSI (interactive and silent) and portable EXE |
+| Packages | One EXE that runs portable or installs (it carries the MSI, D-026), and the MSI for silent deployment |
 | License | PcNinja Freeware Use License (free to use; no redistribution or resale) |
 
 ## Documents

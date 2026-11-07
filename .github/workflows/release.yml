@@ -25,9 +25,10 @@ jobs:
     permissions:
       contents: write
     steps:
+      # D-026: the released EXE is the universal one (runs portable or installs from the MSI it carries).
       - uses: actions/download-artifact@v5
         with:
-          name: WinTool-by-PcNinja-portable-unsigned
+          name: WinTool-by-PcNinja-universal-unsigned
           path: release
       - uses: actions/download-artifact@v5
         with:

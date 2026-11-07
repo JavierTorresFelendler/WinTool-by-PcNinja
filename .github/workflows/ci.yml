@@ -307,9 +307,9 @@ jobs:
           path: src/WinTool.App/bin/Release/net48/WinTool-by-PcNinja.exe
           if-no-files-found: error
 
-      # D-026 prototype: the universal EXE carries the MSI built above (app EXE -> MSI -> universal EXE).
-      # A separate artifact for testing only; releases still ship the EXE and MSI as before.
-      - name: Universal EXE prototype (D-026)
+      # D-026: the universal EXE carries the MSI built above (app EXE -> MSI -> universal EXE).
+      # Releases ship it as WinTool-by-PcNinja.exe; the MSI it carries is the one beside it.
+      - name: Universal EXE (D-026)
         if: matrix.configuration == 'Release'
         shell: pwsh
         run: |
@@ -332,10 +332,10 @@ jobs:
           Write-Host ("Universal EXE {0:N0} bytes (app-only EXE {1:N0}, MSI {2:N0})" -f $size, $plain, (Get-Item $msi).Length)
           if ($size -le (Get-Item $msi).Length) { Write-Host "::error title=universal::the EXE does not contain the MSI"; exit 1 }
 
-      - name: Upload universal EXE prototype
+      - name: Upload universal EXE
         if: matrix.configuration == 'Release'
         uses: actions/upload-artifact@v6
         with:
-          name: WinTool-by-PcNinja-universal-prototype
+          name: WinTool-by-PcNinja-universal-unsigned
           path: ${{ runner.temp }}/universal/WinTool-by-PcNinja.exe
           if-no-files-found: error

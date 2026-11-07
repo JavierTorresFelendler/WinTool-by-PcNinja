@@ -144,16 +144,26 @@ namespace WinTool.App.ViewModels
             IsBusy = true;
             try
             {
-                Status = T["UPD_Checking"];
-                var release = await updater.FindReleaseAsync(AppVersion.Current, CancellationToken.None);
-                if (release == null)
+                string msi;
+                if (Infrastructure.EmbeddedInstaller.IsPresent)
                 {
-                    Dialogs.Info(T.Format("UPD_NoInstallerForVersion", AppVersion.Current, ProductInfo.RepositoryUrl + "/releases"));
-                    return false;
+                    // D-026: the universal EXE carries this version's MSI, so installing works offline.
+                    msi = Infrastructure.EmbeddedInstaller.Extract();
+                }
+                else
+                {
+                    Status = T["UPD_Checking"];
+                    var release = await updater.FindReleaseAsync(AppVersion.Current, CancellationToken.None);
+                    if (release == null)
+                    {
+                        Dialogs.Info(T.Format("UPD_NoInstallerForVersion", AppVersion.Current, ProductInfo.RepositoryUrl + "/releases"));
+                        return false;
+                    }
+
+                    var progress = new Progress<long>(bytes => Status = T.Format("UPD_Downloading", (bytes / 1048576.0).ToString("N1", T.Culture)));
+                    msi = await updater.DownloadVerifiedAsync(release, ReleaseFiles.Installer, progress, CancellationToken.None);
                 }
 
-                var progress = new Progress<long>(bytes => Status = T.Format("UPD_Downloading", (bytes / 1048576.0).ToString("N1", T.Culture)));
-                var msi = await updater.DownloadVerifiedAsync(release, ReleaseFiles.Installer, progress, CancellationToken.None);
                 if (!EnterUpdateGate()) return true;
                 AppLog.Current.Info("Update", "Installing " + msi + " with the schedule from the portable copy.");
                 Process.Start(new ProcessStartInfo("msiexec.exe", "/i \"" + msi + "\" " + msiProperties) { UseShellExecute = true });

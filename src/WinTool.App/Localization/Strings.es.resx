@@ -356,7 +356,7 @@ No se puede deshacer desde WinTool.</value></data>
   <data name="OF_Confirm_RemoveExisting" xml:space="preserve"><value>Se quitarán todos los productos de Office instalados con Hacer clic y ejecutar antes de la nueva instalación. ¿Continuar?</value></data>
   <data name="OF_Confirm_Silent" xml:space="preserve"><value>Office se instalará en silencio, sin su propia ventana. Una vez que empieza el instalador de Office no se puede cancelar: detenerlo podría dejar Office instalado a medias. Suele tardar entre 10 y 30 minutos; WinTool muestra el progreso. No apagues el equipo.
 
-¿Empezar la instalación?</value><comment>needs review</comment></data>
+¿Empezar la instalación?</value></data>
   <data name="OF_NeedApp" xml:space="preserve"><value>Elige al menos una aplicación.</value></data>
   <data name="OF_NeedLanguage" xml:space="preserve"><value>Elige al menos un idioma.</value></data>
   <data name="OF_NeedFolder" xml:space="preserve"><value>Elige la carpeta del paquete.</value></data>

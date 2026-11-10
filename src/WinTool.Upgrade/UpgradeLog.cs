@@ -9,7 +9,7 @@ namespace WinTool.Upgrade;
 /// </summary>
 public static class AppLog
 {
-    public static string Folder => System.IO.Path.Combine(WinTool.Core.WinToolPaths.MachineData, "Upgrade");
+    public static string Folder => WinTool.Core.WinToolPaths.EnsureMachineDataDirectory(System.IO.Path.Combine(WinTool.Core.WinToolPaths.MachineData, "Upgrade"));
 
     public static string Path => WinTool.Core.Diagnostics.AppLog.Current.CurrentFilePath;
 

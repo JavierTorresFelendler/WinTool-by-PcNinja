@@ -24,7 +24,7 @@ namespace WinTool.Core.IO
 
             var fullPath = Path.GetFullPath(path);
             var directory = Path.GetDirectoryName(fullPath);
-            Directory.CreateDirectory(directory);
+            WinToolPaths.EnsureMachineDataDirectory(directory);
             var temporary = Path.Combine(directory, "." + Path.GetFileName(fullPath) + "." + Guid.NewGuid().ToString("N") + ".tmp");
 
             try

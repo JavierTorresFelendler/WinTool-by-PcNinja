@@ -30,9 +30,11 @@ namespace WinTool.WindowsUpdate.Storage
         public static string DefaultFolder =>
             Path.Combine(WinTool.Core.WinToolPaths.MachineData, "WindowsUpdate");
 
-        public WindowsUpdateSettings LoadSettings() => settings.LoadOrNull() ?? new WindowsUpdateSettings();
-        public void SaveSettings(WindowsUpdateSettings value) => settings.Save(value);
-        public WindowsUpdateState LoadState() => state.LoadOrNull() ?? new WindowsUpdateState();
-        public void SaveState(WindowsUpdateState value) => state.Save(value);
+        public WindowsUpdateSettings LoadSettings() { Prepare(); return settings.LoadOrNull() ?? new WindowsUpdateSettings(); }
+        public void SaveSettings(WindowsUpdateSettings value) { Prepare(); settings.Save(value); }
+        public WindowsUpdateState LoadState() { Prepare(); return state.LoadOrNull() ?? new WindowsUpdateState(); }
+        public void SaveState(WindowsUpdateState value) { Prepare(); state.Save(value); }
+
+        private void Prepare() => WinTool.Core.WinToolPaths.EnsureMachineDataDirectory(Folder);
     }
 }

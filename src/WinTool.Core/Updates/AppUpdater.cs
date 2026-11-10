@@ -112,7 +112,7 @@ namespace WinTool.Core.Updates
                 throw new UpdateVerificationException(ReleaseFeed.ChecksumsFile + " of " + release.Tag + " has no line for " + assetName + ".");
 
             var folder = Path.Combine(downloadFolder, release.Version.ToString());
-            Directory.CreateDirectory(folder);
+            WinToolPaths.EnsureMachineDataDirectory(folder);
             var path = Path.Combine(folder, assetName);
             var partial = path + ".partial";
             if (File.Exists(partial)) File.Delete(partial);

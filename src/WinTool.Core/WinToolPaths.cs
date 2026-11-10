@@ -25,6 +25,19 @@ namespace WinTool.Core
         /// <summary>The test root in use, or null when WinTool uses its normal folders.</summary>
         public static string DataRootOverride => NormalizeRoot(Environment.GetEnvironmentVariable(DataRootVariable));
 
+        /// <summary>Prepares a data directory, enforcing the machine policy only inside WinTool's real machine-data tree.</summary>
+        public static string EnsureMachineDataDirectory(string directory)
+        {
+            var fullPath = Path.GetFullPath(directory);
+            var machineRoot = Path.GetFullPath(Resolve(null, Environment.GetFolderPath).MachineData).TrimEnd('\\', '/');
+            if (DataRootOverride == null && (string.Equals(fullPath, machineRoot, StringComparison.OrdinalIgnoreCase) ||
+                fullPath.StartsWith(machineRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
+                Security.MachineDataDirectory.Ensure(machineRoot, fullPath);
+            else
+                Directory.CreateDirectory(fullPath);
+            return fullPath;
+        }
+
         public static DataFolders Resolve(string dataRoot, Func<Environment.SpecialFolder, string> specialFolder)
         {
             var root = NormalizeRoot(dataRoot);

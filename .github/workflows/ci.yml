@@ -89,6 +89,12 @@ jobs:
             exit $LASTEXITCODE
           }
 
+      - name: RC local-feed lifecycle (isolated files only)
+        shell: pwsh
+        run: |
+          dotnet test tests/WinTool.Core.Tests/WinTool.Core.Tests.csproj -c Release -p:Version=0.1.0-rc.1 --artifacts-path "$env:RUNNER_TEMP/lifecycle-build" --filter FullyQualifiedName~LocalFeedLifecycleTests --logger "console;verbosity=normal"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Portable EXE self-test (WinTool-by-PcNinja.exe alone in an empty folder)
         shell: pwsh
         run: |

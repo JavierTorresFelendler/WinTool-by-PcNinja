@@ -154,8 +154,8 @@ namespace WinTool.App
         }
 
         private static bool TestOverridesSet() =>
-            !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinToolPaths.DataRootVariable)) ||
-            !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinTool.Core.Updates.AppUpdater.FeedVariable));
+            !string.IsNullOrWhiteSpace(TestEnvironment.Get(WinToolPaths.DataRootVariable)) ||
+            !string.IsNullOrWhiteSpace(TestEnvironment.Get(WinTool.Core.Updates.AppUpdater.FeedVariable));
 
         /// <summary>Internal: the elevated restart after the user chose Run portable; not a command.</summary>
         internal const string PortableChosenArgument = "--portable-chosen";

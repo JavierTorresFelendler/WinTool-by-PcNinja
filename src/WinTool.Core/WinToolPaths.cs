@@ -7,7 +7,7 @@ namespace WinTool.Core
     /// Where WinTool keeps its own data. Normally %ProgramData%\PcNinja\WinTool (machine data:
     /// logs, Windows Update state, upgrade state, downloaded updates) and
     /// %LocalAppData%\PcNinja\WinTool (per-user settings).
-    /// The environment variable WINTOOL_DATA_ROOT, when it holds an absolute path, moves both
+    /// In Debug or alpha/beta/rc builds, WINTOOL_DATA_ROOT with an absolute path moves both
     /// under that folder (&lt;root&gt;\ProgramData and &lt;root&gt;\User) so a test run never touches
     /// the real data. It does not move what belongs to other programs, such as the old
     /// WinUpdate Tool's configuration.
@@ -17,13 +17,13 @@ namespace WinTool.Core
         public const string DataRootVariable = "WINTOOL_DATA_ROOT";
 
         /// <summary>Machine-wide data folder.</summary>
-        public static string MachineData => Resolve(Environment.GetEnvironmentVariable(DataRootVariable), Environment.GetFolderPath).MachineData;
+        public static string MachineData => Resolve(TestEnvironment.Get(DataRootVariable), Environment.GetFolderPath).MachineData;
 
         /// <summary>Per-user data folder.</summary>
-        public static string UserData => Resolve(Environment.GetEnvironmentVariable(DataRootVariable), Environment.GetFolderPath).UserData;
+        public static string UserData => Resolve(TestEnvironment.Get(DataRootVariable), Environment.GetFolderPath).UserData;
 
         /// <summary>The test root in use, or null when WinTool uses its normal folders.</summary>
-        public static string DataRootOverride => NormalizeRoot(Environment.GetEnvironmentVariable(DataRootVariable));
+        public static string DataRootOverride => NormalizeRoot(TestEnvironment.Get(DataRootVariable));
 
         public static DataFolders Resolve(string dataRoot, Func<Environment.SpecialFolder, string> specialFolder)
         {

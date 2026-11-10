@@ -47,11 +47,11 @@ namespace WinTool.Core.Operations
                 {
                     return new OperationLock(enter(), operation);
                 }
-                catch (InvalidOperationException) when (DateTime.UtcNow < deadline)
+                catch (OperationBusyException) when (DateTime.UtcNow < deadline)
                 {
                     Thread.Sleep(100);
                 }
-                catch (InvalidOperationException)
+                catch (OperationBusyException)
                 {
                     return null;
                 }

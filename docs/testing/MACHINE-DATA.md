@@ -23,10 +23,17 @@ CI checks do not replace the owner's VM acceptance. No release is approved here.
 6. Exercise MSI repair, upgrade and uninstall in the VM; check data-folder
    permissions and the existing schedule after each supported transition.
 
+Path checks retain native directory handles without delete sharing. Before an
+unsafe tree's inheritable permissions are repaired, its existing subtree is
+opened without write sharing; an existing writer makes the repair fail closed.
+Already safe files may be inspected while a trusted writer holds them. The
+root has a protected ACL; descendants may inherit the checked safe policy.
+
 Local unit tests use only temporary filesystem fixtures. They cover repairing a
 permissive nested tree with explicit child grants, refusal without repair,
-protected creation, owner/write-grant policy and per-user log fallback. They
-cannot establish real SYSTEM/UAC or Windows Installer behavior. Keep locked-file,
+protected creation, owner/write-grant policy, per-user log fallback, rename
+prevention during validation, refusal of existing writers and junction refusal.
+They cannot establish real SYSTEM/UAC or Windows Installer behavior. Keep locked-file,
 ownership-repair and concurrent-access results explicit when VM evidence is
 unavailable. ACL repair preserves existing file bytes; it does not authenticate
 previously stored data.

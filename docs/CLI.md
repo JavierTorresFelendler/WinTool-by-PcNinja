@@ -31,6 +31,16 @@ Scheduled tasks and the MSI always wait.
 
 ## Schedule
 
+Task registration requires the exact installed EXE recorded by the MSI's
+64-bit HKLM `InstallFolder` value. This is D-014 applied to the command line:
+the CLI never prompts. A portable copy returns exit **23** for
+`schedule set --enable`, enabled schedule imports, `update start-as-system`,
+and `update run` with automatic retry enabled. Install WinTool using the MSI
+or the universal EXE's **Install** choice, then run the command from the
+installed copy. The GUI keeps its existing installation offer (D-014/D-026).
+`schedule show`, `schedule remove` and disabling a schedule still work from a
+portable copy. Manual update runs without automatic retry remain available.
+
 | Command | Admin | What it does |
 | --- | --- | --- |
 | `schedule show` | No | Settings, task state, next run, whether the task matches the settings. |
@@ -168,6 +178,7 @@ Windows does not pass a process's variables to the copy it starts with administr
 | 20 | Retry scheduled | — |
 | 21 | Skipped: Windows busy, cooldown, or another WinTool operation running | Another WinTool operation is running |
 | 22 | Needs attention: retry limit reached or automatic retry off | — |
+| 23 | Installed copy required for automatic retry | Installed copy required to register a task |
 | 30–33 | — | Windows Upgrade results, see above |
 | 40 | — | Office: the Office Deployment Tool could not be downloaded or extracted |
 | 41 | — | Office: the Office Deployment Tool is not signed by Microsoft; nothing ran |

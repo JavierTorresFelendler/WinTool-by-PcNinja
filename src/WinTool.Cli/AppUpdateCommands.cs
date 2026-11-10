@@ -28,7 +28,7 @@ namespace WinTool.Cli
             this.error = error;
         }
 
-        public bool IsInstalled => exePath.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase);
+        public bool IsInstalled => InstalledCopy.IsInstalled(exePath);
 
         public int Run(string command, string[] rest)
         {

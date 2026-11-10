@@ -99,7 +99,19 @@ namespace WinTool.WindowsUpdate.Tests
     {
         private const string Exe = @"C:\Program Files\PcNinja\WinTool\WinTool-by-PcNinja.exe";
 
-        private static ScheduleService Service(FakeTasks tasks) => new ScheduleService(tasks, new ListLog(), Exe, () => new DateTime(2026, 11, 6, 10, 0, 0));
+        private static ScheduleService Service(FakeTasks tasks) => new ScheduleService(tasks, new ListLog(), Exe, () => new DateTime(2026, 11, 6, 10, 0, 0), () => @"C:\Program Files\PcNinja\WinTool");
+
+        [Fact]
+        public void All_registration_paths_refuse_a_portable_copy_before_modifying_existing_tasks()
+        {
+            var tasks = new FakeTasks();
+            tasks.All.Add(new TaskEntry { Folder = TaskNames.Folder, Name = TaskNames.Main });
+            var service = new ScheduleService(tasks, new ListLog(), Exe, () => DateTime.Now, () => null);
+            Assert.Throws<WinTool.Core.Updates.InstalledCopyRequiredException>(() => service.Apply(new WindowsUpdateSettings { ScheduleEnabled = true }));
+            Assert.Throws<WinTool.Core.Updates.InstalledCopyRequiredException>(() => service.ScheduleRetry(DateTime.Now, "fixture", 1));
+            Assert.Throws<WinTool.Core.Updates.InstalledCopyRequiredException>(() => service.StartRunOnce());
+            Assert.Single(tasks.All);
+        }
 
         [Fact]
         public void Saving_replaces_every_own_task_in_any_folder()

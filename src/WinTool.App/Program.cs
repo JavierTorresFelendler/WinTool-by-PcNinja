@@ -169,7 +169,7 @@ namespace WinTool.App
         {
             if (!EmbeddedInstaller.IsPresent) return true;
             var exe = Process.GetCurrentProcess().MainModule.FileName;
-            if (exe.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase)) return true;
+            if (WinTool.Core.Updates.InstalledCopy.IsInstalled(exe)) return true;
 
             // The installed copy itself (also outside Program Files) never asks.
             var installed = FindInstalledCopy();

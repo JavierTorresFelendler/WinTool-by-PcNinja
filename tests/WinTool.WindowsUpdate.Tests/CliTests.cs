@@ -81,8 +81,36 @@ namespace WinTool.WindowsUpdate.Tests
         {
             var output = new StringWriter();
             var error = new StringWriter();
-            var code = new CommandRunner(env, output, error).Run(args);
+            var code = new CommandRunner(env, output, error, () => @"C:\Program Files\PcNinja\WinTool").Run(args);
             return (code, output.ToString(), error.ToString());
+        }
+
+        [Theory]
+        [InlineData("schedule", "set", "--enable")]
+        [InlineData("update", "start-as-system")]
+        [InlineData("update", "run")]
+        public void Portable_task_registration_is_refused_without_creating_tasks(params string[] args)
+        {
+            using (var env = new FakeEnvironment())
+            {
+                var output = new StringWriter();
+                var error = new StringWriter();
+                var code = new CommandRunner(env, output, error, () => null).Run(args);
+                Assert.Equal(CliExit.InstalledCopyRequired, code);
+                Assert.Empty(env.FakeTasks.All);
+                Assert.Contains("Install WinTool", error.ToString());
+            }
+        }
+
+        [Theory]
+        [InlineData("show")]
+        [InlineData("remove")]
+        public void Portable_schedule_inspection_and_removal_remain_available(string command)
+        {
+            using (var env = new FakeEnvironment())
+            {
+                Assert.Equal(CliExit.Ok, new CommandRunner(env, new StringWriter(), new StringWriter(), () => null).Run(new[] { "schedule", command }));
+            }
         }
 
         [Theory]

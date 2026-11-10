@@ -617,8 +617,7 @@ namespace WinTool.App.ViewModels
 
         private bool IsPortableCopy()
         {
-            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            return !env.ExecutablePath.StartsWith(programFiles, StringComparison.OrdinalIgnoreCase);
+            return !WinTool.Core.Updates.InstalledCopy.IsInstalled(env.ExecutablePath);
         }
 
         private bool Begin(string text, bool indeterminate)

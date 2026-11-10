@@ -145,19 +145,11 @@ jobs:
             return $text
           }
           Invoke-WinTool @('status', '--json') @(0) | Out-Null
-          Invoke-WinTool @('schedule', 'set', '--enable', '--frequency', 'Weekly', '--day', 'Sunday', '--time', '03:00', '--wake') @(0) | Out-Null
+          Invoke-WinTool @('schedule', 'set', '--enable', '--frequency', 'Weekly', '--day', 'Sunday', '--time', '03:00', '--wake') @(23) | Out-Null
+          Invoke-WinTool @('update', 'start-as-system') @(23) | Out-Null
           $show = Invoke-WinTool @('schedule', 'show', '--json') @(0)
-          if ($show -notmatch '"matchesSettings": true') {
-            Invoke-WinTool @('schedule', 'show') @(0) | Out-Null
-            Write-Host "::error title=cli::registered task does not match the settings"
-            exit 1
-          }
-          # Monthly too: Task Scheduler stores its elements in another order (found on Windows 11 23H2).
-          Invoke-WinTool @('schedule', 'set', '--frequency', 'Monthly', '--month-day', '15', '--at-startup') @(0) | Out-Null
-          $monthly = Invoke-WinTool @('schedule', 'show', '--json') @(0)
-          if ($monthly -notmatch '"matchesSettings": true') {
-            Invoke-WinTool @('schedule', 'show') @(0) | Out-Null
-            Write-Host "::error title=cli::monthly task does not match the settings"
+          if ($show -notmatch '"task": null') {
+            Write-Host "::error title=cli::portable refusal created a task"
             exit 1
           }
           Invoke-WinTool @('update', 'health', '--no-network') @(0, 1, 11) | Out-Null
@@ -266,6 +258,10 @@ jobs:
           $r = Msi @('/i', "`"$msi`"", 'REINSTALL=ALL', 'REINSTALLMODE=vomus') 'repair'
           if ($r.Code -ne 0) { Fail "repair failed with $($r.Code)" $r }
           if ((Show) -notmatch '"dayOfWeek": "Friday"') { Fail "repair changed the schedule" $r }
+
+          # Positive registration uses the MSI-installed copy, including the monthly XML round trip.
+          $monthly = Start-Process -FilePath $installed -ArgumentList @('schedule', 'set', '--frequency', 'Monthly', '--month-day', '15', '--at-startup') -Wait -PassThru -NoNewWindow
+          if ($monthly.ExitCode -ne 0 -or (Show) -notmatch '"matchesSettings": true') { Fail 'installed monthly task does not match settings' $null }
 
           # 4. Uninstall removes the files and the scheduled task.
           $r = Msi @('/x', "`"$msi`"") 'uninstall'

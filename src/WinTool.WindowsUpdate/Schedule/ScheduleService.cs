@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using WinTool.WindowsUpdate.Engine;
 using WinTool.WindowsUpdate.Storage;
+using WinTool.Core.Updates;
 
 namespace WinTool.WindowsUpdate.Schedule
 {
@@ -26,13 +27,20 @@ namespace WinTool.WindowsUpdate.Schedule
         private readonly IRunLog log;
         private readonly string exePath;
         private readonly Func<DateTime> clock;
+        private readonly Func<string> installedFolder;
 
-        public ScheduleService(ITaskSchedulerService tasks, IRunLog log, string exePath, Func<DateTime> clock)
+        public ScheduleService(ITaskSchedulerService tasks, IRunLog log, string exePath, Func<DateTime> clock, Func<string> installedFolder = null)
         {
             this.tasks = tasks;
             this.log = log;
             this.exePath = exePath;
             this.clock = clock ?? (() => DateTime.Now);
+            this.installedFolder = installedFolder ?? InstalledCopy.ReadInstallFolder;
+        }
+
+        public void RequireInstalled()
+        {
+            if (!InstalledCopy.IsInstalled(exePath, installedFolder())) throw new InstalledCopyRequiredException();
         }
 
         /// <summary>
@@ -44,6 +52,7 @@ namespace WinTool.WindowsUpdate.Schedule
         {
             var errors = settings.Validate();
             if (errors.Count > 0) throw new ArgumentException(string.Join(" ", errors));
+            if (settings.ScheduleEnabled) RequireInstalled();
 
             var xml = settings.ScheduleEnabled ? TaskXmlBuilder.BuildSchedule(settings, exePath, clock()) : null;
             RemoveOwnTasks(keepRetry: false);
@@ -75,6 +84,7 @@ namespace WinTool.WindowsUpdate.Schedule
 
         public void ScheduleRetry(DateTime runAt, string reason, int retryNumber)
         {
+            RequireInstalled();
             tasks.Register(TaskNames.Retry, TaskXmlBuilder.BuildRetry(exePath, runAt, reason, clock()));
         }
 
@@ -86,6 +96,7 @@ namespace WinTool.WindowsUpdate.Schedule
         /// <summary>WU-56: start a one-time run as SYSTEM now.</summary>
         public void StartRunOnce()
         {
+            RequireInstalled();
             tasks.Register(TaskNames.RunOnce, TaskXmlBuilder.BuildRunOnce(exePath, clock()));
             tasks.Run(TaskNames.RunOnce);
         }

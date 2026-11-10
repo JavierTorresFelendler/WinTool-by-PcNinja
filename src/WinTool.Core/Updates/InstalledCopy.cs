@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using Microsoft.Win32;
 
 namespace WinTool.Core.Updates
 {
@@ -18,6 +20,36 @@ namespace WinTool.Core.Updates
     /// </summary>
     public static class InstalledCopy
     {
+        public static string ReadInstallFolder()
+        {
+            try
+            {
+                using (var machine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                using (var key = machine.OpenSubKey(@"SOFTWARE\PcNinja\WinTool"))
+                    return key?.GetValue("InstallFolder") as string;
+            }
+            catch (Exception ex) when (ex is System.Security.SecurityException || ex is UnauthorizedAccessException || ex is IOException)
+            {
+                return null;
+            }
+        }
+
+        public static bool IsInstalled(string exePath) => IsInstalled(exePath, ReadInstallFolder());
+
+        public static bool IsInstalled(string exePath, string installFolder)
+        {
+            if (string.IsNullOrWhiteSpace(exePath) || string.IsNullOrWhiteSpace(installFolder)) return false;
+            try
+            {
+                if (!Path.IsPathRooted(exePath) || !Path.IsPathRooted(installFolder)) return false;
+                return string.Equals(Path.GetFullPath(exePath), Path.Combine(Path.GetFullPath(installFolder), ReleaseFiles.Executable), StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is PathTooLongException)
+            {
+                return false;
+            }
+        }
+
         public static LaunchChoice Decide(string thisExe, string installedExe, Version installedFileVersion, Version thisFileVersion)
         {
             if (string.IsNullOrEmpty(installedExe) || installedFileVersion == null) return LaunchChoice.Ask;
@@ -30,5 +62,10 @@ namespace WinTool.Core.Updates
             try { return System.IO.Path.GetFullPath(path).TrimEnd('\\', '/'); }
             catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is System.IO.PathTooLongException) { return path; }
         }
+    }
+
+    public sealed class InstalledCopyRequiredException : InvalidOperationException
+    {
+        public InstalledCopyRequiredException() : base("Task registration requires the installed copy of WinTool. Install WinTool using the MSI or the universal EXE's Install choice, then run the command from the installed copy.") { }
     }
 }

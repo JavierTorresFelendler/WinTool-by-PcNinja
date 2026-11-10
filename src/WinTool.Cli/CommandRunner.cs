@@ -7,6 +7,7 @@ using System.Linq;
 using WinTool.Core;
 using WinTool.Core.IO;
 using WinTool.Core.Json;
+using WinTool.Core.Updates;
 using WinTool.WindowsUpdate.Engine;
 using WinTool.WindowsUpdate.Logic;
 using WinTool.WindowsUpdate.Migration;
@@ -27,12 +28,14 @@ namespace WinTool.Cli
         private readonly IWindowsUpdateEnvironment env;
         private readonly TextWriter output;
         private readonly TextWriter error;
+        private readonly Func<string> installedFolder;
 
-        public CommandRunner(IWindowsUpdateEnvironment env, TextWriter output, TextWriter error)
+        public CommandRunner(IWindowsUpdateEnvironment env, TextWriter output, TextWriter error, Func<string> installedFolder = null)
         {
             this.env = env;
             this.output = output;
             this.error = error;
+            this.installedFolder = installedFolder ?? InstalledCopy.ReadInstallFolder;
         }
 
         /// <summary>Areas this runner handles; the app handles version, help and self-test.</summary>
@@ -100,6 +103,12 @@ namespace WinTool.Cli
                 }
 
                 throw new UsageException("Unknown command: " + string.Join(" ", args.Take(2)) + ". Run \"WinTool-by-PcNinja.exe help\".");
+            }
+            catch (InstalledCopyRequiredException ex)
+            {
+                if (args.Any(a => a == "--json")) Json(new { Result = "InstalledCopyRequired", ExitCode = CliExit.InstalledCopyRequired, Message = ex.Message });
+                else error.WriteLine(ex.Message);
+                return CliExit.InstalledCopyRequired;
             }
             catch (UsageException ex)
             {
@@ -189,6 +198,8 @@ namespace WinTool.Cli
             var explicitScope = ScopeSwitches.Any(a.Has);
             var snooze = a.Has("snooze");
             if (snooze && type != RunType.Manual) throw new UsageException("--snooze is only allowed for manual runs.");
+            // Refuse before scanning/installing when this run can create an automatic retry task.
+            if (env.Store.LoadSettings().AutoRetryEnabled) Schedule().RequireInstalled();
 
             var request = new RunRequest
             {
@@ -433,6 +444,7 @@ namespace WinTool.Cli
 
             // --keep-schedule: the WinTool installer was given its own schedule, which wins over the old tool's.
             var settings = legacy == null || a.Has("keep-schedule") ? null : LegacyWinUpdateConfig.Import(legacy);
+            if (settings != null && settings.ScheduleEnabled) Schedule().RequireInstalled();
             Note(EventLevel.Information, "found " + (legacy != null ? "its settings file" : "no settings file") + ", " +
                 tasks.Count + " scheduled task(s) and " + installs.Count + " installation(s)" +
                 (installs.Count > 0 ? " (" + string.Join("; ", installs.Select(i => i.ToString())) + ")" : "") + ".");
@@ -569,8 +581,10 @@ namespace WinTool.Cli
 
             try
             {
+                if (settings.ScheduleEnabled) Schedule().RequireInstalled();
                 Schedule().Apply(settings);
             }
+            catch (InstalledCopyRequiredException) { throw; }
             catch (Exception ex) when (ex is InvalidOperationException || ex is UnauthorizedAccessException || ex is System.Runtime.InteropServices.COMException)
             {
                 return Fail(a, "The schedule was not saved: " + ex.Message);
@@ -688,7 +702,7 @@ namespace WinTool.Cli
 
         // --------------------------------------------------------------- helpers
 
-        private ScheduleService Schedule() => new ScheduleService(env.Tasks, env.Log, env.ExecutablePath, env.Clock);
+        private ScheduleService Schedule() => new ScheduleService(env.Tasks, env.Log, env.ExecutablePath, env.Clock, installedFolder);
 
         private IRetryScheduler Retries() => Schedule();
 

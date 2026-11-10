@@ -1,5 +1,9 @@
 # Releasing
 
+Build with the .NET 10 SDK selected by `global.json`. Unit-test libraries target
+both `net48` and `net10.0-windows`; the shipped application remains x64 .NET
+Framework 4.8. Build and run all unit tests before preparing a candidate.
+
 1. Merge the work to `main` and wait for green CI.
 2. Tag the commit: `v1.2.3` for a stable release, `v1.2.3-rc.1`,
    `-beta.1` or `-alpha.1` for a test version (D-023, D-024), and push the tag.

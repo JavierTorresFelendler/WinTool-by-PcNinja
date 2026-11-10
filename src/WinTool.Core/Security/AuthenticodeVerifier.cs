@@ -16,13 +16,6 @@ public static class AuthenticodeVerifier
     public static bool IsTrustedMicrosoftFile(string filePath, out string signer)
     {
         signer = "Unknown";
-        try
-        {
-            using var certificate = new X509Certificate2(X509Certificate.CreateFromSignedFile(filePath));
-            signer = certificate.Subject;
-            if (!certificate.Subject.Contains("Microsoft Corporation", StringComparison.OrdinalIgnoreCase)) return false;
-        }
-        catch { return false; }
 
         var fileInfo = new WinTrustFileInfo
         {
@@ -48,7 +41,7 @@ public static class AuthenticodeVerifier
                 RevocationChecks = 0,
                 UnionChoice = 1,
                 FileInfoPointer = fileInfoPointer,
-                StateAction = 0,
+                StateAction = 1,
                 StateData = IntPtr.Zero,
                 UrlReference = IntPtr.Zero,
                 ProviderFlags = 0,
@@ -58,16 +51,63 @@ public static class AuthenticodeVerifier
             Marshal.StructureToPtr(data, dataPointer, false);
             actionPointer = Marshal.AllocCoTaskMem(Marshal.SizeOf<Guid>());
             Marshal.StructureToPtr(ActionGenericVerifyV2, actionPointer, false);
-            return WinVerifyTrust(IntPtr.Zero, actionPointer, dataPointer) == 0;
+            if (WinVerifyTrust(IntPtr.Zero, actionPointer, dataPointer) != 0) return false;
+            data = Marshal.PtrToStructure<WinTrustData>(dataPointer);
+            // Read the verified signer from native state instead of the obsolete signed-file loader.
+            var provider = WTHelperProvDataFromStateData(data.StateData);
+            if (provider == IntPtr.Zero) return false;
+            var signerPointer = WTHelperGetProvSignerFromChain(provider, 0, false, 0);
+            if (signerPointer == IntPtr.Zero) return false;
+            var verified = Marshal.PtrToStructure<ProviderSigner>(signerPointer);
+            if (verified.Error != 0 || verified.CertificateCount == 0 || verified.Certificates == IntPtr.Zero) return false;
+            var context = Marshal.PtrToStructure<ProviderCertificate>(verified.Certificates).Certificate;
+            if (context == IntPtr.Zero) return false;
+            using var certificate = new X509Certificate2(context);
+            signer = certificate.Subject;
+            return certificate.Subject.Contains("Microsoft Corporation", StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
+            if (dataPointer != IntPtr.Zero && actionPointer != IntPtr.Zero)
+            {
+                var data = Marshal.PtrToStructure<WinTrustData>(dataPointer);
+                if (data.StateData != IntPtr.Zero)
+                {
+                    data.StateAction = 2;
+                    Marshal.StructureToPtr(data, dataPointer, false);
+                    WinVerifyTrust(IntPtr.Zero, actionPointer, dataPointer);
+                }
+            }
             if (actionPointer != IntPtr.Zero) Marshal.FreeCoTaskMem(actionPointer);
             if (dataPointer != IntPtr.Zero) Marshal.FreeCoTaskMem(dataPointer);
             if (fileInfoWritten) Marshal.DestroyStructure<WinTrustFileInfo>(fileInfoPointer);
             Marshal.FreeCoTaskMem(fileInfoPointer);
         }
     }
+
+    [DllImport("wintrust.dll", ExactSpelling = true)]
+    private static extern IntPtr WTHelperProvDataFromStateData(IntPtr state);
+
+    [DllImport("wintrust.dll", ExactSpelling = true)]
+    private static extern IntPtr WTHelperGetProvSignerFromChain(IntPtr provider, uint index, [MarshalAs(UnmanagedType.Bool)] bool counterSigner, uint counterIndex);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ProviderSigner
+    {
+        public uint Size;
+        public System.Runtime.InteropServices.ComTypes.FILETIME VerifyAsOf;
+        public uint CertificateCount;
+        public IntPtr Certificates;
+        public uint SignerType;
+        public IntPtr SignerInfo;
+        public uint Error;
+        public uint CounterSignerCount;
+        public IntPtr CounterSigners;
+        public IntPtr Chain;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ProviderCertificate { public uint Size; public IntPtr Certificate; }
 
     [DllImport("wintrust.dll", ExactSpelling = true, PreserveSig = true)]
     private static extern uint WinVerifyTrust(IntPtr hwnd, IntPtr actionId, IntPtr trustData);

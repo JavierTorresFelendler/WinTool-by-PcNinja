@@ -84,7 +84,14 @@ namespace WinTool.Core.Tests
                 var root = temp.File("Machine");
                 MachineDataDirectory.Ensure(root, root, true, identity.User);
                 var file = Path.Combine(root, "Operation.lock");
-                using (var held = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None))
+                File.WriteAllText(file, "fixture");
+                // Elevated runners may default new files to the Administrators owner, unlike
+                // a normal developer token. Establish this test policy's trusted owner explicitly.
+                var acl = new FileInfo(file).GetAccessControl();
+                acl.SetOwner(identity.User);
+                new FileInfo(file).SetAccessControl(acl);
+                Assert.True(MachineDataDirectory.IsSafe(new FileInfo(file).GetAccessControl(), identity.User, false));
+                using (var held = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
                     MachineDataDirectory.Ensure(root, root, true, identity.User);
             }
         }

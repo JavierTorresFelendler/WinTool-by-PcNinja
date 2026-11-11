@@ -175,7 +175,9 @@ namespace WinTool.Core.Updates
             if (File.Exists(url))
             {
                 // A local test feed's asset (only accepted beside a local feed file, see ReleaseFeed).
-                File.Copy(url, path, false);
+                if (Security.ProtectedMachineData.IsMachinePath(path))
+                { using (var input = File.OpenRead(url)) using (var output = Security.ProtectedMachineData.OpenWriter(path, false)) input.CopyTo(output); }
+                else File.Copy(url, path, false);
                 progress?.Report(new FileInfo(path).Length);
                 return;
             }
@@ -184,7 +186,9 @@ namespace WinTool.Core.Updates
             {
                 response.EnsureSuccessStatusCode();
                 using (var input = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                using (var output = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
+                using (var output = Security.ProtectedMachineData.IsMachinePath(path)
+                    ? Security.ProtectedMachineData.OpenWriter(path, false)
+                    : new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
                 {
                     var buffer = new byte[81920];
                     long total = 0;

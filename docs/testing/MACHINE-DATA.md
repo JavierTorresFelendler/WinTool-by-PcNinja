@@ -1,43 +1,75 @@
-# Machine-data validation
+# Machine-data transition and validation
 
-Run changing checks only in a designated disposable VM with a snapshot. Record
-the candidate commit, EXE/MSI hashes, Windows build, account elevation, command
-exit codes and results. Remove machine/account identifiers before sharing logs.
-CI checks do not replace the owner's VM acceptance. No release is approved here.
+Candidate implementation of D-028, awaiting independent re-review before owner
+VM testing. CI does not replace owner acceptance. After review, use a designated
+disposable VM and snapshot. Record SHA, artifact hashes, Windows build, elevation
+and outcomes; sanitize identifying data.
 
-1. Install the candidate MSI. Inspect `%ProgramData%\PcNinja\WinTool`:
-   owner is Administrators or SYSTEM; DACL inheritance is disabled;
-   SYSTEM and Administrators have full control; Users have read/execute only.
-2. Start the application without elevation. Confirm startup logging appears in
-   `%LocalAppData%\PcNinja\WinTool\Logs` and the machine ACL is unchanged.
-3. On a separate restored snapshot, prepare an existing permissive WinTool data
-   folder with nested test data. Start elevated and verify ownership and ACLs
-   at the root, nested folders and files. Verify existing valid settings still
-   load. Do not substitute real servicing operations for these checks.
-4. Repeat non-elevated: an unsafe machine folder must be refused before its
-   settings/state are consumed, and logging must use the per-user fallback.
-5. Check refusal of a reparse point inside the data tree and an unsafe PcNinja
-   parent. The application must not change another product's folder or follow
-   the redirected path. Parent-folder problems require administrator review;
-   WinTool does not rewrite shared parent permissions.
-6. Exercise MSI repair, upgrade and uninstall in the VM; check data-folder
-   permissions and the existing schedule after each supported transition.
+## Implemented contract
 
-Path checks retain native directory handles without delete sharing. Before an
-unsafe tree's inheritable permissions are repaired, its existing subtree is
-opened without write sharing; an existing writer makes the repair fail closed.
-Already safe files may be inspected while a trusted writer holds them. The
-root has a protected ACL; descendants may inherit the checked safe policy.
+- Machine data lives directly under %ProgramData%\PcNinja-WinTool. The shared
+  %ProgramData%\PcNinja parent and other products are unchanged.
+- Fresh objects have explicit protected ACLs: Administrators own them,
+  Administrators/SYSTEM have full control and Users have read/execute. Safe
+  restrictive existing ACLs are retained, including removal of Users read.
+  There is no recursive permission repair.
+- Unsafe existing directories are renamed to unique .untrusted-GUID siblings and
+  replaced with fresh objects. Their contents are not adopted. Reparse points
+  are refused. Failure to rename/create is reported, never repaired in place.
+  Cached directory handles prevent replacement without scanning descendants.
+- Elevated GUI startup, changing CLI commands and the MSI's deferred SYSTEM
+  --initialize-data action migrate under the machine operation lock. Read-only
+  inspection does not trigger migration. Unavailable settings/state yield
+  read-only defaults; saving still fails.
+- Migration reads only the old root's WindowsUpdate/settings.json,
+  WindowsUpdate/state.json and Upgrade/Last-Upgrade.json. Reads pin ancestors,
+  refuse reparse points and multiply linked files, and limit input to 1 MiB.
+  Typed validators serialize fresh data; unknown fields, retry claims and legacy
+  success evidence are not carried over as trusted proof.
+- Invalid source files are reported as not imported; original bytes remain.
+  Existing protected destinations are retained. Destination/report/marker write
+  failures leave completion unpublished for retry. migration-v1.complete.json
+  is written last; migration-v1.report.txt records per-rule dispositions without
+  raw input or identifying paths.
+- Updates/ and logs are not migrated. Logs page and logs collect read both
+  current and old logs. Archive source prefixes preserve same-name logs from
+  different roots. Linked logs are refused.
+- D-027's task copy is under the new root's Scheduler/ (PR #13). The common
+  protection primitive is identical in both independent drafts; consolidate it
+  during integration.
+- WINTOOL_DATA_ROOT works only in Debug or alpha/beta/rc builds, using PR #14's
+  accessor. Its remaining feed policy is an integration dependency. Unit
+  logging is injected directly instead of relying on stable-build overrides.
 
-Local unit tests use only temporary filesystem fixtures. They cover repairing a
-permissive nested tree with explicit child grants, refusal without repair,
-protected creation, owner/write-grant policy, per-user log fallback, rename
-prevention during validation, refusal of existing writers and junction refusal.
-They cannot establish real SYSTEM/UAC or Windows Installer behavior. Keep locked-file,
-ownership-repair and concurrent-access results explicit when VM evidence is
-unavailable. ACL repair preserves existing file bytes; it does not authenticate
-previously stored data.
+## Evidence and limits
 
-`WINTOOL_DATA_ROOT` uses isolated test folders and is exempt from the production
-machine ACL policy. Build/version restrictions on selecting that override are
-handled separately; this ACL change does not alter its existing availability.
+Temporary filesystem fixtures cover replacement with retained old security
+handles, read-only refusal, junction/hard-link refusal, once-only migration,
+reserialization, failed-write retry and old/current log viewing and collection.
+Typed validation tests cover invalid settings and unconfirmed legacy outcomes.
+No production root or real task is used locally.
+
+These fixtures do not establish MSI/UAC/SYSTEM transitions, real cross-process
+concurrency, antivirus behavior or full migration compatibility. Locked unsafe
+folders can block initialization. Quarantined new-root contents are retained
+for administrator examination, not imported automatically. Rejected legacy
+input is not retried after a successful completion marker; consult the report.
+
+## Owner VM checks after independent review
+
+1. Fresh MSI/portable startup: inspect the new root owner/ACL and completion
+   marker. Confirm other PcNinja folders and permissions are unchanged.
+2. Upgrade with a legacy user-owned shared parent: allowlisted settings survive
+   as newly serialized files; historical success remains unconfirmed. Old logs
+   remain visible/collectible, including same-name logs in both roots.
+3. With a user-owned new root and retained handles, confirm rename plus fresh
+   creation, no payload adoption, and changes through old handles cannot reach
+   the new root.
+4. Check malformed/oversized/linked input, interrupted migration, destination
+   write failure and restart. Confirm no payload/log migration or false completion.
+5. With restrictive trusted ACLs and a standard user, check defaults, write
+   refusal and per-user logging without permission repair.
+6. Exercise install/repair/upgrade/uninstall and concurrent-operation rejection.
+   Check D-027's copy location using PR #13's acceptance checklist.
+
+No merge, tag, release or host migration is authorized by this checklist.

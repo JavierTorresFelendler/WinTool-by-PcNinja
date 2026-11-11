@@ -29,7 +29,9 @@ namespace WinTool.Core.IO
 
             try
             {
-                using (var stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                using (var stream = Security.ProtectedMachineData.IsMachinePath(temporary)
+                    ? Security.ProtectedMachineData.OpenWriter(temporary, false)
+                    : new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                 {
                     stream.Write(bytes, 0, bytes.Length);
                     stream.Flush(true);
@@ -37,6 +39,8 @@ namespace WinTool.Core.IO
 
                 if (File.Exists(fullPath))
                 {
+                    if (Security.ProtectedMachineData.IsMachinePath(fullPath) && !Security.ProtectedMachineData.IsProtectedExecutable(fullPath))
+                        throw new UnauthorizedAccessException("Existing machine data is not protected.");
                     File.Replace(temporary, fullPath, null, true);
                 }
                 else

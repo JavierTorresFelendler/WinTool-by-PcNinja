@@ -140,8 +140,20 @@ start /wait WinTool-by-PcNinja.exe office install --family ltsc --languages he-i
 | Command | What it does |
 | --- | --- |
 | `status` | Version, computer, Windows, last update run, schedule, pending restart. |
-| `logs collect [--output folder\|file.zip]` | Zip with logs, settings, state, task XML and status. Default: `%ProgramData%\PcNinja\WinTool\LogPackages`. |
+| `logs collect [--output folder\|file.zip]` | Zip with logs, settings, state, task XML and status. Default: `%ProgramData%\PcNinja-WinTool\LogPackages`. |
 | `version`, `help`, `--self-test` | Version, this summary, completeness check of the EXE. |
+
+## Machine data
+
+D-028 moves machine data to %ProgramData%\PcNinja-WinTool. Elevated startup and
+changing commands perform a once-only, locked migration of validated legacy
+settings/state. Existing untrusted objects are retained separately and replaced
+with fresh protected objects. Updates and logs are not migrated. The Logs page
+and logs collect retain read-only access to old logs at
+%ProgramData%\PcNinja\WinTool\Logs. See docs/testing/MACHINE-DATA.md for the
+migration report, rejection behavior and pending VM checks.
+
+Initialization failure returns exit 24; no changing command starts.
 
 ## Test environment variables
 
@@ -149,7 +161,7 @@ For testing only; WinTool works without them.
 
 | Variable | Effect |
 | --- | --- |
-| `WINTOOL_DATA_ROOT` | An absolute folder. WinTool keeps its machine data (logs, Windows Update and upgrade state, downloaded updates, log packages) in `<root>\ProgramData` and its user settings in `<root>\User`, instead of `%ProgramData%\PcNinja\WinTool` and `%LocalAppData%\PcNinja\WinTool`. The log's first line says so. A relative or empty value is ignored. It does not move the old WinUpdate Tool's configuration, scheduled tasks, the registry or the installed program. |
+| `WINTOOL_DATA_ROOT` | Debug or alpha/beta/rc builds only; stable Release builds ignore it and log once. An absolute folder. WinTool keeps its machine data (logs, Windows Update and upgrade state, downloaded updates, log packages) in `<root>\ProgramData` and its user settings in `<root>\User`, instead of `%ProgramData%\PcNinja-WinTool` and `%LocalAppData%\PcNinja\WinTool`. The log's first line says so. A relative or empty value is ignored. It does not move the old WinUpdate Tool's configuration, scheduled tasks, the registry or the installed program. |
 | `WINTOOL_UPDATE_FEED` | Another releases JSON (https or a local file) for `app-update` and the update question; files beside a local JSON are used as the downloads. |
 
 Windows does not pass a process's variables to the copy it starts with administrator rights. When either variable is set and WinTool is not already running as administrator, the window does not restart itself elevated: it says so and exits with code 5. Set the variables in a command prompt opened as administrator and start WinTool from there. (Passing them on the command line instead would let a standard user steer an administrator process.)

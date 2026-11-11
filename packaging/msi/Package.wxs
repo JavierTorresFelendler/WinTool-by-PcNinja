@@ -64,17 +64,8 @@
     <StandardDirectory Id="ProgramMenuFolder" />
     <StandardDirectory Id="DesktopFolder" />
 
-    <StandardDirectory Id="CommonAppDataFolder">
-      <Directory Id="PcNinjaDataFolder" Name="PcNinja">
-        <Directory Id="WinToolDataFolder" Name="WinTool" />
-      </Directory>
-    </StandardDirectory>
-    <Component Id="MachineDataFolder" Directory="WinToolDataFolder" Guid="{B44731D0-17BB-4F93-A81C-899F8876C260}">
-      <CreateFolder>
-        <PermissionEx Id="MachineDataPermissions" Sddl="O:BAG:BAD:P(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;GRGX;;;BU)" />
-      </CreateFolder>
-      <RegistryValue Root="HKLM" Key="SOFTWARE\PcNinja\WinTool" Name="MachineDataPolicy" Type="integer" Value="1" KeyPath="yes" />
-    </Component>
+    <!-- D-028: Core creates a fresh protected root. MSI must not adopt a pre-existing unsafe folder. -->
+    <CustomAction Id="InitializeMachineData" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="check" ExeCommand="--initialize-data" />
 
     <Component Id="MainExecutable" Directory="INSTALLFOLDER" Guid="{3F1B0A8E-2C4D-4E6F-8A9B-1C2D3E4F5A60}">
       <File Id="MainExe" Source="$(ExePath)" Name="WinTool-by-PcNinja.exe" KeyPath="yes" />
@@ -100,7 +91,6 @@
     <Feature Id="Main" Title="WinTool by PcNinja" Level="1">
       <ComponentRef Id="MainExecutable" />
       <ComponentRef Id="InstallRegistry" />
-      <ComponentRef Id="MachineDataFolder" />
       <ComponentRef Id="StartMenuShortcut" />
       <ComponentRef Id="DesktopShortcut" />
     </Feature>
@@ -127,7 +117,8 @@
     <InstallExecuteSequence>
       <Custom Action="TakeOverLegacy" Before="InstallFinalize" Condition="NOT REMOVE AND NOT (WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;)" />
       <Custom Action="TakeOverLegacyKeepSchedule" Before="InstallFinalize" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
-      <Custom Action="ApplySchedule" After="InstallFiles" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
+      <Custom Action="InitializeMachineData" After="WriteRegistryValues" Condition="NOT REMOVE" />
+      <Custom Action="ApplySchedule" After="InitializeMachineData" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
       <Custom Action="RemoveSchedule" Before="RemoveFiles" Condition="REMOVE = &quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
     </InstallExecuteSequence>
 

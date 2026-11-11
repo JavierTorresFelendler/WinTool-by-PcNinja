@@ -99,6 +99,9 @@ namespace WinTool.App
                 // Started with administrator rights already: asked here, after a running window was activated instead.
                 if (askHere && !AskInstallOrPortable()) return ExitOk;
 
+                try { MachineDataTransition.Initialize(); }
+                catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
+                { AppLog.Current.Error("Storage", "Machine data initialization failed.", ex); ShowMessage(Loc.Instance["Startup_DataInitializationFailed"], MessageBoxImage.Stop); return 24; }
                 var app = new App();
                 app.InitializeComponent();
                 return app.RunMainWindow(settings);

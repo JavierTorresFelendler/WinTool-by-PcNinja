@@ -25,6 +25,9 @@ namespace WinTool.App.Infrastructure
             var command = args[0].Trim().ToLowerInvariant();
             if (CommandRunner.Handles(command))
             {
+                try { if (!MachineDataTransition.IsReadOnly(args)) MachineDataTransition.Initialize(); }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
+                { Console.Error.WriteLine("Machine data initialization failed: " + ex.Message); return 24; }
                 AppLog.Current.Info("CLI", "Command: " + string.Join(" ", args));
                 var exePath = Process.GetCurrentProcess().MainModule.FileName;
                 var exit = new CommandRunner(new WindowsUpdateEnvironment(exePath), Console.Out, Console.Error).Run(args);
@@ -34,6 +37,10 @@ namespace WinTool.App.Infrastructure
 
             switch (command)
             {
+                case "--initialize-data":
+                    try { MachineDataTransition.Initialize(); return 0; }
+                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
+                    { Console.Error.WriteLine("Machine data initialization failed: " + ex.Message); return 24; }
                 case "--version":
                 case "version":
                     if (args.Length > 1 && args[1] == "--json")

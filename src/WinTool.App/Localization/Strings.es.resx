@@ -426,4 +426,5 @@ Cancelar: no hacer nada.</value></data>
   <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Reinicia primero el equipo y luego vuelve a buscar e instalar.</value></data>
   <data name="WU_Restart_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso, quizá una actualización programada. Reinicia cuando termine.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows sigue instalando una actualización en segundo plano. Reiniciar ahora puede hacer que el reinicio tarde más. ¿Reiniciar de todos modos?</value></data>
+  <data name="Startup_DataInitializationFailed" xml:space="preserve"><value>WinTool no pudo inicializar sus datos protegidos. No se inició ninguna operación de mantenimiento. Revise el registro e inténtelo de nuevo como administrador.</value></data>
 </root>

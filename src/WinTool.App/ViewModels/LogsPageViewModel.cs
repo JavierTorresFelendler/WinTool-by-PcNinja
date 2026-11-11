@@ -147,7 +147,7 @@ namespace WinTool.App.ViewModels
         {
             var keep = day;
             Days.Clear();
-            foreach (var d in LogReader.Days(AppLog.Current.Directory)) Days.Add(d);
+            foreach (var d in LogReader.AvailableDays(AppLog.Current.Directory)) Days.Add(d);
             var today = DateTime.Today;
             if (!Days.Contains(today)) Days.Insert(0, today);
             day = keep.HasValue && Days.Contains(keep.Value) ? keep : Days[0];
@@ -164,7 +164,7 @@ namespace WinTool.App.ViewModels
             IReadOnlyList<LogEntry> entries;
             try
             {
-                entries = await Task.Run(() => LogReader.ReadTail(path, area == "All" ? MaxEntries : MaxEntries * 10)
+                entries = await Task.Run(() => LogReader.ReadDay(AppLog.Current.Directory, day.Value, area == "All" ? MaxEntries : MaxEntries * 10)
                     .Where(e => area == "All" || string.Equals(e.Area, area, StringComparison.OrdinalIgnoreCase)).ToList());
             }
             catch (IOException ex)

@@ -25,7 +25,7 @@ namespace WinTool.Core.Diagnostics
 
         public string Directory { get; }
 
-        /// <summary>The process-wide log, under %ProgramData%\PcNinja\WinTool\Logs by default.</summary>
+        /// <summary>The process-wide log, under %ProgramData%\PcNinja-WinTool\Logs by default.</summary>
         public static AppLog Current
         {
             get { return current ?? (current = CreateDefault()); }
@@ -53,7 +53,7 @@ namespace WinTool.Core.Diagnostics
                 prepareMachine();
                 return new AppLog(machineDirectory);
             }
-            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException)
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException || ex is Operations.OperationBusyException)
             {
                 var fallback = new AppLog(userDirectory);
                 fallback.Warn("Storage", "Machine logging is unavailable; using the per-user log. " + ex.GetType().Name);
@@ -100,7 +100,12 @@ namespace WinTool.Core.Diagnostics
                 lock (gate)
                 {
                     WinToolPaths.EnsureMachineDataDirectory(Directory);
-                    File.AppendAllText(CurrentFilePath, line, Utf8NoBom);
+                    if (Security.ProtectedMachineData.IsMachinePath(CurrentFilePath))
+                    {
+                        using (var stream = Security.ProtectedMachineData.OpenWriter(CurrentFilePath, true))
+                        { var bytes = Utf8NoBom.GetBytes(line); stream.Write(bytes, 0, bytes.Length); }
+                    }
+                    else File.AppendAllText(CurrentFilePath, line, Utf8NoBom);
                 }
             }
             catch (Exception)

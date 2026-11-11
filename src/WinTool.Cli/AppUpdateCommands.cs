@@ -32,6 +32,8 @@ namespace WinTool.Cli
 
         public int Run(string command, string[] rest)
         {
+            if (command == "install" && WinTool.Core.Security.ProtectedTaskCopy.IsManagedPath(exePath))
+            { error.WriteLine("Update the original portable app and save its schedule to refresh the protected task copy."); return CliExit.Failed; }
             switch (command)
             {
                 case "check": return Check(Parse(rest, new[] { "test-versions", "json" }));

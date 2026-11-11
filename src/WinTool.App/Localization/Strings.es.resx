@@ -417,7 +417,7 @@ No se puede deshacer desde WinTool.</value></data>
 {0}
 
 Sí: instalar WinTool ahora; el instalador crea esta programación y esta ventana se cierra.
-No: programar esta copia portable de todos modos (no muevas ni elimines el archivo).
+No: crear una copia local protegida para esta programación, sin instalar el MSI. Después se puede retirar el archivo portable original.
 Cancelar: no hacer nada.</value></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>No se pudo descargar el instalador de WinTool {0}. Descarga WinTool-by-PcNinja.msi desde {1}.</value></data>
   <data name="Settings_Spanish_Review" xml:space="preserve"><value>El español es una primera traducción, pendiente de revisión por un hablante nativo.</value></data>
@@ -426,4 +426,6 @@ Cancelar: no hacer nada.</value></data>
   <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Reinicia primero el equipo y luego vuelve a buscar e instalar.</value></data>
   <data name="WU_Restart_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso, quizá una actualización programada. Reinicia cuando termine.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows sigue instalando una actualización en segundo plano. Reiniciar ahora puede hacer que el reinicio tarde más. ¿Reiniciar de todos modos?</value></data>
+  <data name="WU_Schedule_TargetUnavailable" xml:space="preserve"><value>No se pudo preparar la copia protegida o el instalador. No se creó ninguna tarea para la ruta portable. Revise el registro e inténtelo como administrador.</value></data>
+  <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>Actualice la aplicación portable original y guarde su programación para renovar la copia local protegida.</value></data>
 </root>

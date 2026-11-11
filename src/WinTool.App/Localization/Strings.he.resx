@@ -417,7 +417,7 @@
 {0}
 
 כן: להתקין את WinTool עכשיו; המתקין ייצור את התזמון הזה, והחלון ייסגר.
-לא: לתזמן את העותק הנייד בכל זאת (אין להעביר או למחוק את הקובץ).
+לא: ליצור עותק מקומי מוגן עבור התזמון, ללא התקנת MSI. לאחר מכן אפשר להסיר את הקובץ הנייד המקורי.
 ביטול: לא לעשות דבר.</value></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>לא ניתן היה להוריד את המתקין של WinTool {0}. אפשר להוריד את WinTool-by-PcNinja.msi מ־{1}.</value></data>
   <data name="Settings_Spanish_Review" xml:space="preserve"><value>הספרדית היא תרגום ראשון שממתין לבדיקה של דובר ספרדית.</value></data>
@@ -426,4 +426,6 @@
   <data name="WU_InstallAfterRestart" xml:space="preserve"><value>יש להפעיל מחדש את המחשב תחילה, ואז לחפש ולהתקין שוב.</value></data>
   <data name="WU_Restart_Busy" xml:space="preserve"><value>פעולה אחרת של WinTool פועלת, אולי עדכון מתוזמן. הפעל מחדש אחרי שהיא תסתיים.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows עדיין מתקין עדכון ברקע. הפעלה מחדש עכשיו עלולה להאריך את ההפעלה מחדש. להפעיל מחדש בכל זאת?</value></data>
+  <data name="WU_Schedule_TargetUnavailable" xml:space="preserve"><value>לא ניתן להכין את העותק המוגן לתזמון או את המתקין. לא נוצרה משימה לנתיב הנייד. בדוק את היומן ונסה שוב כמנהל מערכת.</value></data>
+  <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>עדכן את היישום הנייד המקורי, ואז שמור את התזמון כדי לרענן את העותק המקומי המוגן.</value></data>
 </root>

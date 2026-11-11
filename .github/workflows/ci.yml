@@ -145,11 +145,16 @@ jobs:
             return $text
           }
           Invoke-WinTool @('status', '--json') @(0) | Out-Null
-          Invoke-WinTool @('schedule', 'set', '--enable', '--frequency', 'Weekly', '--day', 'Sunday', '--time', '03:00', '--wake') @(23) | Out-Null
-          Invoke-WinTool @('update', 'start-as-system') @(23) | Out-Null
+          Invoke-WinTool @('schedule', 'set', '--enable', '--frequency', 'Weekly', '--day', 'Sunday', '--time', '03:00', '--wake') @(0) | Out-Null
+          # Run-once SYSTEM execution is covered by fakes only: never start a real update install on CI.
           $show = Invoke-WinTool @('schedule', 'show', '--json') @(0)
-          if ($show -notmatch '"task": null') {
-            Write-Host "::error title=cli::portable refusal created a task"
+          $status = $show | ConvertFrom-Json
+          [xml]$definition = $status.task.xml
+          $target = [string]$definition.Task.Actions.Exec.Command
+          $expected = Join-Path $env:ProgramData 'PcNinja-WinTool\Scheduler\'
+          if (-not $target.StartsWith($expected, [StringComparison]::OrdinalIgnoreCase) -or -not (Test-Path -LiteralPath $target) -or
+              (Get-FileHash -LiteralPath $target).Hash -ne (Get-FileHash -LiteralPath $exe).Hash) {
+            Write-Host "::error title=cli::portable task did not use a verified protected local copy"
             exit 1
           }
           Invoke-WinTool @('update', 'health', '--no-network') @(0, 1, 11) | Out-Null

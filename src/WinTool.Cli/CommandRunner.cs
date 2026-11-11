@@ -28,14 +28,14 @@ namespace WinTool.Cli
         private readonly IWindowsUpdateEnvironment env;
         private readonly TextWriter output;
         private readonly TextWriter error;
-        private readonly Func<string> installedFolder;
+        private readonly Func<string, string> target;
 
-        public CommandRunner(IWindowsUpdateEnvironment env, TextWriter output, TextWriter error, Func<string> installedFolder = null)
+        public CommandRunner(IWindowsUpdateEnvironment env, TextWriter output, TextWriter error, Func<string, string> target = null)
         {
             this.env = env;
             this.output = output;
             this.error = error;
-            this.installedFolder = installedFolder ?? InstalledCopy.ReadInstallFolder;
+            this.target = target;
         }
 
         /// <summary>Areas this runner handles; the app handles version, help and self-test.</summary>
@@ -198,8 +198,6 @@ namespace WinTool.Cli
             var explicitScope = ScopeSwitches.Any(a.Has);
             var snooze = a.Has("snooze");
             if (snooze && type != RunType.Manual) throw new UsageException("--snooze is only allowed for manual runs.");
-            // Refuse before scanning/installing when this run can create an automatic retry task.
-            if (env.Store.LoadSettings().AutoRetryEnabled) Schedule().RequireInstalled();
 
             var request = new RunRequest
             {
@@ -444,7 +442,7 @@ namespace WinTool.Cli
 
             // --keep-schedule: the WinTool installer was given its own schedule, which wins over the old tool's.
             var settings = legacy == null || a.Has("keep-schedule") ? null : LegacyWinUpdateConfig.Import(legacy);
-            if (settings != null && settings.ScheduleEnabled) Schedule().RequireInstalled();
+            if (settings != null && settings.ScheduleEnabled) Schedule().PrepareTarget();
             Note(EventLevel.Information, "found " + (legacy != null ? "its settings file" : "no settings file") + ", " +
                 tasks.Count + " scheduled task(s) and " + installs.Count + " installation(s)" +
                 (installs.Count > 0 ? " (" + string.Join("; ", installs.Select(i => i.ToString())) + ")" : "") + ".");
@@ -581,7 +579,6 @@ namespace WinTool.Cli
 
             try
             {
-                if (settings.ScheduleEnabled) Schedule().RequireInstalled();
                 Schedule().Apply(settings);
             }
             catch (InstalledCopyRequiredException) { throw; }
@@ -702,7 +699,7 @@ namespace WinTool.Cli
 
         // --------------------------------------------------------------- helpers
 
-        private ScheduleService Schedule() => new ScheduleService(env.Tasks, env.Log, env.ExecutablePath, env.Clock, installedFolder);
+        private ScheduleService Schedule() => new ScheduleService(env.Tasks, env.Log, env.ExecutablePath, env.Clock, target);
 
         private IRetryScheduler Retries() => Schedule();
 

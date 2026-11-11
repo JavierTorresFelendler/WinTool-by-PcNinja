@@ -482,16 +482,19 @@ namespace WinTool.App.ViewModels
 
             if (settings.InstallFirmwareUpdates && !current.InstallFirmwareUpdates && !Dialogs.Confirm(T["WU_Firmware_Schedule_Warning"])) return;
 
-            // D-014: a schedule needs a stable path. A portable copy offers to install WinTool, whose MSI creates the schedule.
+            // D-027: portable scheduling offers MSI installation or a protected local task copy.
             if (settings.ScheduleEnabled && IsPortableCopy())
             {
                 var choice = Dialogs.Choose(T.Format("WU_Schedule_InstallOffer", env.ExecutablePath));
                 if (choice == System.Windows.MessageBoxResult.Cancel) return;
-                if (choice == System.Windows.MessageBoxResult.Yes && InstallForSchedule != null)
+                if (choice == System.Windows.MessageBoxResult.Yes)
                 {
-                    env.Store.SaveSettings(settings);
-                    if (await InstallForSchedule(MsiScheduleProperties.CommandLine(settings))) return;
-                    // The MSI is not available: fall through and schedule this copy, as with No.
+                    if (InstallForSchedule != null)
+                    {
+                        if (await InstallForSchedule(MsiScheduleProperties.CommandLine(settings))) return;
+                    }
+                    SetScheduleMessage(() => T["WU_Schedule_TargetUnavailable"], true);
+                    return;
                 }
             }
 
@@ -501,6 +504,8 @@ namespace WinTool.App.ViewModels
                 env.Store.SaveSettings(settings);
                 SetScheduleMessage(() => settings.ScheduleEnabled ? T["WU_Schedule_Saved"] : T["WU_Schedule_Off"], false);
             }
+            catch (WinTool.Core.Updates.InstalledCopyRequiredException)
+            { SetScheduleMessage(() => T["WU_Schedule_TargetUnavailable"], true); }
             catch (Exception ex) when (ex is InvalidOperationException || ex is UnauthorizedAccessException || ex is System.Runtime.InteropServices.COMException || ex is ArgumentException)
             {
                 SetScheduleMessage(() => T.Format("WU_Schedule_Failed", ex.Message), true);

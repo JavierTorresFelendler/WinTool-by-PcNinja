@@ -6,6 +6,8 @@ using System.Xml.Linq;
 using WinTool.WindowsUpdate.Engine;
 using WinTool.WindowsUpdate.Storage;
 using WinTool.Core.Updates;
+using WinTool.Core.Security;
+using WinTool.Core.Operations;
 
 namespace WinTool.WindowsUpdate.Schedule
 {
@@ -27,20 +29,40 @@ namespace WinTool.WindowsUpdate.Schedule
         private readonly IRunLog log;
         private readonly string exePath;
         private readonly Func<DateTime> clock;
-        private readonly Func<string> installedFolder;
+        private readonly Func<string, string> resolve;
+        private readonly Action<IEnumerable<string>> retire;
+        private readonly bool isolated;
 
-        public ScheduleService(ITaskSchedulerService tasks, IRunLog log, string exePath, Func<DateTime> clock, Func<string> installedFolder = null)
+        public ScheduleService(ITaskSchedulerService tasks, IRunLog log, string exePath, Func<DateTime> clock, Func<string, string> target = null, Action<IEnumerable<string>> retire = null)
         {
             this.tasks = tasks;
             this.log = log;
             this.exePath = exePath;
             this.clock = clock ?? (() => DateTime.Now);
-            this.installedFolder = installedFolder ?? InstalledCopy.ReadInstallFolder;
+            resolve = target ?? ProtectedTaskCopy.Resolve;
+            this.retire = retire ?? (target == null ? ProtectedTaskCopy.Retire : _ => { });
+            isolated = target != null;
         }
 
-        public void RequireInstalled()
+        public string PrepareTarget()
         {
-            if (!InstalledCopy.IsInstalled(exePath, installedFolder())) throw new InstalledCopyRequiredException();
+            try { using (Enter()) return resolve(exePath); }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException)
+            { throw new InstalledCopyRequiredException(ex); }
+        }
+
+        private IDisposable Enter() => isolated ? (IDisposable)new Empty() : OperationGate.EnterWindows();
+        private sealed class Empty : IDisposable { public void Dispose() { } }
+
+        private void Cleanup()
+        {
+            try
+            {
+                var paths = tasks.Find(TaskNames.IsOwn).Select(task => (string)XDocument.Parse(task.Xml).Descendants().First(element => element.Name.LocalName == "Command")).ToList();
+                retire(paths);
+            }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is System.Xml.XmlException || ex is InvalidOperationException || ex is ArgumentException)
+            { log.Write(EventIds.ScheduleFailed, EventLevel.Warning, "Protected task-copy cleanup deferred; task references or active files remain."); }
         }
 
         /// <summary>
@@ -52,21 +74,25 @@ namespace WinTool.WindowsUpdate.Schedule
         {
             var errors = settings.Validate();
             if (errors.Count > 0) throw new ArgumentException(string.Join(" ", errors));
-            if (settings.ScheduleEnabled) RequireInstalled();
-
-            var xml = settings.ScheduleEnabled ? TaskXmlBuilder.BuildSchedule(settings, exePath, clock()) : null;
-            RemoveOwnTasks(keepRetry: false);
-            if (xml == null)
+            using (Enter())
             {
-                log.Write(EventIds.ScheduleRemoved, EventLevel.Information, "Windows Update schedule turned off.");
-                return;
-            }
+                var target = settings.ScheduleEnabled ? PrepareTarget() : null;
+                var xml = settings.ScheduleEnabled ? TaskXmlBuilder.BuildSchedule(settings, target, clock()) : null;
+                RemoveOwnTasks(keepRetry: false);
+                if (xml == null)
+                {
+                    log.Write(EventIds.ScheduleRemoved, EventLevel.Information, "Windows Update schedule turned off.");
+                    Cleanup();
+                    return;
+                }
 
-            tasks.Register(TaskNames.Main, xml);
-            log.Write(EventIds.ScheduleSaved, EventLevel.Information, "Windows Update schedule saved: " + Describe(settings) + ".");
+                tasks.Register(TaskNames.Main, xml);
+                log.Write(EventIds.ScheduleSaved, EventLevel.Information, "Windows Update schedule saved: " + Describe(settings) + ".");
+                Cleanup();
+            }
         }
 
-        public void RemoveAll() => RemoveOwnTasks(keepRetry: false);
+        public void RemoveAll() { using (Enter()) { RemoveOwnTasks(keepRetry: false); Cleanup(); } }
 
         public ScheduleStatus GetStatus(WindowsUpdateSettings settings)
         {
@@ -84,21 +110,18 @@ namespace WinTool.WindowsUpdate.Schedule
 
         public void ScheduleRetry(DateTime runAt, string reason, int retryNumber)
         {
-            RequireInstalled();
-            tasks.Register(TaskNames.Retry, TaskXmlBuilder.BuildRetry(exePath, runAt, reason, clock()));
+            using (Enter()) { var target = PrepareTarget(); tasks.Register(TaskNames.Retry, TaskXmlBuilder.BuildRetry(target, runAt, reason, clock())); Cleanup(); }
         }
 
         public void CancelRetry()
         {
-            tasks.Delete(TaskNames.Folder, TaskNames.Retry);
+            using (Enter()) { tasks.Delete(TaskNames.Folder, TaskNames.Retry); Cleanup(); }
         }
 
         /// <summary>WU-56: start a one-time run as SYSTEM now.</summary>
         public void StartRunOnce()
         {
-            RequireInstalled();
-            tasks.Register(TaskNames.RunOnce, TaskXmlBuilder.BuildRunOnce(exePath, clock()));
-            tasks.Run(TaskNames.RunOnce);
+            using (Enter()) { var target = PrepareTarget(); tasks.Register(TaskNames.RunOnce, TaskXmlBuilder.BuildRunOnce(target, clock())); tasks.Run(TaskNames.RunOnce); Cleanup(); }
         }
 
         public static string Describe(WindowsUpdateSettings settings)
@@ -130,7 +153,9 @@ namespace WinTool.WindowsUpdate.Schedule
             if (string.IsNullOrWhiteSpace(registeredXml)) return new List<string> { "The task has no definition." };
             try
             {
-                var expected = Signature(TaskXmlBuilder.BuildSchedule(settings, exePath, clock()));
+                var command = (string)XDocument.Parse(registeredXml).Descendants().FirstOrDefault(element => element.Name.LocalName == "Command");
+                var expectedPath = !isolated && command != null && ProtectedTaskCopy.IsManagedPath(command) && ProtectedMachineData.IsProtectedExecutable(command) ? command : exePath;
+                var expected = Signature(TaskXmlBuilder.BuildSchedule(settings, expectedPath, clock()));
                 var actual = Signature(registeredXml);
                 var differences = new List<string>();
                 for (var i = 0; i < Math.Max(expected.Count, actual.Count); i++)

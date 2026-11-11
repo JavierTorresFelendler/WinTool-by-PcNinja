@@ -413,7 +413,25 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   installers, servicing, merge, tag or release is authorized by this entry.
   Existing CI and owner-designated disposable-VM acceptance gates remain.
 
+## D-028 Dedicated protected machine data and one-time migration
+
+- **Status:** Accepted (2026-11-11), explicit owner approval. Supersedes the
+  previous machine-data location and in-place adoption/repair policy.
+- **Decision:** Machine data moves to `%ProgramData%\PcNinja-WinTool`.
+  A pre-existing root not owned by Administrators or SYSTEM is renamed aside
+  and replaced with a fresh protected directory; it is never adopted or repaired
+  in place. The shared `%ProgramData%\PcNinja` parent remains unchanged.
+- Legacy settings and state are untrusted: parse, validate and serialize new
+  files, without raw copying or following reparse points/hard links.
+  `Updates\` and logs are not migrated. Migration runs once under the
+  machine-wide operation lock and records completion.
+- The Logs page and `logs collect` retain read-only access to old logs.
+  D-027's task copy lives under the new root or Program Files.
+- No merge, tag or release. Revised S1/S2 require independent re-review before
+  owner VM testing; no production-machine migration is authorized as a test.
+
 ## Open questions
 
-The S1 legacy-data transition and the D-009 wording amendment remain separate
-owner decisions. D-027 does not accept either proposal implicitly.
+The owner separately accepted the data transition as D-028 (PR #12) and the
+narrow D-009 clarification as D-029 (PR #19). Reconcile these independent
+decision entries during integration; the original entries remain intact.

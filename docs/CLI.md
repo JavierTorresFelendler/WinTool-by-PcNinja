@@ -31,15 +31,24 @@ Scheduled tasks and the MSI always wait.
 
 ## Schedule
 
-Task registration requires the exact installed EXE recorded by the MSI's
-64-bit HKLM `InstallFolder` value. This is D-014 applied to the command line:
-the CLI never prompts. A portable copy returns exit **23** for
-`schedule set --enable`, enabled schedule imports, `update start-as-system`,
-and `update run` with automatic retry enabled. Install WinTool using the MSI
-or the universal EXE's **Install** choice, then run the command from the
-installed copy. The GUI keeps its existing installation offer (D-014/D-026).
-`schedule show`, `schedule remove` and disabling a schedule still work from a
-portable copy. Manual update runs without automatic retry remain available.
+D-027 applies to every SYSTEM task: normal schedules, automatic retries and
+`update start-as-system`. A portable or writable custom MSI location provisions a
+protected copy under `%ProgramData%\PcNinja-WinTool\Scheduler\<SHA256>\`. The
+original file may then be removed without changing the task target. MSI
+registration alone does not prove a location is protected.
+
+The CLI never prompts or installs an MSI for scheduling. An explicit scheduling
+command provisions the copy as administrator; preparation failure returns exit
+23 before task removal. Manual updates start normally with automatic retry
+enabled; if a retry is needed but preparation fails, exit 22 reports that no
+retry was scheduled. Inspection, removal and disabling remain available from a
+portable copy. The GUI offers Install, protected copy (No), or Cancel.
+
+Removing tasks retires only unreferenced managed copies. A busy executable is
+retained with retirement.pending; cleanup retries on a later administrative
+task change. Update the original WinTool EXE and save the schedule again to
+refresh a worker. A managed worker never updates itself. See
+docs/reviews/S2-PROTECTED-COPY-PLAN.md for limitations and VM checks.
 
 | Command | Admin | What it does |
 | --- | --- | --- |
@@ -142,7 +151,7 @@ start /wait WinTool-by-PcNinja.exe office install --family ltsc --languages he-i
 | Command | What it does |
 | --- | --- |
 | `app-update check [--test-versions] [--json]` | Is a newer WinTool published on GitHub? Test versions only with `--test-versions` (D-023). |
-| `app-update install --yes [--test-versions] [--json]` | Portable: downloads and verifies the new EXE and replaces this one; the old one stays as `WinTool-by-PcNinja-v<file version>.exe` (D-018). Installed: downloads and verifies the MSI and prints the `msiexec` command to run once WinTool is closed. |
+| `app-update install --yes [--test-versions] [--json]` | Managed task copy: refused; update the original and save the schedule again. Portable: downloads and verifies the new EXE and replaces this one; the old one stays as `WinTool-by-PcNinja-v<file version>.exe` (D-018). Installed: downloads and verifies the MSI and prints the `msiexec` command to run once WinTool is closed. |
 | `version [--json]` | Version; with `--json` also the file and MSI versions (D-024). |
 
 ## Other
@@ -177,8 +186,8 @@ Windows does not pass a process's variables to the copy it starts with administr
 | 11 | Completed, but some updates failed | Completed with warnings (health warnings, reset warnings) |
 | 20 | Retry scheduled | — |
 | 21 | Skipped: Windows busy, cooldown, or another WinTool operation running | Another WinTool operation is running |
-| 22 | Needs attention: retry limit reached or automatic retry off | — |
-| 23 | Installed copy required for automatic retry | Installed copy required to register a task |
+| 22 | Needs attention: retry limit reached, automatic retry off, or protected target unavailable | — |
+| 23 | — | Protected local task target could not be prepared |
 | 30–33 | — | Windows Upgrade results, see above |
 | 40 | — | Office: the Office Deployment Tool could not be downloaded or extracted |
 | 41 | — | Office: the Office Deployment Tool is not signed by Microsoft; nothing ran |

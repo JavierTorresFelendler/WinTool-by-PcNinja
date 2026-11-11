@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using Microsoft.Win32;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace WinTool.Core.Updates
 {
@@ -42,7 +44,7 @@ namespace WinTool.Core.Updates
             try
             {
                 if (!Path.IsPathRooted(exePath) || !Path.IsPathRooted(installFolder)) return false;
-                return string.Equals(Path.GetFullPath(exePath), Path.Combine(Path.GetFullPath(installFolder), ReleaseFiles.Executable), StringComparison.OrdinalIgnoreCase);
+                return string.Equals(Normalize(exePath), Normalize(Path.Combine(Path.GetFullPath(installFolder), ReleaseFiles.Executable)), StringComparison.OrdinalIgnoreCase);
             }
             catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is PathTooLongException)
             {
@@ -59,13 +61,22 @@ namespace WinTool.Core.Updates
 
         private static string Normalize(string path)
         {
-            try { return System.IO.Path.GetFullPath(path).TrimEnd('\\', '/'); }
+            try
+            {
+                var full = System.IO.Path.GetFullPath(path).TrimEnd('\\', '/');
+                var longPath = new StringBuilder(32768);
+                var length = GetLongPathNameW(full, longPath, longPath.Capacity);
+                return length > 0 && length < longPath.Capacity ? longPath.ToString().TrimEnd('\\', '/') : full;
+            }
             catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is System.IO.PathTooLongException) { return path; }
         }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        private static extern uint GetLongPathNameW(string path, StringBuilder expanded, int length);
     }
 
     public sealed class InstalledCopyRequiredException : InvalidOperationException
     {
-        public InstalledCopyRequiredException() : base("Task registration requires the installed copy of WinTool. Install WinTool using the MSI or the universal EXE's Install choice, then run the command from the installed copy.") { }
+        public InstalledCopyRequiredException(Exception inner = null) : base("A protected local task target could not be prepared. Run as administrator and check the task-copy log. No task was registered for the portable path.", inner) { }
     }
 }

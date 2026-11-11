@@ -50,7 +50,7 @@ namespace WinTool.App.ViewModels
         }
         public string Status { get => status; private set => Set(ref status, value); }
 
-        public bool IsInstalled => exePath.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase);
+        public bool IsInstalled => InstalledCopy.IsInstalled(exePath);
 
         /// <summary>At startup: quiet when nothing is found or the check fails.</summary>
         public void CheckAtStartup()
@@ -104,6 +104,7 @@ namespace WinTool.App.ViewModels
 
         private async Task InstallAsync(ReleaseInfo release)
         {
+            if (WinTool.Core.Security.ProtectedTaskCopy.IsManagedPath(exePath)) { Dialogs.Info(T["UPD_ManagedTaskCopy"]); return; }
             if (OperationRunning())
             {
                 Dialogs.Info(T["UPD_WaitForOperation"]);

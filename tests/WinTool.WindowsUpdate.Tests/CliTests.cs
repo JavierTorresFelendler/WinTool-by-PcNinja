@@ -101,8 +101,60 @@ namespace WinTool.WindowsUpdate.Tests
         {
             var output = new StringWriter();
             var error = new StringWriter();
-            var code = new CommandRunner(env, output, error).Run(args);
+            var code = new CommandRunner(env, output, error, path => path).Run(args);
             return (code, output.ToString(), error.ToString());
+        }
+
+        [Theory]
+        [InlineData("schedule", "set", "--enable")]
+        [InlineData("update", "start-as-system")]
+        public void Portable_task_registration_is_refused_without_creating_tasks(params string[] args)
+        {
+            using (var env = new FakeEnvironment())
+            {
+                var output = new StringWriter();
+                var error = new StringWriter();
+                var code = new CommandRunner(env, output, error, path => throw new WinTool.Core.Updates.InstalledCopyRequiredException()).Run(args);
+                Assert.Equal(CliExit.InstalledCopyRequired, code);
+                Assert.Empty(env.FakeTasks.All);
+                Assert.Contains("protected local task target", error.ToString());
+            }
+        }
+
+        [Theory]
+        [InlineData("show")]
+        [InlineData("remove")]
+        public void Portable_schedule_inspection_and_removal_remain_available(string command)
+        {
+            using (var env = new FakeEnvironment())
+            {
+                Assert.Equal(CliExit.Ok, new CommandRunner(env, new StringWriter(), new StringWriter(), path => throw new WinTool.Core.Updates.InstalledCopyRequiredException()).Run(new[] { "schedule", command }));
+            }
+        }
+
+        [Fact]
+        public void Portable_default_update_run_is_not_refused_when_task_preparation_is_unavailable()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                var code = new CommandRunner(env, new StringWriter(), new StringWriter(), path => throw new WinTool.Core.Updates.InstalledCopyRequiredException()).Run(new[] { "update", "run" });
+                Assert.Equal(0, code);
+                Assert.True(env.Agent.Searches > 0);
+                Assert.Empty(env.FakeTasks.All);
+            }
+        }
+
+        [Theory]
+        [InlineData("schedule", "set", "--enable")]
+        [InlineData("update", "start-as-system")]
+        public void Portable_registration_uses_the_resolved_protected_target(params string[] args)
+        {
+            using (var env = new FakeEnvironment())
+            {
+                const string worker = @"C:\ProgramData\PcNinja-WinTool\Scheduler\fixture\WinTool-by-PcNinja.exe";
+                Assert.Equal(0, new CommandRunner(env, new StringWriter(), new StringWriter(), _ => worker).Run(args));
+                Assert.Contains(worker, Assert.Single(env.FakeTasks.All).Xml);
+            }
         }
 
         [Theory]
@@ -121,6 +173,20 @@ namespace WinTool.WindowsUpdate.Tests
                 var result = Run(env, args);
                 Assert.Equal(CliExit.Usage, result.code);
                 Assert.NotEmpty(result.error);
+            }
+        }
+
+        [Theory]
+        [InlineData("schedule", "set", "--enable")]
+        [InlineData("update", "start-as-system")]
+        public void Busy_task_preparation_returns_21_without_changes(params string[] args)
+        {
+            using (var env = new FakeEnvironment())
+            {
+                var code = new CommandRunner(env, new StringWriter(), new StringWriter(),
+                    _ => throw new WinTool.Core.Operations.OperationBusyException()).Run(args);
+                Assert.Equal(21, code);
+                Assert.Empty(env.FakeTasks.All);
             }
         }
 
@@ -202,6 +268,19 @@ namespace WinTool.WindowsUpdate.Tests
                 Assert.Equal(ExitCodes.RetryScheduled, result.code);
                 Assert.NotNull(env.FakeTasks.Get(TaskNames.Retry));
                 Assert.Contains("\"result\": \"RetryScheduled\"", result.output);
+            }
+        }
+
+        [Fact]
+        public void Retry_target_failure_reports_attention_without_claiming_a_registered_retry()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                env.FakeProbe.NetworkReady = false;
+                var output = new StringWriter();
+                var code = new CommandRunner(env, output, new StringWriter(), path => throw new WinTool.Core.Updates.InstalledCopyRequiredException()).Run(new[] { "update", "run", "--scheduled", "--json" });
+                Assert.Equal(22, code); Assert.Empty(env.FakeTasks.All); Assert.Contains("RetryDisabled", output.ToString());
+                Assert.Null(env.Memory.State.LastRetryScheduled);
             }
         }
 

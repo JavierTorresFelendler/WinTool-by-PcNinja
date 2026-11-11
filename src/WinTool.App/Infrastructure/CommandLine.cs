@@ -33,6 +33,16 @@ namespace WinTool.App.Infrastructure
                 }
                 catch (WinTool.Core.Operations.OperationBusyException)
                 { Console.Error.WriteLine("Another WinTool operation is still running; installer task maintenance timed out."); return 21; }
+                catch (Exception ex) when (WinTool.WindowsUpdate.Schedule.MaintenancePolicy.NonFatal(ex))
+                { AppLog.Current.Warn("Schedule", "Task maintenance could not acquire its lease: " + ex.GetType().Name); return 1; }
+            }
+            if (command == "--refresh-tasks")
+            {
+                return TaskMaintenance.RefreshForInstaller();
+            }
+            if (command == "--remove-tasks")
+            {
+                return TaskMaintenance.RemoveForInstaller();
             }
             if (CommandRunner.Handles(command))
             {
@@ -40,6 +50,8 @@ namespace WinTool.App.Infrastructure
                 catch (WinTool.Core.Operations.OperationBusyException ex) { Console.Error.WriteLine(ex.Message); return 21; }
                 catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
                 { Console.Error.WriteLine("Machine data initialization failed: " + ex.Message); return 24; }
+                if (WinTool.WindowsUpdate.Schedule.MaintenancePolicy.RefreshOnCommand(args)) TaskMaintenance.OnManualCliStart();
+
                 AppLog.Current.Info("CLI", "Command: " + string.Join(" ", args));
                 var exePath = Process.GetCurrentProcess().MainModule.FileName;
                 var exit = new CommandRunner(new WindowsUpdateEnvironment(exePath), Console.Out, Console.Error).Run(args);

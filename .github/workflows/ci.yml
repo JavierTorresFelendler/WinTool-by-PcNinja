@@ -146,18 +146,15 @@ jobs:
           }
           Invoke-WinTool @('status', '--json') @(0) | Out-Null
           Invoke-WinTool @('schedule', 'set', '--enable', '--frequency', 'Weekly', '--day', 'Sunday', '--time', '03:00', '--wake') @(0) | Out-Null
+          # Run-once SYSTEM execution is covered by fakes only: never start a real update install on CI.
           $show = Invoke-WinTool @('schedule', 'show', '--json') @(0)
-          if ($show -notmatch '"matchesSettings": true') {
-            Invoke-WinTool @('schedule', 'show') @(0) | Out-Null
-            Write-Host "::error title=cli::registered task does not match the settings"
-            exit 1
-          }
-          # Monthly too: Task Scheduler stores its elements in another order (found on Windows 11 23H2).
-          Invoke-WinTool @('schedule', 'set', '--frequency', 'Monthly', '--month-day', '15', '--at-startup') @(0) | Out-Null
-          $monthly = Invoke-WinTool @('schedule', 'show', '--json') @(0)
-          if ($monthly -notmatch '"matchesSettings": true') {
-            Invoke-WinTool @('schedule', 'show') @(0) | Out-Null
-            Write-Host "::error title=cli::monthly task does not match the settings"
+          $status = $show | ConvertFrom-Json
+          [xml]$definition = $status.task.xml
+          $target = [string]$definition.Task.Actions.Exec.Command
+          $expected = Join-Path $env:ProgramData 'PcNinja-WinTool\Scheduler\'
+          if (-not $target.StartsWith($expected, [StringComparison]::OrdinalIgnoreCase) -or -not (Test-Path -LiteralPath $target) -or
+              (Get-FileHash -LiteralPath $target).Hash -ne (Get-FileHash -LiteralPath $exe).Hash) {
+            Write-Host "::error title=cli::portable task did not use a verified protected local copy"
             exit 1
           }
           Invoke-WinTool @('update', 'health', '--no-network') @(0, 1, 11) | Out-Null
@@ -271,6 +268,9 @@ jobs:
           $show = Show
           Write-Host $show
           if ($show -notmatch '"matchesSettings": true' -or $show -notmatch '"dayOfWeek": "Friday"' -or $show -notmatch '"wakeToRun": true') { Fail "schedule from MSI properties is wrong" $r }
+          $installedStatus = $show | ConvertFrom-Json
+          [xml]$installedDefinition = $installedStatus.task.xml
+          if ([string]$installedDefinition.Task.Actions.Exec.Command -ne $installed) { Fail 'protected MSI task did not point at the installed EXE' $r }
           if ((Get-ItemProperty 'HKLM:\SOFTWARE\PcNinja\WinTool').Language -ne 'he') { Fail "language default was not written" $r }
           if (-not (Test-Path (Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'WinTool by PcNinja.lnk'))) { Fail "desktop shortcut missing" $r }
 
@@ -278,6 +278,10 @@ jobs:
           $r = Msi @('/i', "`"$msi`"", 'REINSTALL=ALL', 'REINSTALLMODE=vomus') 'repair'
           if ($r.Code -ne 0) { Fail "repair failed with $($r.Code)" $r }
           if ((Show) -notmatch '"dayOfWeek": "Friday"') { Fail "repair changed the schedule" $r }
+
+          # Positive registration uses the MSI-installed copy, including the monthly XML round trip.
+          $monthly = Start-Process -FilePath $installed -ArgumentList @('schedule', 'set', '--frequency', 'Monthly', '--month-day', '15', '--at-startup') -Wait -PassThru -NoNewWindow
+          if ($monthly.ExitCode -ne 0 -or (Show) -notmatch '"matchesSettings": true') { Fail 'installed monthly task does not match settings' $null }
 
           # 4. Uninstall removes the files and the scheduled task.
           $r = Msi @('/x', "`"$msi`"") 'uninstall'

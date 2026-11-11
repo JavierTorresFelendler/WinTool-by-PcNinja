@@ -333,7 +333,12 @@ namespace WinTool.WindowsUpdate.Engine
 
             var delay = RetryPolicy.DelayMinutes(settings, next);
             var runAt = clock().AddMinutes(delay);
-            retries.ScheduleRetry(runAt, reason, next);
+            try { retries.ScheduleRetry(runAt, reason, next); }
+            catch (Exception ex) when (ex is WinTool.Core.Updates.InstalledCopyRequiredException || ex is System.IO.IOException || ex is UnauthorizedAccessException)
+            {
+                log.Write(EventIds.RetryNotScheduled, EventLevel.Warning, "Protected retry target unavailable; no retry scheduled. " + ex.Message);
+                return new RunOutcome(RunResult.RetryDisabled, "Retry not scheduled: " + ex.Message);
+            }
             state.RetryCount = next;
             state.LastRetryScheduled = WindowsUpdateState.Stamp(runAt);
             state.LastRetryReason = reason;

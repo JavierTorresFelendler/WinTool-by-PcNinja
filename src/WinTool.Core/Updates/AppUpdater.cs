@@ -223,6 +223,7 @@ namespace WinTool.Core.Updates
         /// <summary>Returns the path the previous copy was moved to.</summary>
         public static string Apply(string runningExe, string downloadedExe, Version runningFileVersion)
         {
+            if (Security.ProtectedTaskCopy.IsManagedPath(runningExe)) throw new UpdateVerificationException("Update the original portable application; its next elevated launch refreshes the protected task copy.");
             var folder = Path.GetDirectoryName(Path.GetFullPath(runningExe));
             var target = Path.Combine(folder, ReleaseFiles.Executable);
             var archive = Path.Combine(folder, ReleaseFiles.PreviousCopyName(runningFileVersion));

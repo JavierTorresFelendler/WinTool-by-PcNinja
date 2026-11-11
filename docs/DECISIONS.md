@@ -388,6 +388,32 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ---
 
+## D-027 Portable scheduling uses a protected local task copy
+
+- **Status:** Accepted (2026-11-11). Explicit owner choice of option 3 after
+  independent review of S2. Amends D-014 and the scheduling part of D-026.
+- **Decision (owner):**
+  - Portable use continues to support scanning and installing updates,
+    Windows upgrades and Office installation without installing WinTool.
+  - Scheduling from a portable copy creates a dedicated, protected local copy
+    and points the SYSTEM task at that copy. It never schedules the original
+    portable path, including a USB or user-writable location.
+  - This does not require an MSI, Start menu entry or ordinary application
+    installation. The existing MSI installation option remains available.
+  - Removing the portable schedule also cleans up its protected task copy;
+    cleanup must respect any operation still using it.
+- **Consequences:** The current S2 draft's installed-copy-only refusal and
+  default refusal of portable `update run` do not satisfy this decision and
+  must be revised. GUI resources, CLI documentation, task lifecycle and tests
+  must be updated together. The detailed design in
+  [S2-PROTECTED-COPY-PLAN.md](reviews/S2-PROTECTED-COPY-PLAN.md) remains a
+  candidate implementation undergoing independent re-review; accepting this
+  decision does not establish VM validation. Earlier installed-only behavior is
+  superseded by the candidate described there.
+- **Boundaries:** No host scheduling, copying to production data folders,
+  installers, servicing, merge, tag or release is authorized by this entry.
+  Existing CI and owner-designated disposable-VM acceptance gates remain.
+
 ## D-028 Dedicated protected machine data and one-time migration
 
 - **Status:** Accepted (2026-11-11), explicit owner approval. Supersedes the
@@ -407,4 +433,6 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ## Open questions
 
-None at the moment.
+The owner separately accepted the data transition as D-028 (PR #12) and the
+narrow D-009 clarification as D-029 (PR #19). Reconcile these independent
+decision entries during integration; the original entries remain intact.

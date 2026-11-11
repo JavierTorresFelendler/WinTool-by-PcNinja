@@ -111,7 +111,7 @@
     <CustomAction Id="TakeOverLegacyKeepSchedule" FileRef="MainExe" Execute="commit" Impersonate="no" Return="asyncNoWait"
                   ExeCommand="schedule import-v2 --wait-for-installer --if-present --keep-schedule" />
 
-    <CustomAction Id="RefreshTaskWorkers" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="check" ExeCommand="--wait-operation --refresh-tasks" />
+    <CustomAction Id="RefreshTaskWorkers" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="--refresh-tasks" />
 
     <InstallExecuteSequence>
       <Custom Action="TakeOverLegacy" Before="InstallFinalize" Condition="NOT REMOVE AND NOT (WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;)" />

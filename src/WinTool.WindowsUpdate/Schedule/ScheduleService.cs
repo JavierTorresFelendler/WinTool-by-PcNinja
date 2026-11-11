@@ -42,8 +42,10 @@ namespace WinTool.WindowsUpdate.Schedule
         private readonly Action<IEnumerable<string>> retire;
         private readonly bool isolated;
         private readonly Func<IDisposable> acquire;
+        private readonly Func<bool> installedSource;
+        private readonly Func<string, bool> protectedTarget;
 
-        public ScheduleService(ITaskSchedulerService tasks, IRunLog log, string exePath, Func<DateTime> clock, Func<string, string> target = null, Action<IEnumerable<string>> retire = null, Func<IDisposable> acquire = null)
+        public ScheduleService(ITaskSchedulerService tasks, IRunLog log, string exePath, Func<DateTime> clock, Func<string, string> target = null, Action<IEnumerable<string>> retire = null, Func<IDisposable> acquire = null, Func<bool> installedSource = null, Func<string, bool> protectedTarget = null)
         {
             this.tasks = tasks;
             this.log = log;
@@ -53,6 +55,8 @@ namespace WinTool.WindowsUpdate.Schedule
             this.retire = retire ?? (target == null ? ProtectedTaskCopy.Retire : _ => { });
             isolated = target != null;
             this.acquire = acquire;
+            this.installedSource = installedSource ?? (() => InstalledCopy.IsInstalled(exePath));
+            this.protectedTarget = protectedTarget ?? ProtectedMachineData.IsProtectedExecutable;
         }
 
         public string PrepareTarget()
@@ -123,25 +127,35 @@ namespace WinTool.WindowsUpdate.Schedule
             {
                 var existing = tasks.Find(TaskNames.IsOwn).ToList();
                 if (existing.Count == 0) { Cleanup(); return; }
+                var authoritative = installedSource();
+                var definitions = new List<Tuple<TaskEntry, XDocument>>();
+                foreach (var task in existing)
+                {
+                    try
+                    {
+                        var xml = XDocument.Parse(task.Xml);
+                        var command = xml.Descendants().Single(element => element.Name.LocalName == "Command");
+                        if (!authoritative && !ProtectedTaskCopy.IsManagedPath(command.Value) && protectedTarget(command.Value)) continue;
+                        definitions.Add(Tuple.Create(task, xml));
+                    }
+                    catch (Exception ex) when (MaintenancePolicy.NonFatal(ex))
+                    { log.Write(EventIds.ScheduleFailed, EventLevel.Warning, "Task refresh skipped an unreadable definition: " + ex.GetType().Name); }
+                }
+                if (definitions.Count == 0) { Cleanup(); return; }
                 var sourceVersion = ReadVersion(exePath);
                 if (!isolated && sourceVersion == null) throw new System.IO.IOException("Running WinTool version is unavailable; worker refresh refused.");
-                var definitions = existing.Select(task => new { Task = task, Xml = XDocument.Parse(task.Xml) }).ToList();
+                string target = null;
                 foreach (var definition in definitions)
                 {
-                    var command = definition.Xml.Descendants().Single(element => element.Name.LocalName == "Command");
-                    var workerVersion = isolated || ProtectedMachineData.IsProtectedExecutable(command.Value) ? ReadVersion(command.Value) : null;
-                    if (sourceVersion != null && workerVersion != null && sourceVersion < workerVersion)
-                        return; // Launching an older technician copy must not roll workers back.
-                }
-                var target = PrepareTarget();
-                foreach (var definition in definitions)
-                {
-                    var command = definition.Xml.Descendants().Single(element => element.Name.LocalName == "Command");
+                    var command = definition.Item2.Descendants().Single(element => element.Name.LocalName == "Command");
+                    var workerVersion = protectedTarget(command.Value) ? ReadVersion(command.Value) : null;
+                    if (!authoritative && sourceVersion != null && workerVersion != null && sourceVersion < workerVersion) continue;
+                    if (target == null) target = PrepareTarget();
                     if (string.Equals(command.Value, target, StringComparison.OrdinalIgnoreCase)) continue;
                     command.Value = target;
-                    tasks.Register(definition.Task.Name, definition.Xml.ToString());
-                    if (!string.Equals(definition.Task.Folder, TaskNames.Folder, StringComparison.OrdinalIgnoreCase))
-                        tasks.Delete(definition.Task.Folder, definition.Task.Name);
+                    tasks.Register(definition.Item1.Name, definition.Item2.ToString());
+                    if (!string.Equals(definition.Item1.Folder, TaskNames.Folder, StringComparison.OrdinalIgnoreCase))
+                        tasks.Delete(definition.Item1.Folder, definition.Item1.Name);
                 }
                 Cleanup();
             }

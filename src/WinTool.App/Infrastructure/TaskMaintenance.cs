@@ -10,6 +10,9 @@ namespace WinTool.App.Infrastructure
 {
     internal static class TaskMaintenance
     {
+        private static void Warn(Exception ex) => AppLog.Current.Warn("Schedule", "Task maintenance deferred or incomplete: " + ex.GetType().Name);
+        internal static int RefreshForInstaller() => MaintenancePolicy.Execute(() => Service().RefreshExisting(), false, Warn);
+        internal static int RemoveForInstaller() => MaintenancePolicy.Execute(() => Service().RemoveAllWaiting(TimeSpan.FromMinutes(15)), true, Warn);
         internal static ScheduleService Service()
         {
             var path = Process.GetCurrentProcess().MainModule.FileName;

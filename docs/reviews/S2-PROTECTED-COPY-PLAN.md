@@ -48,11 +48,20 @@ remains separate for the chooser and MSI updater.
    manual versions cannot downgrade a newer protected worker. Status exposes
    worker file versions and content mismatch with the running image. Busy GUI
    startup waits in the background for up to 15 minutes; closing the process or
-   timing out defers to the next launch. Manual CLI starts attempt immediate
-   refresh; portable CLI self-update starts the new verified EXE with the waiting
+   timing out defers to the next launch. Read-only CLI starts never refresh.
+   Changing update/schedule commands attempt immediate refresh; a portable
+   source refreshes only managed or unprotected legacy targets and never takes
+   protected installed tasks. Installed sources may refresh any task, including
+   a newer portable generation. A portable downgrade skips only that worker,
+   leaving eligible legacy tasks available for conversion.
+   Portable CLI self-update starts the new verified EXE with the waiting
    refresh command, so provisioning never uses the old mapped process image.
-   Installer maintenance waits up to 15
-   minutes and fails explicitly if still busy; uninstall does not ignore failure.
+   MSI refresh is immediate best-effort, with a defined error code and warning,
+   and does not block installation. Explicit schedule application still waits
+   up to 15 minutes. Uninstall blocks only on busy timeout; other errors are
+   logged and removal continues, possibly requiring manual task cleanup.
+   Malformed task definitions are skipped individually. Hidden maintenance
+   commands catch non-fatal errors and return defined codes rather than crash.
    Cleanup respects references and active images. Run-once releases its operation
    scope before starting the SYSTEM task.
 6. MSI identity expands existing 8.3 aliases without granting task eligibility.

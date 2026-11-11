@@ -33,21 +33,20 @@ namespace WinTool.App.Infrastructure
                 }
                 catch (WinTool.Core.Operations.OperationBusyException)
                 { Console.Error.WriteLine("Another WinTool operation is still running; installer task maintenance timed out."); return 21; }
+                catch (Exception ex) when (WinTool.WindowsUpdate.Schedule.MaintenancePolicy.NonFatal(ex))
+                { AppLog.Current.Warn("Schedule", "Task maintenance could not acquire its lease: " + ex.GetType().Name); return 1; }
             }
             if (command == "--refresh-tasks")
             {
-                TaskMaintenance.Service().RefreshExisting();
-                return 0;
+                return TaskMaintenance.RefreshForInstaller();
             }
             if (command == "--remove-tasks")
             {
-                try { TaskMaintenance.Service().RemoveAllWaiting(TimeSpan.FromMinutes(15)); return 0; }
-                catch (WinTool.Core.Operations.OperationBusyException)
-                { Console.Error.WriteLine("Another WinTool operation is still running; scheduled tasks were not removed."); return 21; }
+                return TaskMaintenance.RemoveForInstaller();
             }
             if (CommandRunner.Handles(command))
             {
-                TaskMaintenance.OnManualCliStart();
+                if (WinTool.WindowsUpdate.Schedule.MaintenancePolicy.RefreshOnCommand(args)) TaskMaintenance.OnManualCliStart();
                 AppLog.Current.Info("CLI", "Command: " + string.Join(" ", args));
                 var exePath = Process.GetCurrentProcess().MainModule.FileName;
                 var exit = new CommandRunner(new WindowsUpdateEnvironment(exePath), Console.Out, Console.Error).Run(args);

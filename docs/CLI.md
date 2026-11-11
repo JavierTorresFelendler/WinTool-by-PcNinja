@@ -52,11 +52,16 @@ without enabling a disabled main schedule. A managed worker never updates itself
 Schedule status reports each worker's version and whether its bytes match the
 running image; a mismatch is reported while refresh is pending. Busy startup
 refresh waits in the background for up to 15 minutes; closing the application
-before it succeeds leaves the next elevated launch to retry. Manual CLI launches
-attempt the refresh without waiting; a successful portable self-update starts
-the new EXE's internal waiting refresh command. Installer schedule
-maintenance waits up to 15 minutes and fails explicitly on timeout; uninstall
-never silently leaves tasks after an ignored busy result. See
+before it succeeds leaves the next elevated launch to retry. Only changing update
+and schedule CLI commands attempt refresh; read-only commands never refresh.
+Portable refresh preserves protected installed targets: only managed workers or
+unprotected legacy targets are eligible. The installed copy may refresh any task.
+A successful portable self-update starts the new EXE's internal waiting refresh.
+MSI refresh is best-effort and never blocks installation. Explicit schedule
+application and uninstall wait up to 15 minutes on busy. Uninstall logs other
+maintenance errors and continues; remaining tasks may require administrator
+cleanup. Maintenance exits 1 on refresh errors, 21 on uninstall busy timeout,
+and 0 on successful or best-effort removal. See
 docs/reviews/S2-PROTECTED-COPY-PLAN.md for limitations and VM checks.
 
 | Command | Admin | What it does |

@@ -14,6 +14,18 @@ namespace WinTool.Core.Tests
         private static string UniqueName() => @"Local\PcNinja.WinTool.OperationGate.Tests." + Guid.NewGuid().ToString("N");
 
         [Fact]
+        public void Illegal_nesting_surfaces_as_an_exception_instead_of_a_busy_result()
+        {
+            if (!OnWindows) return;
+            var name = UniqueName();
+            using (var identity = System.Security.Principal.WindowsIdentity.GetCurrent())
+            using (var update = new OperationGate.TestEndpoint(name, identity.User.Value).EnterUpdate())
+            {
+                Assert.Throws<InvalidOperationException>(() => OperationLock.TryAcquireForTest("nested Windows operation", TimeSpan.FromMilliseconds(200), name));
+            }
+        }
+
+        [Fact]
         public async Task A_second_holder_is_refused_while_the_first_holds_the_lock()
         {
             if (!OnWindows) return;

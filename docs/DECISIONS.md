@@ -388,6 +388,62 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ---
 
+## D-027 Portable scheduling uses a protected local task copy
+
+- **Status:** Accepted (2026-11-11). Explicit owner choice of option 3 after
+  independent review of S2. Amends D-014 and the scheduling part of D-026.
+- **Decision (owner):**
+  - Portable use continues to support scanning and installing updates,
+    Windows upgrades and Office installation without installing WinTool.
+  - Scheduling from a portable copy creates a dedicated, protected local copy
+    and points the SYSTEM task at that copy. It never schedules the original
+    portable path, including a USB or user-writable location.
+  - This does not require an MSI, Start menu entry or ordinary application
+    installation. The existing MSI installation option remains available.
+  - Removing the portable schedule also cleans up its protected task copy;
+    cleanup must respect any operation still using it.
+- **Consequences:** The current S2 draft's installed-copy-only refusal and
+  default refusal of portable `update run` do not satisfy this decision and
+  must be revised. GUI resources, CLI documentation, task lifecycle and tests
+  must be updated together. The detailed design in
+  [S2-PROTECTED-COPY-PLAN.md](reviews/S2-PROTECTED-COPY-PLAN.md) remains a
+  candidate implementation undergoing independent re-review; accepting this
+  decision does not establish VM validation. Earlier installed-only behavior is
+  superseded by the candidate described there.
+- **Boundaries:** No host scheduling, copying to production data folders,
+  installers, servicing, merge, tag or release is authorized by this entry.
+  Existing CI and owner-designated disposable-VM acceptance gates remain.
+
+## D-028 Dedicated protected machine data and one-time migration
+
+- **Status:** Accepted (2026-11-11), explicit owner approval. Supersedes the
+  previous machine-data location and in-place adoption/repair policy.
+- **Decision:** Machine data moves to `%ProgramData%\PcNinja-WinTool`.
+  A pre-existing root not owned by Administrators or SYSTEM is renamed aside
+  and replaced with a fresh protected directory; it is never adopted or repaired
+  in place. The shared `%ProgramData%\PcNinja` parent remains unchanged.
+- Legacy settings and state are untrusted: parse, validate and serialize new
+  files, without raw copying or following reparse points/hard links.
+  `Updates\` and logs are not migrated. Migration runs once under the
+  machine-wide operation lock and records completion.
+- The Logs page and `logs collect` retain read-only access to old logs.
+  D-027's task copy lives under the new root or Program Files.
+- No merge, tag or release. Revised S1/S2 require independent re-review before
+  owner VM testing; no production-machine migration is authorized as a test.
+
+## D-029 Limited clarification of D-009 for the universal MSI payload
+
+- **Status:** Accepted (2026-11-11), explicit owner approval. Supersedes
+  D-009 only to the extent described here; the original entry remains intact.
+- **Decision:** D-009 permits only the D-026 universal EXE's embedded WinTool
+  MSI to be extracted to a new temporary folder, checked against its embedded
+  build-time SHA-256 and opened through Windows Installer in the existing
+  approved installation flow. The restriction on dropped executable payloads
+  otherwise remains.
+- This clarification changes no packaging behavior and grants no merge, tag,
+  release or publication authority. Review and owner VM gates remain in force.
+
 ## Open questions
 
-None at the moment.
+None at the moment. D-027, D-028 and D-029 record the separately accepted owner
+decisions; their original predecessor entries remain intact.

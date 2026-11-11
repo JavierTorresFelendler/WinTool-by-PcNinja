@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!-- net48 is the product. net8.0-windows exists only so the unit tests also run on Linux during development. -->
-    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
+    <!-- net48 is the product; net10.0-windows is the secondary development/test target. -->
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <RootNamespace>WinTool.Office</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable Condition="'$(TargetFramework)' == 'net48'">annotations</Nullable>

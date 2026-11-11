@@ -417,7 +417,7 @@ Cancel what can be cancelled and close WinTool when it has stopped? An installer
 {0}
 
 Yes: install WinTool now; the installer creates this schedule, and this window closes.
-No: schedule this portable copy anyway (do not move or delete the file).
+No: create a protected local copy for this schedule, without MSI installation. The original portable file can be removed.
 Cancel: do nothing.</value></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>The installer for WinTool {0} could not be downloaded. Download WinTool-by-PcNinja.msi from {1}.</value></data>
   <data name="Settings_Spanish_Review" xml:space="preserve"><value>Spanish is a first translation, waiting for review by a native speaker.</value></data>
@@ -426,4 +426,7 @@ Cancel: do nothing.</value></data>
   <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Restart the computer first; then search and install again.</value></data>
   <data name="WU_Restart_Busy" xml:space="preserve"><value>Another WinTool operation is running, possibly a scheduled update. Restart when it has finished.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows is still installing an update in the background. Restarting now can make the restart take longer. Restart anyway?</value></data>
+  <data name="Startup_DataInitializationFailed" xml:space="preserve"><value>WinTool could not initialize its protected data. No maintenance operation was started. Check the log and try again as administrator.</value></data>
+  <data name="WU_Schedule_TargetUnavailable" xml:space="preserve"><value>The protected task target or installer could not be prepared. No task was created for the portable path. Check the log and try again as administrator.</value></data>
+  <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>Update the original portable application. Its next administrator launch refreshes the protected local task copy automatically.</value></data>
 </root>

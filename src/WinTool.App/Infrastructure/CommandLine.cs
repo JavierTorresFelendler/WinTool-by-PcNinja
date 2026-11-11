@@ -23,8 +23,35 @@ namespace WinTool.App.Infrastructure
         {
             AttachParentConsole();
             var command = args[0].Trim().ToLowerInvariant();
+            if (command == "--wait-operation")
+            {
+                if (args.Length < 2) return Program.ExitUsage;
+                try
+                {
+                    using (TaskMaintenance.WaitForOperation(TimeSpan.FromMinutes(15)))
+                        return Run(System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Skip(args, 1)));
+                }
+                catch (WinTool.Core.Operations.OperationBusyException)
+                { Console.Error.WriteLine("Another WinTool operation is still running; installer task maintenance timed out."); return 21; }
+                catch (Exception ex) when (WinTool.WindowsUpdate.Schedule.MaintenancePolicy.NonFatal(ex))
+                { AppLog.Current.Warn("Schedule", "Task maintenance could not acquire its lease: " + ex.GetType().Name); return 1; }
+            }
+            if (command == "--refresh-tasks")
+            {
+                return TaskMaintenance.RefreshForInstaller();
+            }
+            if (command == "--remove-tasks")
+            {
+                return TaskMaintenance.RemoveForInstaller();
+            }
             if (CommandRunner.Handles(command))
             {
+                try { if (!MachineDataTransition.IsReadOnly(args)) MachineDataTransition.Initialize(); }
+                catch (WinTool.Core.Operations.OperationBusyException ex) { Console.Error.WriteLine(ex.Message); return 21; }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
+                { Console.Error.WriteLine("Machine data initialization failed: " + ex.Message); return 24; }
+                if (WinTool.WindowsUpdate.Schedule.MaintenancePolicy.RefreshOnCommand(args)) TaskMaintenance.OnManualCliStart();
+
                 AppLog.Current.Info("CLI", "Command: " + string.Join(" ", args));
                 var exePath = Process.GetCurrentProcess().MainModule.FileName;
                 var exit = new CommandRunner(new WindowsUpdateEnvironment(exePath), Console.Out, Console.Error).Run(args);
@@ -34,6 +61,10 @@ namespace WinTool.App.Infrastructure
 
             switch (command)
             {
+                case "--initialize-data":
+                    try { MachineDataTransition.Initialize(deferWhenBusy: true); return 0; }
+                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
+                    { Console.Error.WriteLine("Machine data initialization failed: " + ex.Message); return 24; }
                 case "--version":
                 case "version":
                     if (args.Length > 1 && args[1] == "--json")

@@ -5,11 +5,11 @@ namespace WinTool.Upgrade;
 /// <summary>
 /// The ported Windows Upgrade code logs through this class (it was AppLog in the
 /// standalone tool). Lines go to the WinTool log with the "Upgrade" area; upgrade
-/// state files live in %ProgramData%\PcNinja\WinTool\Upgrade.
+/// state files live in %ProgramData%\PcNinja-WinTool\Upgrade (D-028).
 /// </summary>
 public static class AppLog
 {
-    public static string Folder => System.IO.Path.Combine(WinTool.Core.WinToolPaths.MachineData, "Upgrade");
+    public static string Folder => WinTool.Core.WinToolPaths.EnsureMachineDataDirectory(System.IO.Path.Combine(WinTool.Core.WinToolPaths.MachineData, "Upgrade"));
 
     public static string Path => WinTool.Core.Diagnostics.AppLog.Current.CurrentFilePath;
 

@@ -99,7 +99,7 @@ Line numbers refer to that commit.
 
 | Id | V2 behavior | Source | WinTool |
 | --- | --- | --- | --- |
-| WU-80 | Machine config `%ProgramData%\PcNinja\WinUpdateTool\config.json` and state `state.json`, written atomically; version-based migration of old defaults. | Core 1177–1340 | **Keep** the content, new folder `%ProgramData%\PcNinja\WinTool`. Import the V2 file on takeover (D-015). |
+| WU-80 | Machine config `%ProgramData%\PcNinja\WinUpdateTool\config.json` and state `state.json`, written atomically; version-based migration of old defaults. | Core 1177–1340 | **Keep** the content, new folder `%ProgramData%\PcNinja-WinTool` (D-028). Import the V2 file on takeover (D-015). |
 | WU-81 | State: last run started/finished/type/result/message, last success, retry scheduled/reason/count, restart required. | Core 1282 | **Keep**. Shown on the Dashboard and the Windows Update screen. |
 | WU-82 | Run lock file with process id and a 6-hour stale timeout. | Core 1359 | **Change**. The machine-wide operation lock (`OperationLock`) replaces it; the system releases it if the process dies. |
 | WU-83 | Every log line also goes to the Windows Application event log (source "PcNinja WinUpdate Tool"). Event ids are reused for different meanings (for example 1080–1086). | Core 1097 | **Change** (owner, Q-WU-4): keep the event log with source `WinTool by PcNinja`, one fixed event id per meaning, documented in a table. |

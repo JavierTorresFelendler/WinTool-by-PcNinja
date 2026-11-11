@@ -104,6 +104,12 @@ namespace WinTool.Cli
 
                 throw new UsageException("Unknown command: " + string.Join(" ", args.Take(2)) + ". Run \"WinTool-by-PcNinja.exe help\".");
             }
+            catch (WinTool.Core.Operations.OperationBusyException ex)
+            {
+                if (args.Any(a => a == "--json")) Json(new { Result = "Busy", ExitCode = 21, Message = ex.Message });
+                else error.WriteLine(ex.Message);
+                return 21;
+            }
             catch (InstalledCopyRequiredException ex)
             {
                 if (args.Any(a => a == "--json")) Json(new { Result = "InstalledCopyRequired", ExitCode = CliExit.InstalledCopyRequired, Message = ex.Message });
@@ -583,6 +589,7 @@ namespace WinTool.Cli
             {
                 Schedule().Apply(settings);
             }
+            catch (WinTool.Core.Operations.OperationBusyException) { throw; }
             catch (InstalledCopyRequiredException) { throw; }
             catch (Exception ex) when (ex is InvalidOperationException || ex is UnauthorizedAccessException || ex is System.Runtime.InteropServices.COMException)
             {

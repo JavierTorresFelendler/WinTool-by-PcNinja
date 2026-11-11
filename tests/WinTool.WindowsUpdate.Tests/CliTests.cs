@@ -156,6 +156,20 @@ namespace WinTool.WindowsUpdate.Tests
             }
         }
 
+        [Theory]
+        [InlineData("schedule", "set", "--enable")]
+        [InlineData("update", "start-as-system")]
+        public void Busy_task_preparation_returns_21_without_changes(params string[] args)
+        {
+            using (var env = new FakeEnvironment())
+            {
+                var code = new CommandRunner(env, new StringWriter(), new StringWriter(),
+                    _ => throw new WinTool.Core.Operations.OperationBusyException()).Run(args);
+                Assert.Equal(21, code);
+                Assert.Empty(env.FakeTasks.All);
+            }
+        }
+
         [Fact]
         public void Scan_lists_updates_and_counts()
         {

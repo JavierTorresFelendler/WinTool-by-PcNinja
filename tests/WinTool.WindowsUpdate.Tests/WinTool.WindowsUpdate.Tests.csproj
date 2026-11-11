@@ -17,6 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\WinTool.WindowsUpdate\WinTool.WindowsUpdate.csproj" />
-    <ProjectReference Include="..\..\src\WinTool.Cli\WinTool.Cli.csproj" />
+    <ProjectReference Include="..\..\src\WinTool.Core\WinTool.Core.csproj" />
+    <Compile Include="..\Fakes\WindowsUpdateFakes.cs" Link="Fakes.cs" />
   </ItemGroup>
 </Project>

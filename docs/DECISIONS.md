@@ -388,6 +388,32 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ---
 
+## D-027 Portable scheduling uses a protected local task copy
+
+- **Status:** Accepted (2026-11-11). Explicit owner choice of option 3 after
+  independent review of S2. Amends D-014 and the scheduling part of D-026.
+- **Decision (owner):**
+  - Portable use continues to support scanning and installing updates,
+    Windows upgrades and Office installation without installing WinTool.
+  - Scheduling from a portable copy creates a dedicated, protected local copy
+    and points the SYSTEM task at that copy. It never schedules the original
+    portable path, including a USB or user-writable location.
+  - This does not require an MSI, Start menu entry or ordinary application
+    installation. The existing MSI installation option remains available.
+  - Removing the portable schedule also cleans up its protected task copy;
+    cleanup must respect any operation still using it.
+- **Consequences:** The current S2 draft's installed-copy-only refusal and
+  default refusal of portable `update run` do not satisfy this decision and
+  must be revised. GUI resources, CLI documentation, task lifecycle and tests
+  must be updated together. The detailed design in
+  [S2-PROTECTED-COPY-PLAN.md](reviews/S2-PROTECTED-COPY-PLAN.md) remains a
+  proposal pending pre-flight and independent review; accepting this decision
+  does not mean that behavior is implemented or VM-validated.
+- **Boundaries:** No host scheduling, copying to production data folders,
+  installers, servicing, merge, tag or release is authorized by this entry.
+  Existing CI and owner-designated disposable-VM acceptance gates remain.
+
 ## Open questions
 
-None at the moment.
+The S1 legacy-data transition and the D-009 wording amendment remain separate
+owner decisions. D-027 does not accept either proposal implicitly.

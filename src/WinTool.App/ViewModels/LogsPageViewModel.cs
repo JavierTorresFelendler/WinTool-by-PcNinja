@@ -165,7 +165,8 @@ namespace WinTool.App.ViewModels
             try
             {
                 entries = await Task.Run(() => LogReader.ReadDay(AppLog.Current.Directory, day.Value, area == "All" ? MaxEntries : MaxEntries * 10)
-                    .Where(e => area == "All" || string.Equals(e.Area, area, StringComparison.OrdinalIgnoreCase)).ToList());
+                    .Where(e => area == "All" || string.Equals(e.Area, area, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(e.Area, "Legacy / " + area, StringComparison.OrdinalIgnoreCase)).ToList());
             }
             catch (IOException ex)
             {

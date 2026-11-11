@@ -18,8 +18,10 @@ namespace WinTool.Core.Tests
                 var day = new DateTime(2026, 11, 1);
                 File.WriteAllText(LogReader.PathFor(current, day), "2026-11-01 11:00:00  INFO   App  current\n");
                 var old = LogReader.PathFor(legacy, day); var contents = "2026-11-01 10:00:00  INFO   App  legacy\n"; File.WriteAllText(old, contents);
-                var entries = LogReader.ReadDayFrom(new[] { current, legacy }, day, 50);
+                var entries = LogReader.ReadDayFrom(new[] { current, legacy }, day, 50, legacy);
                 Assert.Equal(new[] { "legacy", "current" }, entries.Select(entry => entry.Message));
+                Assert.Equal("Legacy / App", entries[0].Area);
+                Assert.Equal("App", entries[1].Area);
                 Assert.Equal(contents, File.ReadAllText(old));
             }
         }

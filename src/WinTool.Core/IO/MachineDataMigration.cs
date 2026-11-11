@@ -19,13 +19,14 @@ namespace WinTool.Core.IO
             Action<string> prepare, Func<string, string> read, Action<string, string> write)
         {
             var marker = Path.Combine(root, "migration-v1.complete.json");
+            if (Complete(marker, read)) return;
             using (var operation = acquire())
             {
                 if (operation == null) throw new IOException("Machine data migration is busy.");
                 prepare(root);
                 if (File.Exists(marker))
                 {
-                    if (read(marker) != "{\"schemaVersion\":1,\"complete\":true}") throw new IOException("Migration completion is unconfirmed.");
+                    Complete(marker, read);
                     return;
                 }
                 var report = new List<string>();
@@ -43,8 +44,7 @@ namespace WinTool.Core.IO
                         parsed = rule.Validate(ProtectedMachineData.ReadUntrustedFile(source));
                         if (parsed == null) throw new FormatException("Input was not validated.");
                     }
-                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is FormatException ||
-                        ex is ArgumentException || ex is System.Runtime.Serialization.SerializationException || ex is System.Security.Cryptography.CryptographicException)
+                    catch (Exception ex) when (!(ex is OutOfMemoryException) && !(ex is StackOverflowException) && !(ex is AccessViolationException))
                     { report.Add(relative + ": not imported (" + ex.GetType().Name + ")"); continue; }
                     // Destination failures must leave completion unpublished so a later run can retry.
                     prepare(Path.GetDirectoryName(target));
@@ -55,6 +55,18 @@ namespace WinTool.Core.IO
                 // Written last: a crash never publishes a completion marker ahead of its data/report.
                 write(marker, "{\"schemaVersion\":1,\"complete\":true}");
             }
+        }
+
+        private static bool Complete(string marker, Func<string, string> read)
+        {
+            if (!File.Exists(marker)) return false;
+            // An untrusted marker is not evidence that migration completed.
+            try
+            {
+                if (read(marker) != "{\"schemaVersion\":1,\"complete\":true}") throw new IOException("Migration completion is unconfirmed.");
+                return true;
+            }
+            catch (UnauthorizedAccessException) { return false; }
         }
     }
 }

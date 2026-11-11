@@ -18,16 +18,18 @@ namespace WinTool.App.Infrastructure
                 (area == "upgrade" && (command == "status" || command == "scan" || command == "downloads")) ||
                 (area == "office" && (command == "status" || command == "config" || command == "tool-check")) || (area == "app-update" && command == "check");
         }
-        internal static void Initialize()
+        internal static void Initialize(bool deferWhenBusy = false)
         {
             if (!Program.IsAdministrator() || WinToolPaths.DataRootOverride != null) return;
-            MachineDataMigration.Run(WinToolPaths.MachineData, WinToolPaths.LegacyMachineData, new[]
+            try { MachineDataMigration.Run(WinToolPaths.MachineData, WinToolPaths.LegacyMachineData, new[]
             {
                 new MigrationRule(Path.Combine("WindowsUpdate", "settings.json"), LegacyDataValidation.Settings),
                 new MigrationRule(Path.Combine("WindowsUpdate", "state.json"), LegacyDataValidation.State),
                 new MigrationRule(Path.Combine("Upgrade", "Last-Upgrade.json"), WinTool.Upgrade.UpgradeHistory.ValidateLegacyState)
             }, () => OperationGate.EnterWindows(), path => WinToolPaths.EnsureMachineDataDirectory(path),
-                ProtectedMachineData.ReadProtectedFile, AtomicFile.WriteAllText);
+                ProtectedMachineData.ReadProtectedFile, AtomicFile.WriteAllText); }
+            catch (OperationBusyException) when (deferWhenBusy)
+            { WinTool.Core.Diagnostics.AppLog.Current.Info("Storage", "Migration deferred while another operation is running."); }
         }
     }
 }

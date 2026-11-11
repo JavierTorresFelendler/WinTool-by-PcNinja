@@ -14,6 +14,83 @@ namespace WinTool.Core.Tests
     {
         private sealed class Lease : IDisposable { public void Dispose() { } }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Planted_file_or_junction_is_retained_without_following_and_replaced(bool junction)
+        {
+            using (var temp = new TempDirectory())
+            using (var identity = WindowsIdentity.GetCurrent())
+            {
+                var acl = new DirectorySecurity(); acl.SetOwner(identity.User); acl.SetAccessRuleProtection(true, false);
+                acl.AddAccessRule(new FileSystemAccessRule(identity.User, FileSystemRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
+                new DirectoryInfo(temp.Path).SetAccessControl(acl);
+                var root = temp.File("Machine");
+                var target = temp.File("Target"); Directory.CreateDirectory(target); File.WriteAllText(Path.Combine(target, "keep.txt"), "unchanged");
+                if (junction)
+                {
+                    using (var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c mklink /J \"" + root + "\" \"" + target + "\"")
+                        { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true }))
+                    { process.WaitForExit(); Assert.Equal(0, process.ExitCode); }
+                }
+                else File.WriteAllText(root, "untrusted");
+                try
+                {
+                    ProtectedMachineData.Ensure(root, root, true, identity.User, () => new Lease());
+                    Assert.True(Directory.Exists(root));
+                    Assert.False(File.Exists(Path.Combine(root, "keep.txt")));
+                    Assert.Equal("unchanged", File.ReadAllText(Path.Combine(target, "keep.txt")));
+                    Assert.Single(Directory.GetFileSystemEntries(temp.Path, "Machine.untrusted-*"));
+                    ProtectedMachineData.ReleaseForTest(root);
+                    ProtectedMachineData.Ensure(root, root, true, identity.User, () => { throw new Exception("Safe uncached validation needs no lock"); });
+                }
+                finally { ProtectedMachineData.ReleaseForTest(root); }
+            }
+        }
+
+        [Fact]
+        public void Ancestor_delete_is_unsafe_and_installer_grants_are_trusted_only_for_direct_targets()
+        {
+            var admin = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null);
+            var users = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+            var installer = new SecurityIdentifier("S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464");
+            var acl = new DirectorySecurity(); acl.SetOwner(admin); acl.SetAccessRuleProtection(true, false);
+            acl.AddAccessRule(new FileSystemAccessRule(users, FileSystemRights.Delete, AccessControlType.Allow));
+            Assert.False(ProtectedMachineData.SafeAcl(acl, admin, false, true));
+            acl.RemoveAccessRuleAll(new FileSystemAccessRule(users, FileSystemRights.Delete, AccessControlType.Allow));
+            acl.AddAccessRule(new FileSystemAccessRule(installer, FileSystemRights.FullControl, AccessControlType.Allow));
+            Assert.False(ProtectedMachineData.SafeAcl(acl, admin, false, false));
+            Assert.True(ProtectedMachineData.SafeAcl(acl, admin, false, false, true));
+        }
+
+        [Fact]
+        public void Completed_migration_reads_without_acquiring_a_busy_lock()
+        {
+            using (var temp = new TempDirectory())
+            {
+                File.WriteAllText(temp.File("migration-v1.complete.json"), "{\"schemaVersion\":1,\"complete\":true}");
+                MachineDataMigration.Run(temp.Path, temp.File("old"), new MigrationRule[0],
+                    () => { throw new Exception("Must not acquire"); }, _ => { throw new Exception("Must not prepare"); }, File.ReadAllText, File.WriteAllText);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Validator_conversion_failure_is_rejected_without_blocking_completion(bool overflow)
+        {
+            using (var temp = new TempDirectory())
+            {
+                File.WriteAllText(temp.File("state.json"), "{}");
+                var destination = temp.File("New");
+                MachineDataMigration.Run(destination, temp.Path, new[] { new MigrationRule("state.json", _ =>
+                    { if (overflow) throw new OverflowException(); throw new InvalidCastException(); }) }, () => new Lease(),
+                    path => Directory.CreateDirectory(path), File.ReadAllText, File.WriteAllText);
+                Assert.True(File.Exists(Path.Combine(destination, "migration-v1.complete.json")));
+                Assert.False(File.Exists(Path.Combine(destination, "state.json")));
+            }
+        }
+
         [Fact]
         public void Fresh_objects_replace_unsafe_tree_and_old_security_handles_do_not_reach_them()
         {
@@ -36,6 +113,7 @@ namespace WinTool.Core.Tests
                     try
                     {
                         ProtectedMachineData.Ensure(root, root, true, identity.User, () => new Lease());
+                        ProtectedMachineData.Ensure(root, root, true, identity.User, () => { throw new Exception("Validation needs no lock"); });
                         Assert.False(File.Exists(Path.Combine(root, "old.txt")));
                         Assert.Single(Directory.GetDirectories(temp.Path, "Machine.untrusted-*"));
                         Assert.True(SetKernelObjectSecurity(held, 4, bad.GetSecurityDescriptorBinaryForm()));

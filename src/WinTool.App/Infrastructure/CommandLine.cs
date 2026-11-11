@@ -23,9 +23,21 @@ namespace WinTool.App.Infrastructure
         {
             AttachParentConsole();
             var command = args[0].Trim().ToLowerInvariant();
+            if (command == "--wait-operation")
+            {
+                if (args.Length < 2) return Program.ExitUsage;
+                try
+                {
+                    using (TaskMaintenance.WaitForOperation(TimeSpan.FromMinutes(15)))
+                        return Run(System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Skip(args, 1)));
+                }
+                catch (WinTool.Core.Operations.OperationBusyException)
+                { Console.Error.WriteLine("Another WinTool operation is still running; installer task maintenance timed out."); return 21; }
+            }
             if (CommandRunner.Handles(command))
             {
                 try { if (!MachineDataTransition.IsReadOnly(args)) MachineDataTransition.Initialize(); }
+                catch (WinTool.Core.Operations.OperationBusyException ex) { Console.Error.WriteLine(ex.Message); return 21; }
                 catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
                 { Console.Error.WriteLine("Machine data initialization failed: " + ex.Message); return 24; }
                 AppLog.Current.Info("CLI", "Command: " + string.Join(" ", args));
@@ -38,7 +50,7 @@ namespace WinTool.App.Infrastructure
             switch (command)
             {
                 case "--initialize-data":
-                    try { MachineDataTransition.Initialize(); return 0; }
+                    try { MachineDataTransition.Initialize(deferWhenBusy: true); return 0; }
                     catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
                     { Console.Error.WriteLine("Machine data initialization failed: " + ex.Message); return 24; }
                 case "--version":

@@ -73,3 +73,20 @@ input is not retried after a successful completion marker; consult the report.
    Check D-027's copy location using PR #13's acceptance checklist.
 
 No merge, tag, release or host migration is authorized by this checklist.
+
+## Follow-up review revision
+
+Existing trusted directories and completion markers are read without acquiring
+the operation lock. Storage reads never create directories. Only creation,
+rename and incomplete migration need the lock; GUI/MSI initialization defers
+when busy, while changing CLI initialization reports exit 21. MSI scheduling
+has a separate waiting path. Validate these behaviors with another process
+holding the gate before owner acceptance.
+
+Root files and directory reparse points are retained by renaming the object
+itself, without following its target. Locked objects still fail explicitly;
+retained objects require administrator cleanup. Conversion failures in legacy
+validators are rejected inputs rather than startup failures. Legacy log entries
+are labelled in the viewer. Ancestor delete grants are refused; TrustedInstaller
+is accepted for direct executable protection, never as a substitute for the
+fresh machine-data ownership policy.

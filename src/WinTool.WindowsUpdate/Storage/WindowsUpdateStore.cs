@@ -41,12 +41,11 @@ namespace WinTool.WindowsUpdate.Storage
         {
             try
             {
-                Prepare();
-                if (WinTool.Core.Security.ProtectedMachineData.IsMachinePath(store.Path) && File.Exists(store.Path))
-                    return JsonFileStore<T>.Deserialize(WinTool.Core.Security.ProtectedMachineData.ReadProtectedFile(store.Path));
+                if (WinTool.Core.Security.ProtectedMachineData.IsMachinePath(store.Path))
+                    return File.Exists(store.Path) ? JsonFileStore<T>.Deserialize(WinTool.Core.Security.ProtectedMachineData.ReadProtectedFile(store.Path)) : null;
                 return store.LoadOrNull();
             }
-            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException || ex is WinTool.Core.Operations.OperationBusyException || ex is System.Runtime.Serialization.SerializationException || ex is FormatException)
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException || ex is System.Runtime.Serialization.SerializationException || ex is FormatException || ex is InvalidCastException || ex is OverflowException)
             { WinTool.Core.Diagnostics.AppLog.Current.Warn("Storage", "Protected data unavailable; read-only defaults used. " + ex.GetType().Name); return null; }
         }
     }

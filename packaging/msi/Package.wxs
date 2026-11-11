@@ -100,7 +100,7 @@
 
     <!-- Schedule: the installed EXE applies it as SYSTEM. Only when the schedule option is on, so an upgrade keeps an existing schedule. -->
     <CustomAction Id="ApplySchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="check"
-                  ExeCommand="schedule set --enable --frequency=[WINTOOL_FREQUENCY] --time=[WINTOOL_TIME] --day=[WINTOOL_DAY_OF_WEEK] --month-day=[WINTOOL_MONTHLY_DAY] --at-startup=[WINTOOL_RUN_AT_STARTUP] --startup-delay=[WINTOOL_STARTUP_DELAY] --run-if-missed=[WINTOOL_RUN_IF_MISSED] --wake=[WINTOOL_WAKE_TO_RUN] --firmware=[WINTOOL_ALLOW_FIRMWARE] --reboot-prompt=[WINTOOL_REBOOT_PROMPT] --auto-retry=[WINTOOL_ENABLE_AUTORETRY] --retry-delay=[WINTOOL_RETRY_INITIAL_DELAY] --retry-attempts=[WINTOOL_RETRY_MAX_ATTEMPTS] --retry-backoff=[WINTOOL_RETRY_BACKOFF] --cooldown=[WINTOOL_MINIMUM_COOLDOWN]" />
+                  ExeCommand="--wait-operation schedule set --enable --frequency=[WINTOOL_FREQUENCY] --time=[WINTOOL_TIME] --day=[WINTOOL_DAY_OF_WEEK] --month-day=[WINTOOL_MONTHLY_DAY] --at-startup=[WINTOOL_RUN_AT_STARTUP] --startup-delay=[WINTOOL_STARTUP_DELAY] --run-if-missed=[WINTOOL_RUN_IF_MISSED] --wake=[WINTOOL_WAKE_TO_RUN] --firmware=[WINTOOL_ALLOW_FIRMWARE] --reboot-prompt=[WINTOOL_REBOOT_PROMPT] --auto-retry=[WINTOOL_ENABLE_AUTORETRY] --retry-delay=[WINTOOL_RETRY_INITIAL_DELAY] --retry-attempts=[WINTOOL_RETRY_MAX_ATTEMPTS] --retry-backoff=[WINTOOL_RETRY_BACKOFF] --cooldown=[WINTOOL_MINIMUM_COOLDOWN]" />
 
     <!-- Uninstall (not an upgrade): remove the scheduled tasks while the EXE still exists. -->
     <CustomAction Id="RemoveSchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="schedule remove" />

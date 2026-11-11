@@ -90,9 +90,15 @@ namespace WinTool.Core.Diagnostics
         }).Distinct().OrderByDescending(day => day).ToList();
 
         public static IReadOnlyList<LogEntry> ReadDay(string current, DateTime day, int count) => ReadDayFrom(Directories(current), day, count);
-        public static IReadOnlyList<LogEntry> ReadDayFrom(IEnumerable<string> directories, DateTime day, int count) => directories.SelectMany(directory =>
+        public static IReadOnlyList<LogEntry> ReadDayFrom(IEnumerable<string> directories, DateTime day, int count, string legacyDirectory = null) => directories.SelectMany(directory =>
         {
-            try { return ReadTail(PathFor(directory, day), count); }
+            try
+            {
+                var entries = ReadTail(PathFor(directory, day), count);
+                if (string.Equals(Path.GetFullPath(directory), Path.GetFullPath(legacyDirectory ?? Path.Combine(WinToolPaths.LegacyMachineData, "Logs")), StringComparison.OrdinalIgnoreCase))
+                    return entries.Select(entry => new LogEntry(entry.Time, entry.Level, "Legacy / " + entry.Area, entry.Message)).ToList();
+                return entries;
+            }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) { return new LogEntry[0]; }
         }).OrderBy(entry => entry.Time, StringComparer.Ordinal).Reverse().Take(count).Reverse().ToList();
     }

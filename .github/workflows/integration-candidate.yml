@@ -1,0 +1,16 @@
+name: Integrated RC candidate
+
+# Test artifacts only. Calling CI does not invoke the Release workflow,
+# create a Git tag or create/publish a GitHub release.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    if: github.head_ref == 'codex/integrated-maintenance-candidate'
+    uses: ./.github/workflows/ci.yml
+    with:
+      tag: v1.0.3-rc.1

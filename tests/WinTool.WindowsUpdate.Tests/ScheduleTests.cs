@@ -102,6 +102,65 @@ namespace WinTool.WindowsUpdate.Tests
         private static ScheduleService Service(FakeTasks tasks) => new ScheduleService(tasks, new ListLog(), Exe, () => new DateTime(2026, 11, 6, 10, 0, 0), path => path);
 
         [Fact]
+        public void Refresh_repoints_retry_only_tasks_without_creating_a_main_schedule()
+        {
+            var tasks = new FakeTasks();
+            var oldXml = TaskXmlBuilder.BuildRetry(@"C:\old-worker.exe", DateTime.Now.AddHours(1), "fixture", DateTime.Now);
+            tasks.Register(TaskNames.Retry, oldXml);
+            Service(tasks).RefreshExisting();
+            var updated = Assert.Single(tasks.All);
+            Assert.Equal(TaskNames.Retry, updated.Name);
+            Assert.Equal(Exe, (string)XDocument.Parse(updated.Xml).Descendants().Single(element => element.Name.LocalName == "Command"));
+            Assert.Equal(ScheduleService.Signature(oldXml).Skip(1), ScheduleService.Signature(updated.Xml).Skip(1));
+        }
+
+        [Fact]
+        public void Failed_refresh_preparation_preserves_existing_definition()
+        {
+            var tasks = new FakeTasks();
+            var xml = TaskXmlBuilder.BuildRetry(@"C:\old.exe", DateTime.Now.AddHours(1), "fixture", DateTime.Now);
+            tasks.Register(TaskNames.Retry, xml);
+            var service = new ScheduleService(tasks, new ListLog(), Exe, () => DateTime.Now,
+                path => throw new System.IO.IOException("fixture"));
+            Assert.Throws<WinTool.Core.Updates.InstalledCopyRequiredException>(() => service.RefreshExisting());
+            Assert.Equal(xml, Assert.Single(tasks.All).Xml);
+        }
+
+        [Fact]
+        public void Run_once_releases_all_operation_scopes_before_starting_worker()
+        {
+            var tasks = new FakeTasks(); var held = 0;
+            tasks.BeforeRun = () => Assert.Equal(0, held);
+            var service = new ScheduleService(tasks, new ListLog(), Exe, () => DateTime.Now, path => path,
+                retire: _ => Assert.True(held > 0), acquire: () => { held++; return new Release(() => held--); });
+            service.StartRunOnce();
+            Assert.Single(tasks.Started);
+        }
+
+        [Fact]
+        public void Uninstall_waits_for_busy_gate_and_keeps_tasks_when_wait_expires()
+        {
+            var tasks = new FakeTasks(); tasks.Register(TaskNames.Retry, "fixture");
+            var attempts = 0;
+            var service = new ScheduleService(tasks, new ListLog(), Exe, () => DateTime.Now, path => path,
+                acquire: () => { if (attempts++ == 0) throw new WinTool.Core.Operations.OperationBusyException(); return new Release(() => { }); });
+            service.RemoveAllWaiting(TimeSpan.FromSeconds(1));
+            Assert.Empty(tasks.All);
+            tasks.Register(TaskNames.Retry, "fixture");
+            var blocked = new ScheduleService(tasks, new ListLog(), Exe, () => DateTime.Now, path => path,
+                acquire: () => throw new WinTool.Core.Operations.OperationBusyException());
+            Assert.Throws<WinTool.Core.Operations.OperationBusyException>(() => blocked.RemoveAllWaiting(TimeSpan.Zero));
+            Assert.Single(tasks.All);
+        }
+
+        private sealed class Release : IDisposable
+        {
+            private readonly Action action;
+            public Release(Action action) { this.action = action; }
+            public void Dispose() { action(); }
+        }
+
+        [Fact]
         public void All_registration_paths_refuse_a_portable_copy_before_modifying_existing_tasks()
         {
             var tasks = new FakeTasks();

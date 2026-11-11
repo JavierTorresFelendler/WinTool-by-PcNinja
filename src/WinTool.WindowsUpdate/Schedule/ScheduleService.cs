@@ -17,9 +17,18 @@ namespace WinTool.WindowsUpdate.Schedule
         public TaskEntry Main { get; set; }
         public TaskEntry Retry { get; set; }
         public bool? MatchesSettings { get; set; }
+        public IReadOnlyList<WorkerStatus> Workers { get; set; }
 
         /// <summary>When the task does not match: which parts differ, expected vs registered.</summary>
         public IReadOnlyList<string> Differences { get; set; }
+    }
+
+    public sealed class WorkerStatus
+    {
+        public string Task { get; set; }
+        public string Path { get; set; }
+        public string Version { get; set; }
+        public bool? MatchesRunningImage { get; set; }
     }
 
     /// <summary>Saves, removes and checks the Windows Update schedule (WU-50 to WU-56, WU-62).</summary>
@@ -32,8 +41,9 @@ namespace WinTool.WindowsUpdate.Schedule
         private readonly Func<string, string> resolve;
         private readonly Action<IEnumerable<string>> retire;
         private readonly bool isolated;
+        private readonly Func<IDisposable> acquire;
 
-        public ScheduleService(ITaskSchedulerService tasks, IRunLog log, string exePath, Func<DateTime> clock, Func<string, string> target = null, Action<IEnumerable<string>> retire = null)
+        public ScheduleService(ITaskSchedulerService tasks, IRunLog log, string exePath, Func<DateTime> clock, Func<string, string> target = null, Action<IEnumerable<string>> retire = null, Func<IDisposable> acquire = null)
         {
             this.tasks = tasks;
             this.log = log;
@@ -42,6 +52,7 @@ namespace WinTool.WindowsUpdate.Schedule
             resolve = target ?? ProtectedTaskCopy.Resolve;
             this.retire = retire ?? (target == null ? ProtectedTaskCopy.Retire : _ => { });
             isolated = target != null;
+            this.acquire = acquire;
         }
 
         public string PrepareTarget()
@@ -51,7 +62,7 @@ namespace WinTool.WindowsUpdate.Schedule
             { throw new InstalledCopyRequiredException(ex); }
         }
 
-        private IDisposable Enter() => isolated ? (IDisposable)new Empty() : OperationGate.EnterWindows();
+        private IDisposable Enter() => acquire != null ? acquire() : isolated ? (IDisposable)new Empty() : OperationGate.EnterWindows();
         private sealed class Empty : IDisposable { public void Dispose() { } }
 
         private void Cleanup()
@@ -94,15 +105,83 @@ namespace WinTool.WindowsUpdate.Schedule
 
         public void RemoveAll() { using (Enter()) { RemoveOwnTasks(keepRetry: false); Cleanup(); } }
 
+        public void RemoveAllWaiting(TimeSpan timeout)
+        {
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            while (true)
+            {
+                try { RemoveAll(); return; }
+                catch (OperationBusyException) when (timer.Elapsed < timeout) { System.Threading.Thread.Sleep(100); }
+            }
+        }
+
+        /// <summary>Refresh existing main/retry/run-once definitions without enabling a disabled schedule.</summary>
+        public void RefreshExisting()
+        {
+            if (ProtectedTaskCopy.IsManagedPath(exePath)) return; // An old worker must never downgrade newer tasks.
+            using (Enter())
+            {
+                var existing = tasks.Find(TaskNames.IsOwn).ToList();
+                if (existing.Count == 0) { Cleanup(); return; }
+                var sourceVersion = ReadVersion(exePath);
+                if (!isolated && sourceVersion == null) throw new System.IO.IOException("Running WinTool version is unavailable; worker refresh refused.");
+                var definitions = existing.Select(task => new { Task = task, Xml = XDocument.Parse(task.Xml) }).ToList();
+                foreach (var definition in definitions)
+                {
+                    var command = definition.Xml.Descendants().Single(element => element.Name.LocalName == "Command");
+                    var workerVersion = isolated || ProtectedMachineData.IsProtectedExecutable(command.Value) ? ReadVersion(command.Value) : null;
+                    if (sourceVersion != null && workerVersion != null && sourceVersion < workerVersion)
+                        return; // Launching an older technician copy must not roll workers back.
+                }
+                var target = PrepareTarget();
+                foreach (var definition in definitions)
+                {
+                    var command = definition.Xml.Descendants().Single(element => element.Name.LocalName == "Command");
+                    if (string.Equals(command.Value, target, StringComparison.OrdinalIgnoreCase)) continue;
+                    command.Value = target;
+                    tasks.Register(definition.Task.Name, definition.Xml.ToString());
+                    if (!string.Equals(definition.Task.Folder, TaskNames.Folder, StringComparison.OrdinalIgnoreCase))
+                        tasks.Delete(definition.Task.Folder, definition.Task.Name);
+                }
+                Cleanup();
+            }
+        }
+
+        private static Version ReadVersion(string path)
+        {
+            try { return Version.TryParse(System.Diagnostics.FileVersionInfo.GetVersionInfo(path).FileVersion, out var version) ? version : null; }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is ArgumentException) { return null; }
+        }
+
+        private WorkerStatus Worker(TaskEntry task)
+        {
+            var result = new WorkerStatus { Task = task.FullPath, MatchesRunningImage = isolated ? (bool?)null : false };
+            try
+            {
+                result.Path = (string)XDocument.Parse(task.Xml).Descendants().Single(element => element.Name.LocalName == "Command");
+                if (!isolated && !ProtectedMachineData.IsProtectedExecutable(result.Path)) return result;
+                result.Version = ReadVersion(result.Path)?.ToString();
+                if (!isolated) result.MatchesRunningImage = string.Equals(AppUpdater.Sha256(result.Path), AppUpdater.Sha256(exePath), StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is System.Xml.XmlException || ex is InvalidOperationException || ex is ArgumentException) { }
+            return result;
+        }
+
         public ScheduleStatus GetStatus(WindowsUpdateSettings settings)
         {
             var main = tasks.Get(TaskNames.Main);
             var status = new ScheduleStatus { Enabled = settings.ScheduleEnabled, Main = main, Retry = tasks.Get(TaskNames.Retry) };
+            status.Workers = tasks.Find(TaskNames.IsOwn).Select(Worker).ToList();
             if (settings.ScheduleEnabled)
             {
                 var differences = main == null ? new List<string> { "The task is missing." } : Compare(main.Xml, settings);
                 status.MatchesSettings = differences.Count == 0;
                 status.Differences = differences;
+            }
+            if (status.Workers.Any(worker => worker.MatchesRunningImage == false))
+            {
+                status.MatchesSettings = false;
+                status.Differences = (status.Differences ?? new List<string>()).Concat(new[] { "A scheduled worker differs from the running WinTool image; refresh is pending." }).ToList();
             }
 
             return status;
@@ -121,7 +200,8 @@ namespace WinTool.WindowsUpdate.Schedule
         /// <summary>WU-56: start a one-time run as SYSTEM now.</summary>
         public void StartRunOnce()
         {
-            using (Enter()) { var target = PrepareTarget(); tasks.Register(TaskNames.RunOnce, TaskXmlBuilder.BuildRunOnce(target, clock())); tasks.Run(TaskNames.RunOnce); Cleanup(); }
+            using (Enter()) { var target = PrepareTarget(); tasks.Register(TaskNames.RunOnce, TaskXmlBuilder.BuildRunOnce(target, clock())); Cleanup(); }
+            tasks.Run(TaskNames.RunOnce);
         }
 
         public static string Describe(WindowsUpdateSettings settings)

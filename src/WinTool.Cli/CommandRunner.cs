@@ -323,11 +323,13 @@ namespace WinTool.Cli
             var status = Schedule().GetStatus(settings);
             if (a.Has("json"))
             {
-                Json(new { Settings = settings, Description = ScheduleService.Describe(settings), status.MatchesSettings, status.Differences, Task = status.Main, RetryTask = status.Retry });
+                Json(new { Settings = settings, Description = ScheduleService.Describe(settings), status.MatchesSettings, status.Differences, status.Workers, Task = status.Main, RetryTask = status.Retry });
                 return CliExit.Ok;
             }
 
             output.WriteLine("Schedule: " + (settings.ScheduleEnabled ? "on, " + ScheduleService.Describe(settings) : "off"));
+            foreach (var worker in status.Workers)
+                output.WriteLine("Worker: " + worker.Task + ", version " + (worker.Version ?? "unknown") + ", matches running image: " + (worker.MatchesRunningImage?.ToString() ?? "unknown"));
             if (settings.ScheduleEnabled)
             {
                 output.WriteLine("Task: " + (status.Main == null ? "missing" : status.Main.State + ", next run " + Format(status.Main.NextRunTime) + ", last run " + Format(status.Main.LastRunTime)));

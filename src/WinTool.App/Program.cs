@@ -99,6 +99,7 @@ namespace WinTool.App
                 // Started with administrator rights already: asked here, after a running window was activated instead.
                 if (askHere && !AskInstallOrPortable()) return ExitOk;
 
+                TaskMaintenance.OnElevatedStart();
                 var app = new App();
                 app.InitializeComponent();
                 return app.RunMainWindow(settings);

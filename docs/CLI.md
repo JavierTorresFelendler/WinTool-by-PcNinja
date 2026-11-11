@@ -46,8 +46,17 @@ portable copy. The GUI offers Install, protected copy (No), or Cancel.
 
 Removing tasks retires only unreferenced managed copies. A busy executable is
 retained with retirement.pending; cleanup retries on a later administrative
-task change. Update the original WinTool EXE and save the schedule again to
-refresh a worker. A managed worker never updates itself. See
+task change or elevated manual start. MSI install/upgrade automatically refreshes
+all existing task targets; elevated manual GUI starts queue the same refresh
+without enabling a disabled main schedule. A managed worker never updates itself.
+Schedule status reports each worker's version and whether its bytes match the
+running image; a mismatch is reported while refresh is pending. Busy startup
+refresh waits in the background for up to 15 minutes; closing the application
+before it succeeds leaves the next elevated launch to retry. Manual CLI launches
+attempt the refresh without waiting; a successful portable self-update starts
+the new EXE's internal waiting refresh command. Installer schedule
+maintenance waits up to 15 minutes and fails explicitly on timeout; uninstall
+never silently leaves tasks after an ignored busy result. See
 docs/reviews/S2-PROTECTED-COPY-PLAN.md for limitations and VM checks.
 
 | Command | Admin | What it does |
@@ -151,7 +160,7 @@ start /wait WinTool-by-PcNinja.exe office install --family ltsc --languages he-i
 | Command | What it does |
 | --- | --- |
 | `app-update check [--test-versions] [--json]` | Is a newer WinTool published on GitHub? Test versions only with `--test-versions` (D-023). |
-| `app-update install --yes [--test-versions] [--json]` | Managed task copy: refused; update the original and save the schedule again. Portable: downloads and verifies the new EXE and replaces this one; the old one stays as `WinTool-by-PcNinja-v<file version>.exe` (D-018). Installed: downloads and verifies the MSI and prints the `msiexec` command to run once WinTool is closed. |
+| `app-update install --yes [--test-versions] [--json]` | Managed task copy: refused; update the original, whose next elevated launch refreshes workers. Portable: downloads and verifies the new EXE and replaces this one; the old one stays as `WinTool-by-PcNinja-v<file version>.exe` (D-018), then queues worker refresh from the new EXE. Installed: downloads and verifies the MSI and prints the `msiexec` command to run once WinTool is closed. |
 | `version [--json]` | Version; with `--json` also the file and MSI versions (D-024). |
 
 ## Other

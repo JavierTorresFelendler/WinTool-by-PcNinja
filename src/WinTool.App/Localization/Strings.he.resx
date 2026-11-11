@@ -427,5 +427,5 @@
   <data name="WU_Restart_Busy" xml:space="preserve"><value>פעולה אחרת של WinTool פועלת, אולי עדכון מתוזמן. הפעל מחדש אחרי שהיא תסתיים.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows עדיין מתקין עדכון ברקע. הפעלה מחדש עכשיו עלולה להאריך את ההפעלה מחדש. להפעיל מחדש בכל זאת?</value></data>
   <data name="WU_Schedule_TargetUnavailable" xml:space="preserve"><value>לא ניתן להכין את העותק המוגן לתזמון או את המתקין. לא נוצרה משימה לנתיב הנייד. בדוק את היומן ונסה שוב כמנהל מערכת.</value></data>
-  <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>עדכן את היישום הנייד המקורי, ואז שמור את התזמון כדי לרענן את העותק המקומי המוגן.</value></data>
+  <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>עדכן את היישום הנייד המקורי. ההפעלה הבאה שלו כמנהל מערכת תרענן אוטומטית את העותק המקומי המוגן.</value></data>
 </root>

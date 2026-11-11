@@ -27,7 +27,7 @@ namespace WinTool.Core.Security
                 return Ensure(Root, path, new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator), Admin, () => OperationGate.EnterWindows());
         }
 
-        internal static string Ensure(string root, string path, bool elevated, SecurityIdentifier owner, Func<IDisposable> acquire)
+        internal static string Ensure(string root, string path, bool elevated, SecurityIdentifier owner, Func<IDisposable> acquire, bool alreadyLocked = false)
         {
             root = Path.GetFullPath(root).TrimEnd('\\');
             path = Path.GetFullPath(path).TrimEnd('\\');
@@ -42,12 +42,19 @@ namespace WinTool.Core.Security
                     var ancestor = new DirectoryInfo(Path.GetDirectoryName(root));
                     var chain = new Stack<DirectoryInfo>();
                     for (var current = ancestor; current != null; current = current.Parent) chain.Push(current);
-                    foreach (var item in chain) parents.Add(Open(item.FullName, false, false));
+                    foreach (var item in chain)
+                    {
+                        parents.Add(Open(item.FullName, false, false));
+                        // The current-SID fixture endpoint trusts only its explicitly secured
+                        // temporary parent. Production always supplies Administrators and
+                        // checks the entire chain; direct executable checks do too.
+                        if (owner.Equals(Admin) && !SafeAcl(item.GetAccessControl(), owner, false, true)) throw Refused();
+                    }
                     // The parent may allow creation, but must not let ordinary users replace children or its ACL.
                     if (!SafeAcl(ancestor.GetAccessControl(), owner, false, true)) throw Refused();
-                    using (var operation = elevated ? acquire() : null)
+                    IDisposable operation = alreadyLocked ? new BorrowedLease() : null;
+                    try
                     {
-                        if (elevated && operation == null) throw new IOException("Machine data initialization is busy.");
                         var relative = path.Substring(root.Length).TrimStart('\\');
                         var current = root;
                         var parts = new List<string> { root };
@@ -56,7 +63,11 @@ namespace WinTool.Core.Security
                         {
                             var directoryKey = owner.Value + "|" + directory;
                             if (Directories.ContainsKey(directoryKey)) continue;
-                            if (Directory.Exists(directory))
+                            FileAttributes? attributes;
+                            try { attributes = File.GetAttributes(directory); }
+                            catch (FileNotFoundException) { attributes = null; }
+                            catch (DirectoryNotFoundException) { attributes = null; }
+                            if (attributes.HasValue && (attributes.Value & (FileAttributes.Directory | FileAttributes.ReparsePoint)) == FileAttributes.Directory)
                             {
                                 using (var probe = Open(directory, false, true))
                                 {
@@ -68,34 +79,43 @@ namespace WinTool.Core.Security
                                         continue;
                                     }
                                 }
-                                if (!elevated) throw Refused();
-                                Directory.Move(directory, directory + ".untrusted-" + Guid.NewGuid().ToString("N"));
                             }
-                            else if (File.Exists(directory)) throw Refused();
                             if (!elevated) throw Refused();
+                            if (operation == null)
+                            {
+                                operation = acquire();
+                                if (operation == null) throw new OperationBusyException();
+                                // Another process may have initialized it before this lease.
+                                return Ensure(root, path, elevated, owner, acquire, alreadyLocked: true);
+                            }
+                            if (attributes.HasValue && !MoveFileExW(directory, directory + ".untrusted-" + Guid.NewGuid().ToString("N"), 0))
+                                throw new IOException("Could not retain the untrusted object separately.", new Win32Exception(Marshal.GetLastWin32Error()));
                             CreateFresh(directory, owner);
                             var held = Open(directory, false, false);
                             if (!SafeAcl(new DirectoryInfo(directory).GetAccessControl(), owner, true, false)) { held.Dispose(); throw Refused(); }
                             Directories.Add(directoryKey, held);
                         }
                     }
+                    finally { operation?.Dispose(); }
                     return path;
                 }
                 finally { foreach (var held in parents) held.Dispose(); }
             }
         }
 
-        internal static bool SafeAcl(FileSystemSecurity acl, SecurityIdentifier owner, bool requireProtected, bool parent)
+        private sealed class BorrowedLease : IDisposable { public void Dispose() { } }
+
+        internal static bool SafeAcl(FileSystemSecurity acl, SecurityIdentifier owner, bool requireProtected, bool parent, bool installer = false)
         {
             var actual = acl.GetOwner(typeof(SecurityIdentifier));
-            if (!owner.Equals(actual) && !SystemAccount.Equals(actual) && !(parent && (Admin.Equals(actual) || TrustedInstaller.Equals(actual)))) return false;
+            if (!owner.Equals(actual) && !SystemAccount.Equals(actual) && !((parent || installer) && (Admin.Equals(actual) || TrustedInstaller.Equals(actual)))) return false;
             if (requireProtected && !acl.AreAccessRulesProtected) return false;
             const FileSystemRights changes = FileSystemRights.Write | FileSystemRights.Delete | FileSystemRights.DeleteSubdirectoriesAndFiles | FileSystemRights.ChangePermissions | FileSystemRights.TakeOwnership;
             foreach (FileSystemAccessRule rule in acl.GetAccessRules(true, true, typeof(SecurityIdentifier)))
             {
                 if (rule.AccessControlType != AccessControlType.Allow || (rule.PropagationFlags & PropagationFlags.InheritOnly) != 0) continue;
-                if (owner.Equals(rule.IdentityReference) || SystemAccount.Equals(rule.IdentityReference) || (parent && (Admin.Equals(rule.IdentityReference) || TrustedInstaller.Equals(rule.IdentityReference)))) continue;
-                var forbidden = parent ? FileSystemRights.DeleteSubdirectoriesAndFiles | FileSystemRights.ChangePermissions | FileSystemRights.TakeOwnership : changes;
+                if (owner.Equals(rule.IdentityReference) || SystemAccount.Equals(rule.IdentityReference) || ((parent || installer) && (Admin.Equals(rule.IdentityReference) || TrustedInstaller.Equals(rule.IdentityReference)))) continue;
+                var forbidden = parent ? FileSystemRights.Delete | FileSystemRights.DeleteSubdirectoriesAndFiles | FileSystemRights.ChangePermissions | FileSystemRights.TakeOwnership : changes;
                 if ((rule.FileSystemRights & forbidden) != 0) return false;
             }
             return true;
@@ -178,8 +198,8 @@ namespace WinTool.Core.Security
                     if (!SafeAcl(item.GetAccessControl(), Admin, false, true)) return false;
                 }
                 using (var held = Open(path, true, false))
-                    return SafeAcl(new FileInfo(path).GetAccessControl(), Admin, false, false) &&
-                        SafeAcl(new FileInfo(path).Directory.GetAccessControl(), Admin, false, false);
+                    return SafeAcl(new FileInfo(path).GetAccessControl(), Admin, false, false, true) &&
+                        SafeAcl(new FileInfo(path).Directory.GetAccessControl(), Admin, false, false, true);
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException || ex is NotSupportedException) { return false; }
             finally { foreach (var held in handles) held.Dispose(); }
@@ -237,6 +257,8 @@ namespace WinTool.Core.Security
         }
 
         private static bool Within(string root, string path) => string.Equals(root, path, StringComparison.OrdinalIgnoreCase) || path.StartsWith(root + "\\", StringComparison.OrdinalIgnoreCase);
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool MoveFileExW(string source, string target, uint flags);
         private static UnauthorizedAccessException Refused() => new UnauthorizedAccessException("Protected WinTool data is unavailable; administrator initialization is required.");
 
         internal static void ReleaseForTest(string root)

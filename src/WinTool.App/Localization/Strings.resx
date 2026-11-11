@@ -427,5 +427,5 @@ Cancel: do nothing.</value></data>
   <data name="WU_Restart_Busy" xml:space="preserve"><value>Another WinTool operation is running, possibly a scheduled update. Restart when it has finished.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows is still installing an update in the background. Restarting now can make the restart take longer. Restart anyway?</value></data>
   <data name="WU_Schedule_TargetUnavailable" xml:space="preserve"><value>The protected task target or installer could not be prepared. No task was created for the portable path. Check the log and try again as administrator.</value></data>
-  <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>Update the original portable application, then save its schedule to refresh the protected local task copy.</value></data>
+  <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>Update the original portable application. Its next administrator launch refreshes the protected local task copy automatically.</value></data>
 </root>

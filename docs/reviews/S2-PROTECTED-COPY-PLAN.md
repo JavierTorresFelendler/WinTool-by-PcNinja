@@ -37,13 +37,24 @@ remains separate for the chooser and MSI updater.
 4. Copy lifecycle and task mutation use the operation lock. Cleanup inspects
    all WinTool task references and removes only unreferenced managed images.
    Unknown task XML defers cleanup. Busy images retain retirement.pending;
-   cleanup retries on a later administrative task change. There is no cleanup
+   cleanup retries on a later administrative task change or elevated manual start. There is no cleanup
    service: an active copy can therefore remain until that later action.
    Empty pinned directories can remain until a subsequent cleanup.
 5. Managed workers bypass the chooser and cannot self-update or use the MSI
-   updater. Update the original EXE, then save the schedule to select a new
-   generation. Referenced generations remain. This explicit refresh behavior
-   and delayed cleanup need reviewer attention.
+   updater. MSI install/upgrade automatically refreshes all existing main/retry/
+   run-once task targets while preserving their XML settings. Elevated manual GUI
+   starts queue the same refresh, without creating a main task for retry-only
+   installations. Old managed workers never refresh newer task targets. Older
+   manual versions cannot downgrade a newer protected worker. Status exposes
+   worker file versions and content mismatch with the running image. Busy GUI
+   startup waits in the background for up to 15 minutes; closing the process or
+   timing out defers to the next launch. Manual CLI starts attempt immediate
+   refresh; portable CLI self-update starts the new verified EXE with the waiting
+   refresh command, so provisioning never uses the old mapped process image.
+   Installer maintenance waits up to 15
+   minutes and fails explicitly if still busy; uninstall does not ignore failure.
+   Cleanup respects references and active images. Run-once releases its operation
+   scope before starting the SYSTEM task.
 6. MSI identity expands existing 8.3 aliases without granting task eligibility.
    No registry value or user flag bypasses target protection.
 
@@ -63,7 +74,9 @@ After independent review, owner VM checks must cover USB removal/drive-letter
 reuse, actual running-image identity, standard-user write refusal, writable
 custom MSI folders, 8.3 launch aliases, GUI Yes/No/Cancel/failure, retry/run-once,
 reboot persistence, active-worker removal, deferred cleanup and worker refresh.
-Test task-service failures/crash recovery: registration is not transactional
+Include a Defender scan of the actual protected-copy provisioning and SYSTEM
+registration flow (D-009 heuristics), not just the EXE file. Test task-service
+failures/crash recovery: registration is not transactional
 across delete/register. Preparation failure preserves tasks, but later scheduler
 failure can require explicit reapplying of the schedule.
 

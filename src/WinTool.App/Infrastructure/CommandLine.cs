@@ -23,8 +23,31 @@ namespace WinTool.App.Infrastructure
         {
             AttachParentConsole();
             var command = args[0].Trim().ToLowerInvariant();
+            if (command == "--wait-operation")
+            {
+                if (args.Length < 2) return Program.ExitUsage;
+                try
+                {
+                    using (TaskMaintenance.WaitForOperation(TimeSpan.FromMinutes(15)))
+                        return Run(System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Skip(args, 1)));
+                }
+                catch (WinTool.Core.Operations.OperationBusyException)
+                { Console.Error.WriteLine("Another WinTool operation is still running; installer task maintenance timed out."); return 21; }
+            }
+            if (command == "--refresh-tasks")
+            {
+                TaskMaintenance.Service().RefreshExisting();
+                return 0;
+            }
+            if (command == "--remove-tasks")
+            {
+                try { TaskMaintenance.Service().RemoveAllWaiting(TimeSpan.FromMinutes(15)); return 0; }
+                catch (WinTool.Core.Operations.OperationBusyException)
+                { Console.Error.WriteLine("Another WinTool operation is still running; scheduled tasks were not removed."); return 21; }
+            }
             if (CommandRunner.Handles(command))
             {
+                TaskMaintenance.OnManualCliStart();
                 AppLog.Current.Info("CLI", "Command: " + string.Join(" ", args));
                 var exePath = Process.GetCurrentProcess().MainModule.FileName;
                 var exit = new CommandRunner(new WindowsUpdateEnvironment(exePath), Console.Out, Console.Error).Run(args);

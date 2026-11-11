@@ -407,8 +407,9 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   must be revised. GUI resources, CLI documentation, task lifecycle and tests
   must be updated together. The detailed design in
   [S2-PROTECTED-COPY-PLAN.md](reviews/S2-PROTECTED-COPY-PLAN.md) remains a
-  proposal pending pre-flight and independent review; accepting this decision
-  does not mean that behavior is implemented or VM-validated.
+  candidate implementation undergoing independent re-review; accepting this
+  decision does not establish VM validation. Earlier installed-only behavior is
+  superseded by the candidate described there.
 - **Boundaries:** No host scheduling, copying to production data folders,
   installers, servicing, merge, tag or release is authorized by this entry.
   Existing CI and owner-designated disposable-VM acceptance gates remain.

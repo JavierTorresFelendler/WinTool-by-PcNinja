@@ -19,13 +19,15 @@ namespace WinTool.Cli
         private readonly string exePath;
         private readonly TextWriter output;
         private readonly TextWriter error;
+        private readonly Action<string> refreshWorker;
 
-        public AppUpdateCommands(Func<AppUpdater> createUpdater, string exePath, TextWriter output, TextWriter error)
+        public AppUpdateCommands(Func<AppUpdater> createUpdater, string exePath, TextWriter output, TextWriter error, Action<string> refreshWorker = null)
         {
             this.createUpdater = createUpdater;
             this.exePath = exePath;
             this.output = output;
             this.error = error;
+            this.refreshWorker = refreshWorker ?? (path => Process.Start(new ProcessStartInfo(path, "--wait-operation --refresh-tasks") { UseShellExecute = false, CreateNoWindow = true }));
         }
 
         public bool IsInstalled => InstalledCopy.IsInstalled(exePath);
@@ -33,7 +35,7 @@ namespace WinTool.Cli
         public int Run(string command, string[] rest)
         {
             if (command == "install" && WinTool.Core.Security.ProtectedTaskCopy.IsManagedPath(exePath))
-            { error.WriteLine("Update the original portable app and save its schedule to refresh the protected task copy."); return CliExit.Failed; }
+            { error.WriteLine("Update the original portable app; its next elevated launch refreshes the protected task copy."); return CliExit.Failed; }
             switch (command)
             {
                 case "check": return Check(Parse(rest, new[] { "test-versions", "json" }));
@@ -102,7 +104,11 @@ namespace WinTool.Cli
 
                 var exe = updater.DownloadVerifiedAsync(release, ReleaseFiles.Executable, null, CancellationToken.None).GetAwaiter().GetResult();
                 var archive = PortableSwap.Apply(exePath, exe, current.FileVersion);
-                if (a.Has("json")) Json(new { Result = "Updated", ExitCode = CliExit.Ok, From = current.ToString(), To = release.Version.ToString(), PreviousCopy = archive });
+                var refreshQueued = false;
+                try { refreshWorker(Path.Combine(Path.GetDirectoryName(exePath), ReleaseFiles.Executable)); refreshQueued = true; }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.ComponentModel.Win32Exception)
+                { error.WriteLine("WinTool updated; worker refresh could not start. The next elevated launch retries it."); }
+                if (a.Has("json")) Json(new { Result = "Updated", ExitCode = CliExit.Ok, From = current.ToString(), To = release.Version.ToString(), PreviousCopy = archive, WorkerRefreshQueued = refreshQueued });
                 else output.WriteLine("Updated to " + release.Version + ". The previous copy is " + archive + ".");
                 return CliExit.Ok;
             }

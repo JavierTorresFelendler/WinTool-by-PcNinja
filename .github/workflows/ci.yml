@@ -256,6 +256,9 @@ jobs:
           $show = Show
           Write-Host $show
           if ($show -notmatch '"matchesSettings": true' -or $show -notmatch '"dayOfWeek": "Friday"' -or $show -notmatch '"wakeToRun": true') { Fail "schedule from MSI properties is wrong" $r }
+          $installedStatus = $show | ConvertFrom-Json
+          [xml]$installedDefinition = $installedStatus.task.xml
+          if ([string]$installedDefinition.Task.Actions.Exec.Command -ne $installed) { Fail 'protected MSI task did not point at the installed EXE' $r }
           if ((Get-ItemProperty 'HKLM:\SOFTWARE\PcNinja\WinTool').Language -ne 'he') { Fail "language default was not written" $r }
           if (-not (Test-Path (Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'WinTool by PcNinja.lnk'))) { Fail "desktop shortcut missing" $r }
 

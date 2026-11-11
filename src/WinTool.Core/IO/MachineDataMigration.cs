@@ -24,11 +24,7 @@ namespace WinTool.Core.IO
             {
                 if (operation == null) throw new IOException("Machine data migration is busy.");
                 prepare(root);
-                if (File.Exists(marker))
-                {
-                    Complete(marker, read);
-                    return;
-                }
+                if (Complete(marker, read)) return;
                 var report = new List<string>();
                 foreach (var rule in rules)
                 {

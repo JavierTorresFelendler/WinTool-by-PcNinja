@@ -99,6 +99,7 @@ namespace WinTool.App
                 // Started with administrator rights already: asked here, after a running window was activated instead.
                 if (askHere && !AskInstallOrPortable()) return ExitOk;
 
+                TaskMaintenance.OnElevatedStart();
                 var app = new App();
                 app.InitializeComponent();
                 return app.RunMainWindow(settings);
@@ -169,7 +170,8 @@ namespace WinTool.App
         {
             if (!EmbeddedInstaller.IsPresent) return true;
             var exe = Process.GetCurrentProcess().MainModule.FileName;
-            if (exe.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase)) return true;
+            if (WinTool.Core.Security.ProtectedTaskCopy.IsManagedPath(exe) && WinTool.Core.Security.ProtectedMachineData.IsProtectedExecutable(exe)) return true;
+            if (WinTool.Core.Updates.InstalledCopy.IsInstalled(exe)) return true;
 
             // The installed copy itself (also outside Program Files) never asks.
             var installed = FindInstalledCopy();

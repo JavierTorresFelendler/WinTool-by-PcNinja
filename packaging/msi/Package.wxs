@@ -97,10 +97,10 @@
 
     <!-- Schedule: the installed EXE applies it as SYSTEM. Only when the schedule option is on, so an upgrade keeps an existing schedule. -->
     <CustomAction Id="ApplySchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="check"
-                  ExeCommand="schedule set --enable --frequency=[WINTOOL_FREQUENCY] --time=[WINTOOL_TIME] --day=[WINTOOL_DAY_OF_WEEK] --month-day=[WINTOOL_MONTHLY_DAY] --at-startup=[WINTOOL_RUN_AT_STARTUP] --startup-delay=[WINTOOL_STARTUP_DELAY] --run-if-missed=[WINTOOL_RUN_IF_MISSED] --wake=[WINTOOL_WAKE_TO_RUN] --firmware=[WINTOOL_ALLOW_FIRMWARE] --reboot-prompt=[WINTOOL_REBOOT_PROMPT] --auto-retry=[WINTOOL_ENABLE_AUTORETRY] --retry-delay=[WINTOOL_RETRY_INITIAL_DELAY] --retry-attempts=[WINTOOL_RETRY_MAX_ATTEMPTS] --retry-backoff=[WINTOOL_RETRY_BACKOFF] --cooldown=[WINTOOL_MINIMUM_COOLDOWN]" />
+                  ExeCommand="--wait-operation schedule set --enable --frequency=[WINTOOL_FREQUENCY] --time=[WINTOOL_TIME] --day=[WINTOOL_DAY_OF_WEEK] --month-day=[WINTOOL_MONTHLY_DAY] --at-startup=[WINTOOL_RUN_AT_STARTUP] --startup-delay=[WINTOOL_STARTUP_DELAY] --run-if-missed=[WINTOOL_RUN_IF_MISSED] --wake=[WINTOOL_WAKE_TO_RUN] --firmware=[WINTOOL_ALLOW_FIRMWARE] --reboot-prompt=[WINTOOL_REBOOT_PROMPT] --auto-retry=[WINTOOL_ENABLE_AUTORETRY] --retry-delay=[WINTOOL_RETRY_INITIAL_DELAY] --retry-attempts=[WINTOOL_RETRY_MAX_ATTEMPTS] --retry-backoff=[WINTOOL_RETRY_BACKOFF] --cooldown=[WINTOOL_MINIMUM_COOLDOWN]" />
 
     <!-- Uninstall (not an upgrade): remove the scheduled tasks while the EXE still exists. -->
-    <CustomAction Id="RemoveSchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="schedule remove" />
+    <CustomAction Id="RemoveSchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="check" ExeCommand="--remove-tasks" />
 
     <!-- D-025: take over from WinUpdate Tool V1/V2 and uninstall it. One MSI cannot remove another while it
          runs, so the installed EXE starts asynchronously, waits for Windows Installer to be free, then migrates.
@@ -111,10 +111,13 @@
     <CustomAction Id="TakeOverLegacyKeepSchedule" FileRef="MainExe" Execute="commit" Impersonate="no" Return="asyncNoWait"
                   ExeCommand="schedule import-v2 --wait-for-installer --if-present --keep-schedule" />
 
+    <CustomAction Id="RefreshTaskWorkers" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="--refresh-tasks" />
+
     <InstallExecuteSequence>
       <Custom Action="TakeOverLegacy" Before="InstallFinalize" Condition="NOT REMOVE AND NOT (WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;)" />
       <Custom Action="TakeOverLegacyKeepSchedule" Before="InstallFinalize" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
-      <Custom Action="ApplySchedule" After="InstallFiles" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
+      <Custom Action="ApplySchedule" After="WriteRegistryValues" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
+      <Custom Action="RefreshTaskWorkers" After="ApplySchedule" Condition="NOT REMOVE" />
       <Custom Action="RemoveSchedule" Before="RemoveFiles" Condition="REMOVE = &quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
     </InstallExecuteSequence>
 

@@ -1,5 +1,27 @@
 # Releasing
 
+## Local build versions
+
+`Directory.Build.props` deliberately defaults to development version `0.1.0`.
+A local build does not infer the latest release from Git tags. Release CI
+overrides the informational, file and assembly versions from the supplied tag,
+using D-024; it also checks the resulting EXE properties. The MSI version is
+derived from the built EXE's `version --json` output.
+
+For a version-stamped local candidate, pass all three values consistently. For
+example, `1.0.3-rc.1` uses file version `1.0.3.3001` and assembly version
+`1.0.3.0` under D-024. This example is not an assigned next release number:
+
+```powershell
+dotnet build WinTool.sln -c Release -p:Version=1.0.3-rc.1 -p:FileVersion=1.0.3.3001 -p:AssemblyVersion=1.0.3.0
+```
+
+Build/test success is not release permission. Record owner VM acceptance of the
+exact candidate and verify the final release artifacts on the VM before
+publication. The steps below describe the separately authorized release flow.
+
+## Release flow
+
 1. Merge the work to `main` and wait for green CI.
 2. Tag the commit: `v1.2.3` for a stable release, `v1.2.3-rc.1`,
    `-beta.1` or `-alpha.1` for a test version (D-023, D-024), and push the tag.

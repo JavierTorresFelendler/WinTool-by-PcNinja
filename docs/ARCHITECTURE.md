@@ -71,8 +71,8 @@ CI builds the regular app EXE, then the WiX MSI from that EXE, then rebuilds the
 universal EXE carrying the MSI and its build-time SHA-256 (D-026). The MSI never
 contains the universal EXE. `EmbeddedInstaller` extracts the MSI to a new
 temporary folder, checks the embedded hash and invokes Windows Installer when
-installation is chosen. The D-009/D-026 wording clarification is an owner
-decision; this document does not amend the decision log.
+installation is chosen. D-029 records the owner's narrow clarification of
+D-009 for this D-026 payload; the original D-009 entry remains intact.
 
 ## Navigation
 

@@ -388,6 +388,18 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ---
 
+## D-029 Limited clarification of D-009 for the universal MSI payload
+
+- **Status:** Accepted (2026-11-11), explicit owner approval. Supersedes
+  D-009 only to the extent described here; the original entry remains intact.
+- **Decision:** D-009 permits only the D-026 universal EXE's embedded WinTool
+  MSI to be extracted to a new temporary folder, checked against its embedded
+  build-time SHA-256 and opened through Windows Installer in the existing
+  approved installation flow. The restriction on dropped executable payloads
+  otherwise remains.
+- This clarification changes no packaging behavior and grants no merge, tag,
+  release or publication authority. Review and owner VM gates remain in force.
+
 ## Open questions
 
 None at the moment.

@@ -64,6 +64,9 @@
     <StandardDirectory Id="ProgramMenuFolder" />
     <StandardDirectory Id="DesktopFolder" />
 
+    <!-- D-028: Core creates a fresh protected root. MSI must not adopt a pre-existing unsafe folder. -->
+    <CustomAction Id="InitializeMachineData" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="check" ExeCommand="--initialize-data" />
+
     <Component Id="MainExecutable" Directory="INSTALLFOLDER" Guid="{3F1B0A8E-2C4D-4E6F-8A9B-1C2D3E4F5A60}">
       <File Id="MainExe" Source="$(ExePath)" Name="WinTool-by-PcNinja.exe" KeyPath="yes" />
     </Component>
@@ -97,7 +100,7 @@
 
     <!-- Schedule: the installed EXE applies it as SYSTEM. Only when the schedule option is on, so an upgrade keeps an existing schedule. -->
     <CustomAction Id="ApplySchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="check"
-                  ExeCommand="schedule set --enable --frequency=[WINTOOL_FREQUENCY] --time=[WINTOOL_TIME] --day=[WINTOOL_DAY_OF_WEEK] --month-day=[WINTOOL_MONTHLY_DAY] --at-startup=[WINTOOL_RUN_AT_STARTUP] --startup-delay=[WINTOOL_STARTUP_DELAY] --run-if-missed=[WINTOOL_RUN_IF_MISSED] --wake=[WINTOOL_WAKE_TO_RUN] --firmware=[WINTOOL_ALLOW_FIRMWARE] --reboot-prompt=[WINTOOL_REBOOT_PROMPT] --auto-retry=[WINTOOL_ENABLE_AUTORETRY] --retry-delay=[WINTOOL_RETRY_INITIAL_DELAY] --retry-attempts=[WINTOOL_RETRY_MAX_ATTEMPTS] --retry-backoff=[WINTOOL_RETRY_BACKOFF] --cooldown=[WINTOOL_MINIMUM_COOLDOWN]" />
+                  ExeCommand="--wait-operation schedule set --enable --frequency=[WINTOOL_FREQUENCY] --time=[WINTOOL_TIME] --day=[WINTOOL_DAY_OF_WEEK] --month-day=[WINTOOL_MONTHLY_DAY] --at-startup=[WINTOOL_RUN_AT_STARTUP] --startup-delay=[WINTOOL_STARTUP_DELAY] --run-if-missed=[WINTOOL_RUN_IF_MISSED] --wake=[WINTOOL_WAKE_TO_RUN] --firmware=[WINTOOL_ALLOW_FIRMWARE] --reboot-prompt=[WINTOOL_REBOOT_PROMPT] --auto-retry=[WINTOOL_ENABLE_AUTORETRY] --retry-delay=[WINTOOL_RETRY_INITIAL_DELAY] --retry-attempts=[WINTOOL_RETRY_MAX_ATTEMPTS] --retry-backoff=[WINTOOL_RETRY_BACKOFF] --cooldown=[WINTOOL_MINIMUM_COOLDOWN]" />
 
     <!-- Uninstall (not an upgrade): remove the scheduled tasks while the EXE still exists. -->
     <CustomAction Id="RemoveSchedule" FileRef="MainExe" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="schedule remove" />
@@ -114,7 +117,8 @@
     <InstallExecuteSequence>
       <Custom Action="TakeOverLegacy" Before="InstallFinalize" Condition="NOT REMOVE AND NOT (WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;)" />
       <Custom Action="TakeOverLegacyKeepSchedule" Before="InstallFinalize" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
-      <Custom Action="ApplySchedule" After="InstallFiles" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
+      <Custom Action="InitializeMachineData" After="WriteRegistryValues" Condition="NOT REMOVE" />
+      <Custom Action="ApplySchedule" After="InitializeMachineData" Condition="NOT REMOVE AND WINTOOL_ENABLE_SCHEDULE = &quot;1&quot;" />
       <Custom Action="RemoveSchedule" Before="RemoveFiles" Condition="REMOVE = &quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
     </InstallExecuteSequence>
 

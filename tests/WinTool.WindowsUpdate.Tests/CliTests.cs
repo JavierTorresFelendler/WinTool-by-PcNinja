@@ -19,6 +19,7 @@ namespace WinTool.WindowsUpdate.Tests
         public MemoryStore Memory { get; } = new MemoryStore();
         public FakeTasks FakeTasks { get; } = new FakeTasks();
         public ListLog ListLog { get; } = new ListLog();
+        public List<string> ExtraLogSources { get; } = new List<string>();
         public string Legacy { get; set; }
         public bool Admin { get; set; } = true;
         public bool LockBusy { get; set; }
@@ -48,6 +49,7 @@ namespace WinTool.WindowsUpdate.Tests
             Directory.CreateDirectory(logs);
             File.WriteAllText(Path.Combine(logs, "WinTool-20261106.log"), "2026-11-06 10:00:00  INFO   App  started");
             yield return logs;
+            foreach (var source in ExtraLogSources) yield return source;
         }
 
         public void Dispose()
@@ -77,6 +79,24 @@ namespace WinTool.WindowsUpdate.Tests
 
     public class CliTests
     {
+        [Fact]
+        public void Log_collection_retains_distinct_old_and_new_logs_without_migration()
+        {
+            using (var env = new FakeEnvironment())
+            {
+                var legacy = Path.Combine(env.Temp, "Old", "Logs"); Directory.CreateDirectory(legacy);
+                var old = Path.Combine(legacy, "WinTool-20261106.log"); File.WriteAllText(old, "legacy evidence"); env.ExtraLogSources.Add(legacy);
+                var zip = Path.Combine(env.Temp, "collected.zip");
+                Assert.Equal(0, Run(env, "logs", "collect", "--output", zip).code);
+                using (var archive = ZipFile.OpenRead(zip))
+                {
+                    var logs = archive.Entries.Where(entry => entry.Name == "WinTool-20261106.log").ToList();
+                    Assert.Equal(2, logs.Count);
+                    Assert.Contains(logs, entry => { using (var reader = new StreamReader(entry.Open())) return reader.ReadToEnd() == "legacy evidence"; });
+                }
+                Assert.Equal("legacy evidence", File.ReadAllText(old));
+            }
+        }
         private static (int code, string output, string error) Run(FakeEnvironment env, params string[] args)
         {
             var output = new StringWriter();

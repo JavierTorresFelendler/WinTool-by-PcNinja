@@ -426,4 +426,5 @@
   <data name="WU_InstallAfterRestart" xml:space="preserve"><value>יש להפעיל מחדש את המחשב תחילה, ואז לחפש ולהתקין שוב.</value></data>
   <data name="WU_Restart_Busy" xml:space="preserve"><value>פעולה אחרת של WinTool פועלת, אולי עדכון מתוזמן. הפעל מחדש אחרי שהיא תסתיים.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows עדיין מתקין עדכון ברקע. הפעלה מחדש עכשיו עלולה להאריך את ההפעלה מחדש. להפעיל מחדש בכל זאת?</value></data>
+  <data name="Startup_DataInitializationFailed" xml:space="preserve"><value>לא ניתן לאתחל את הנתונים המוגנים של WinTool. לא הופעלה פעולת תחזוקה. בדוק את היומן ונסה שוב כמנהל מערכת.</value></data>
 </root>

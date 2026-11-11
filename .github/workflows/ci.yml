@@ -256,6 +256,18 @@ jobs:
           $r = Msi @('/i', "`"$msi`"", 'WINTOOL_ENABLE_SCHEDULE=1', 'WINTOOL_FREQUENCY=Weekly', 'WINTOOL_DAY_OF_WEEK=Friday', 'WINTOOL_TIME=04:30', 'WINTOOL_WAKE_TO_RUN=1', 'WINTOOL_DESKTOP_SHORTCUT=1', 'WINTOOL_LANGUAGE=he') 'install'
           if ($r.Code -ne 0) { Fail "install failed with $($r.Code)" $r }
           if (-not (Test-Path $installed)) { Fail "WinTool-by-PcNinja.exe was not installed" $r }
+          $data = Join-Path $env:ProgramData 'PcNinja-WinTool'
+          $acl = Get-Acl -LiteralPath $data
+          $owner = $acl.GetOwner([System.Security.Principal.SecurityIdentifier]).Value
+          if ($owner -notin @('S-1-5-18', 'S-1-5-32-544') -or -not $acl.AreAccessRulesProtected) {
+            Fail 'Machine data must have a trusted owner and a protected ACL' $r
+          }
+          foreach ($rule in $acl.GetAccessRules($true, $true, [System.Security.Principal.SecurityIdentifier])) {
+            if ($rule.AccessControlType -eq 'Allow' -and $rule.IdentityReference.Value -notin @('S-1-5-18', 'S-1-5-32-544') -and
+                (([int]$rule.FileSystemRights -band (-bnot [int]([System.Security.AccessControl.FileSystemRights]::ReadAndExecute -bor [System.Security.AccessControl.FileSystemRights]::Synchronize))) -ne 0)) {
+              Fail 'Machine data contains an unexpected write grant' $r
+            }
+          }
           $show = Show
           Write-Host $show
           if ($show -notmatch '"matchesSettings": true' -or $show -notmatch '"dayOfWeek": "Friday"' -or $show -notmatch '"wakeToRun": true') { Fail "schedule from MSI properties is wrong" $r }

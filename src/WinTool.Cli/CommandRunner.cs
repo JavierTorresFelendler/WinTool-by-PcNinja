@@ -101,6 +101,11 @@ namespace WinTool.Cli
 
                 throw new UsageException("Unknown command: " + string.Join(" ", args.Take(2)) + ". Run \"WinTool-by-PcNinja.exe help\".");
             }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException)
+            {
+                error.WriteLine("Protected data is unavailable; no settings were saved. " + ex.Message);
+                return 24;
+            }
             catch (UsageException ex)
             {
                 error.WriteLine(ex.Message);
@@ -653,9 +658,10 @@ namespace WinTool.Cli
             try
             {
                 Directory.CreateDirectory(staging);
+                var sourceIndex = 0;
                 foreach (var source in env.LogSources())
                 {
-                    if (Directory.Exists(source)) CopyFolder(source, Path.Combine(staging, new DirectoryInfo(source).Name));
+                    if (Directory.Exists(source)) CopyFolder(source, Path.Combine(staging, sourceIndex++.ToString(CultureInfo.InvariantCulture) + "-" + new DirectoryInfo(source).Name));
                     else if (File.Exists(source)) File.Copy(source, Path.Combine(staging, Path.GetFileName(source)), true);
                 }
 
@@ -668,9 +674,21 @@ namespace WinTool.Cli
                 }
 
                 File.WriteAllText(Path.Combine(staging, "status.json"), JsonText.Serialize(StatusObject()));
-                Directory.CreateDirectory(Path.GetDirectoryName(zipPath));
-                if (File.Exists(zipPath)) File.Delete(zipPath);
-                ZipFile.CreateFromDirectory(staging, zipPath);
+                WinToolPaths.EnsureMachineDataDirectory(Path.GetDirectoryName(zipPath));
+                if (File.Exists(zipPath))
+                {
+                    if (WinTool.Core.Security.ProtectedMachineData.IsMachinePath(zipPath) && !WinTool.Core.Security.ProtectedMachineData.IsProtectedExecutable(zipPath))
+                        throw new UnauthorizedAccessException("Existing log package is not protected.");
+                    File.Delete(zipPath);
+                }
+                if (WinTool.Core.Security.ProtectedMachineData.IsMachinePath(zipPath))
+                {
+                    using (var stream = WinTool.Core.Security.ProtectedMachineData.OpenWriter(zipPath, false))
+                    using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
+                        foreach (var file in Directory.GetFiles(staging, "*", SearchOption.AllDirectories))
+                            archive.CreateEntryFromFile(file, file.Substring(staging.Length + 1).Replace('\\', '/'));
+                }
+                else ZipFile.CreateFromDirectory(staging, zipPath);
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
@@ -739,7 +757,11 @@ namespace WinTool.Cli
         private static void CopyFolder(string source, string target)
         {
             Directory.CreateDirectory(target);
-            foreach (var file in Directory.GetFiles(source)) File.Copy(file, Path.Combine(target, Path.GetFileName(file)), true);
+            foreach (var file in WinTool.Core.Security.ProtectedMachineData.PlainFiles(source))
+            {
+                using (var input = WinTool.Core.Security.ProtectedMachineData.OpenLog(file))
+                using (var output = File.Create(Path.Combine(target, Path.GetFileName(file)))) input.CopyTo(output);
+            }
             foreach (var folder in Directory.GetDirectories(source)) CopyFolder(folder, Path.Combine(target, Path.GetFileName(folder)));
         }
 

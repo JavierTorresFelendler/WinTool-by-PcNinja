@@ -20,7 +20,7 @@ namespace WinTool.Core.Tests
         public void Without_an_absolute_root_uses_the_normal_folders(string root)
         {
             var folders = WinToolPaths.Resolve(root, Special);
-            Assert.Equal(Path.Combine(Root(), "PD", "PcNinja", "WinTool"), folders.MachineData);
+            Assert.Equal(Path.Combine(Root(), "PD", "PcNinja-WinTool"), folders.MachineData);
             Assert.Equal(Path.Combine(Root(), "LAD", "PcNinja", "WinTool"), folders.UserData);
         }
 

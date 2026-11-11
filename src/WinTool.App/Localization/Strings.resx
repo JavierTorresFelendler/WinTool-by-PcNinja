@@ -426,4 +426,5 @@ Cancel: do nothing.</value></data>
   <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Restart the computer first; then search and install again.</value></data>
   <data name="WU_Restart_Busy" xml:space="preserve"><value>Another WinTool operation is running, possibly a scheduled update. Restart when it has finished.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows is still installing an update in the background. Restarting now can make the restart take longer. Restart anyway?</value></data>
+  <data name="Startup_DataInitializationFailed" xml:space="preserve"><value>WinTool could not initialize its protected data. No maintenance operation was started. Check the log and try again as administrator.</value></data>
 </root>

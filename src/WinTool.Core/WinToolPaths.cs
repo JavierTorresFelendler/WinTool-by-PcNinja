@@ -38,6 +38,7 @@ namespace WinTool.Core
             return fullPath;
         }
 
+
         public static DataFolders Resolve(string dataRoot, Func<Environment.SpecialFolder, string> specialFolder)
         {
             var root = NormalizeRoot(dataRoot);

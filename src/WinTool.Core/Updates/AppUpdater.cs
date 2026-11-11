@@ -70,13 +70,13 @@ namespace WinTool.Core.Updates
 
         /// <summary>
         /// Where releases are read from. The environment variable WINTOOL_UPDATE_FEED may point to
-        /// another releases JSON (https or a local file) for testing before the repository is public.
+        /// another releases JSON (https or a local file) only in Debug or alpha/beta/rc builds.
         /// </summary>
         public static string FeedUrl
         {
             get
             {
-                var custom = Environment.GetEnvironmentVariable(FeedVariable);
+                var custom = TestEnvironment.Get(FeedVariable);
                 return string.IsNullOrWhiteSpace(custom) ? ReleaseFeed.ApiUrl : custom.Trim();
             }
         }

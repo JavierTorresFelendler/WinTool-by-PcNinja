@@ -190,7 +190,10 @@ Initialization failure returns exit 24; no changing command starts.
 
 ## Test environment variables
 
-For testing only; WinTool works without them.
+Supported only in **Debug builds** or versions explicitly marked **alpha, beta
+or rc** (`AppVersion.IsTest`). A stable Release build ignores both variables
+and logs one notice per process. This applies equally to GUI, CLI and processes
+that were already started elevated. WinTool works without these variables.
 
 | Variable | Effect |
 | --- | --- |

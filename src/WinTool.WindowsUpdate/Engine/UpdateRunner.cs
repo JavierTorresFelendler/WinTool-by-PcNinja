@@ -59,7 +59,7 @@ namespace WinTool.WindowsUpdate.Engine
                 {
                     return RunLocked(request, settings, state, progress, cancellation, interactive);
                 }
-                catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+                catch (OperationCanceledException) when (request.SelectionWorkflow && cancellation.IsCancellationRequested)
                 {
                     return Finish(request.Type, state, new RunOutcome(RunResult.Cancelled, "Cancelled before installation."), false);
                 }

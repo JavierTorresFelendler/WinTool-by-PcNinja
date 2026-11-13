@@ -186,6 +186,18 @@ namespace WinTool.WindowsUpdate.Tests
             }
         }
         [Fact]
+        public void Legacy_runner_does_not_gain_selected_workflow_exception_handling()
+        {
+            var s = new Scenario(); var u = U.Windows(); s.Agent.Inner.Available.Add(u); s.Select(u);
+            s.Request.SelectionWorkflow = false;
+            using (var c = new CancellationTokenSource())
+            {
+                s.Agent.AfterSearch = n => { c.Cancel(); throw new OperationCanceledException(c.Token); };
+                Assert.Equal(RunResult.Failed, s.Run(c.Token).Result);
+                Assert.Empty(s.Agent.Downloaded);
+            }
+        }
+        [Fact]
         public void Failed_shared_broad_is_unknown_and_not_retried()
         {
             var s = new Scenario(); var u = U.Windows(); s.Agent.Inner.Available.Add(u); s.Select(u);

@@ -503,7 +503,37 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   Original A/B evidence is reused with its existing limits. No full native
   asynchronous cancellation, service deadline or security/installer change.
 
+## D-032 Retain cache-only Microsoft-file verification without revocation for 1.0.3
+
+- **Status:** Accepted (2026-11-13), explicit owner approval after the scoped
+  T24/T25 signature review. This records the existing behavior for this release;
+  it does not authorize a merge, tag, release or production rollout.
+- **Context:** The Microsoft-file verifier uses WinVerifyTrust with
+  `WTD_CACHE_ONLY_URL_RETRIEVAL | WTD_REVOCATION_CHECK_NONE` and no revocation
+  requests. Technicians must be able to verify files on disconnected machines.
+  The existing implementation and the accepted RC7 binaries are unchanged.
+- **Decision:** Retain that cache-only, no-revocation policy for 1.0.3. Continue
+  to require valid Authenticode integrity, the verified signer's exact Microsoft
+  organization attribute, and the complementary Microsoft-root policy. This
+  decision permits no test roots, invalid signatures or publisher-pin bypass.
+- **Reason:** Preserve the disconnected technician workflow without depending
+  on reachable online CRL/OCSP services, and keep the existing trust behavior
+  bounded during this release.
+- **Consequences and limits:**
+  - No current certificate-revocation status or revocation freshness is
+    established. Later revocation of a Microsoft certificate may go undetected;
+    the remaining integrity, signer and root checks still apply. Offline
+    acceptance is not evidence of online revocation checking.
+  - T24/T25 establish only the recorded sample acceptance and rejection results.
+    They do not establish revocation handling. The native Broadcom rejection
+    demonstrates publisher pinning; a valid unsigned PE and an end-to-end
+    third-party regression test remain separate nonblocking follow-ups.
+  - Adding online revocation requires a new owner decision specifying offline
+    and lookup-failure behavior, deadlines and user-visible outcomes, followed
+    by separate implementation review and validation. This entry does not
+    authorize that work or a silent change to the current policy.
+
 ## Open questions
 
-None at the moment. D-027, D-028, D-029, D-030 and D-031 record the separately accepted owner
+None at the moment. D-027, D-028, D-029, D-030, D-031 and D-032 record the separately accepted owner
 decisions; their original predecessor entries remain intact.

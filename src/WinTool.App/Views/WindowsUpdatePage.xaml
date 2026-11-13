@@ -105,7 +105,7 @@
                     <ProgressBar Value="{Binding ProgressValue, Mode=OneWay}" IsIndeterminate="{Binding ProgressIndeterminate}" Maximum="100" />
                 </StackPanel>
                 <Button Grid.Column="1" Style="{StaticResource Button.Secondary}" Margin="14,0,0,0" VerticalAlignment="Center"
-                        Command="{Binding CancelCommand}" Content="{Binding CancelText}" />
+                        Command="{Binding CancelCommand}" Content="{loc:Loc WU_Cancel}" />
             </Grid>
         </Border>
 

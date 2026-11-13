@@ -106,7 +106,6 @@
   <data name="WU_RestartPrompt" xml:space="preserve"><value>התקנת העדכונים הסתיימה. נדרשת הפעלה מחדש של המחשב להשלמת התהליך. לאחר ההפעלה מחדש ייתכן שיימצאו עדכונים נוספים.</value></data>
   <data name="WU_InstallSelected" xml:space="preserve"><value>התקנת הנבחרים</value></data>
   <data name="WU_Cancel" xml:space="preserve"><value>ביטול</value></data>
-  <data name="WU_CancelAfterInstall" xml:space="preserve"><value>עצירה אחרי קבוצת העדכונים הנוכחית</value></data>
   <data name="WU_CancelPending" xml:space="preserve"><value>התבקש ביטול. ממתין לסיום הפעולה הנוכחית של Windows.</value></data>
   <data name="WU_Available" xml:space="preserve"><value>עדכונים זמינים</value></data>
   <data name="WU_PressCheck" xml:space="preserve"><value>לחץ על "בדיקת עדכונים" כדי לראות מה זמין.</value></data>

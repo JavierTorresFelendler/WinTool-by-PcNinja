@@ -27,11 +27,11 @@ PC. The owner supplies the disposable VM/snapshot. Preserve earlier evidence.
    identifying raw evidence private. A request that arrived only after native
    installation started is a different case, not a failed download-boundary test.
 
-## If cancellation is requested after installation starts
+## After installation starts
 
-The button says Stop after this batch. It requests cooperative cancellation of
-future work and then disables repeat clicks. Current native installation can
-finish. Actual installation results and reboot requirements take precedence;
+Cancel is disabled during installation and final verification. A GUI run has no
+later pass to cancel, and current native installation cannot be interrupted by
+this implementation. Actual installation results and reboot requirements take precedence;
 do not report nothing installed or force-close the process. This observation
 may be recorded during the same session if naturally encountered; no extra
 installation is required solely to repeat earlier unaffected acceptance.

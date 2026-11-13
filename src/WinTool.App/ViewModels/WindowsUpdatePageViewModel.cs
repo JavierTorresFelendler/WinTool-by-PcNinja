@@ -143,7 +143,7 @@ namespace WinTool.App.ViewModels
             this.env = env;
             ScanCommand = new AsyncCommand(ScanAsync, () => !busy);
             InstallCommand = new AsyncCommand(InstallAsync, () => !busy && !pending.Pending && Rows.Any(r => r.IsSelected));
-            CancelCommand = new RelayCommand(CancelCurrentOperation, () => busy && cancellation != null && !cancellation.IsCancellationRequested);
+            CancelCommand = new RelayCommand(CancelCurrentOperation, () => CanRequestCancellation);
             RestartCommand = new RelayCommand(RestartNow, () => pending.Pending && !busy);
             HealthCheckCommand = new AsyncCommand(() => HealthAsync(true), () => !busy);
             CollectLogsCommand = new AsyncCommand(CollectLogsAsync, () => !busy);
@@ -166,8 +166,8 @@ namespace WinTool.App.ViewModels
 
         private void CancelCurrentOperation()
         {
+            if (!CanRequestCancellation) return;
             var source = cancellation;
-            if (source == null || source.IsCancellationRequested) return;
             var requestedAt = DateTime.UtcNow;
             var requestedStage = runStage;
             // Signal before diagnostic I/O so logging cannot delay the boundary check.
@@ -217,7 +217,8 @@ namespace WinTool.App.ViewModels
         public bool HasMessage => !string.IsNullOrEmpty(Message);
         public bool MessageIsError { get => messageIsError; private set => Set(ref messageIsError, value); }
 
-        public string CancelText => runStage == RunStage.Installing ? T["WU_CancelAfterInstall"] : T["WU_Cancel"];
+        private bool CanRequestCancellation => busy && cancellation != null && !cancellation.IsCancellationRequested &&
+            (runStage == RunStage.Checking || runStage == RunStage.Searching || runStage == RunStage.Downloading);
         public string ProgressText { get => cancellation?.IsCancellationRequested == true ? T["WU_CancelPending"] : progressText; private set => Set(ref progressText, value); }
         public double ProgressValue { get => progressValue; private set => Set(ref progressValue, value); }
         public bool ProgressIndeterminate { get => progressIndeterminate; private set => Set(ref progressIndeterminate, value); }
@@ -595,7 +596,7 @@ namespace WinTool.App.ViewModels
         private void OnProgress(RunProgress value)
         {
             runStage = value.Stage;
-            OnPropertyChanged(nameof(CancelText));
+            CommandManager.InvalidateRequerySuggested();
             switch (value.Stage)
             {
                 case RunStage.Searching:
@@ -652,7 +653,6 @@ namespace WinTool.App.ViewModels
         {
             if (busy) return false;
             runStage = RunStage.Checking;
-            OnPropertyChanged(nameof(CancelText));
             IsBusy = true;
             ProgressText = text;
             ProgressIndeterminate = indeterminate;

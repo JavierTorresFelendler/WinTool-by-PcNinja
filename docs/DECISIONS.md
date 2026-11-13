@@ -454,8 +454,9 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   The result states that nothing from this pass was installed; outcomes from
   earlier passes and existing reboot-required precedence remain intact.
 - The GUI logs `CancelRequested` with the displayed stage and UTC request time.
-  It shows pending cancellation, disables repeated requests, and labels the
-  installation-stage action as stopping after the current batch. Current
+  It shows pending cancellation and disables repeated requests. Cancel is also
+  disabled during installation and final verification: a selected-update GUI
+  run is one pass, with no later batch to cancel. Current
   synchronous Windows operations can continue until they return; no claim of
   immediate native abort is made and no process/service is force-terminated.
 - Full WU-24 `BeginDownload` / `BeginInstall` progress, native abort requests,

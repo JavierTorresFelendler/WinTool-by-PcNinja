@@ -13,4 +13,4 @@ jobs:
     if: github.head_ref == 'codex/integrated-maintenance-candidate' || github.head_ref == 'codex/cancel-boundary-and-state'
     uses: ./.github/workflows/ci.yml
     with:
-      tag: ${{ github.head_ref == 'codex/cancel-boundary-and-state' && 'v1.0.3-rc.2' || 'v1.0.3-rc.1' }}
+      tag: v1.0.3-rc.3

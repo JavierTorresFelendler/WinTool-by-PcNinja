@@ -106,7 +106,6 @@ Cancel: close.</value></data>
   <data name="WU_RestartPrompt" xml:space="preserve"><value>Installing the updates finished. Restart the computer to complete it; more updates may be found after the restart.</value></data>
   <data name="WU_InstallSelected" xml:space="preserve"><value>Install Selected</value></data>
   <data name="WU_Cancel" xml:space="preserve"><value>Cancel</value></data>
-  <data name="WU_CancelAfterInstall" xml:space="preserve"><value>Stop after this batch</value></data>
   <data name="WU_CancelPending" xml:space="preserve"><value>Cancellation requested. Waiting for Windows to finish the current operation.</value></data>
   <data name="WU_Available" xml:space="preserve"><value>Available updates</value></data>
   <data name="WU_PressCheck" xml:space="preserve"><value>Press "Check for Updates" to see what is available.</value></data>

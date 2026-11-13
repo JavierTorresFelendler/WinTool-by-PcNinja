@@ -17,7 +17,7 @@ namespace WinTool.WindowsUpdate.Platform
         private static readonly int[] InformationEventsForEventLog =
         {
             EventIds.RunStarted, EventIds.RunFinished, EventIds.InstallResult, EventIds.ResetFinished,
-            EventIds.ScheduleSaved, EventIds.ScheduleRemoved, EventIds.RetryScheduled
+            EventIds.ScheduleSaved, EventIds.ScheduleRemoved, EventIds.RetryScheduled, EventIds.CancelRequested
         };
 
         private readonly AppLog appLog;

@@ -430,4 +430,7 @@ Cancelar: no hacer nada.</value></data>
   <data name="Startup_DataInitializationFailed" xml:space="preserve"><value>WinTool no pudo inicializar sus datos protegidos. No se inició ninguna operación de mantenimiento. Revise el registro e inténtelo de nuevo como administrador.</value></data>
   <data name="WU_Schedule_TargetUnavailable" xml:space="preserve"><value>No se pudo preparar la copia protegida o el instalador. No se creó ninguna tarea para la ruta portable. Revise el registro e inténtelo como administrador.</value></data>
   <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>Actualice la aplicación portable original. Su próximo inicio como administrador renovará automáticamente la copia local protegida.</value></data>
+  <data name="WU_SearchPartial" xml:space="preserve"><value>La verificación o la búsqueda está incompleta. Se desconoce la disponibilidad de actualizaciones; vuelva a buscar.</value></data>
+  <data name="WU_SelectionSkipped" xml:space="preserve"><value>Se omitieron {0} actualizaciones seleccionadas, incluidas {1} con una revisión modificada. No se instaló ninguna revisión de reemplazo. Vuelva a buscar para seleccionar actualizaciones.</value></data>
+  <data name="WU_SelectionUnavailable" xml:space="preserve"><value>Las actualizaciones seleccionadas ya no están disponibles con la directiva seleccionada. No se instaló nada. Vuelva a buscar.</value></data>
 </root>

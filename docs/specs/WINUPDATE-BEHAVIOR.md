@@ -130,6 +130,28 @@ Line numbers refer to that commit.
 
 ## Owner decisions (2026-11-06)
 
+### D-031 selected-update GUI refinement (2026-11-13, issue #22)
+
+WU-03's full three-query discovery remains for report-only Scan and automatic/
+CLI passes. The GUI captures the retained object's primary source and reported
+context, then revalidates frozen selections with one to three existing query
+classes under the operation lease. Unknown/changed context completes full
+validation without repeating completed classes; required failure aborts.
+Provider observations do not prove the contacted endpoint or all policy changes.
+
+WU-26 Broad evidence is shared with a three-query engine snapshot instead of a
+separate GUI refresh. Known restart-required outcomes remain Broad-only; the
+GUI refresh restart check is preserved before snapshot expansion. Failed Broad
+is Verification Unknown, logged against the shared query ID, never proof of
+installation or a fully updated machine. Partial snapshots remain explicit.
+
+Changed revisions are skipped/reported without replacement or automatic rescan.
+All unavailable returns SelectionUnavailable (code0, no installation or last-
+successful-run claim), with a request for the user to Scan again. Report-only
+GUI Scan probes/releases the lease before querying; another operation can start
+afterward. Collision at the brief probe yields existing AlreadyRunning/21 with
+no WinTool automatic Retry. No automatic launch discovery scan is introduced.
+
 | Id | Question | Decision |
 | --- | --- | --- |
 | Q-WU-1 | Drop the driver audit report? | Dropped. |

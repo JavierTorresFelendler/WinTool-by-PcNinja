@@ -22,6 +22,7 @@ namespace WinTool.WindowsUpdate.Engine
             {
                 case RunResult.Succeeded:
                 case RunResult.NoUpdates:
+                case RunResult.SelectionUnavailable:
                 case RunResult.MaxPassesReached:
                     return Ok;
                 case RunResult.RebootRequired:

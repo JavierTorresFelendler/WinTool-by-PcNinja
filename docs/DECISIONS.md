@@ -468,7 +468,39 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   Existing unrelated passing VM evidence can be reused with its stated limits.
 - No merge, tag, release or production rollout is authorized by this decision.
 
+## D-031 Selected-update revalidation and shared verification (issue #22)
+
+- **Status:** Accepted (2026-11-13), owner request and independently reviewed
+  bounded implementation plan. No merge or release authority.
+- Preserve full Broad/Driver/Optional discovery. For the GUI selected-update
+  operation, freeze identities, revisions, scope and primary retained-object
+  source/context; revalidate with fresh objects using only necessary existing
+  query classes. No new native criteria or routing assignments.
+- A changed revision is skipped and reported. Do not install a replacement or
+  automatically rescan. Missing items are neutrally unavailable, not inferred
+  installed. Required-query failure stops the operation before installation.
+- Unknown/mismatched requested/reported context falls back to the full three
+  queries. Reuse completed query classes; an unstable batch completes with fresh
+  objects and records the RC3-equivalent exposure rather than aborting for that
+  reason alone. Context records do not prove the actual contacted server or
+  detect every policy/WSUS change.
+- After installation share the engine-owned Broad verification with the GUI
+  discovery snapshot. Known restart-required outcomes retain Broad-only
+  verification. Failed Broad means verification Unknown; never infer installed
+  or fully updated from absence. All skipped has no post-scan; request an
+  explicit new user Scan.
+- Report-only GUI Scan probes the operation lease and releases immediately,
+  then searches without holding it. Busy is normal, never queued. The advisory
+  probe can briefly collide with a scheduled run: the existing runner returns
+  AlreadyRunning/21 without requesting Retry or changing state. A scheduled run
+  that starts after release can proceed while the GUI scan is active.
+- Preserve D-030 cancellation boundaries. Test call budgets, fresh/revision
+  checks, partial results, fallback reuse, cancellation, and probe races; green
+  CI and exact-head independent review precede one focused owner-VM check.
+  Original A/B evidence is reused with its existing limits. No full native
+  asynchronous cancellation, service deadline or security/installer change.
+
 ## Open questions
 
-None at the moment. D-027, D-028, D-029 and D-030 record the separately accepted owner
+None at the moment. D-027, D-028, D-029, D-030 and D-031 record the separately accepted owner
 decisions; their original predecessor entries remain intact.

@@ -65,7 +65,7 @@ Cancelar: cerrar.</value></data>
   <data name="Dash_OfficeEol" xml:space="preserve"><value>El soporte de esta versión de Office ha terminado.</value></data>
   <data name="Dash_VolumeLicense" xml:space="preserve"><value>Licencia por volumen</value></data>
   <data name="Dash_ScheduleOff" xml:space="preserve"><value>Desactivada</value></data>
-  <data name="Dash_LastRun" xml:space="preserve"><value>Última ejecución</value></data>
+  <data name="Dash_LastRun" xml:space="preserve"><value>Última ejecución registrada</value></data>
   <data name="Dash_Never" xml:space="preserve"><value>Nunca</value></data>
   <data name="Dash_ThisComputer" xml:space="preserve"><value>Este equipo</value></data>
   <data name="Dash_ComputerName" xml:space="preserve"><value>Nombre del equipo</value></data>
@@ -433,4 +433,22 @@ Cancelar: no hacer nada.</value></data>
   <data name="WU_SearchPartial" xml:space="preserve"><value>La verificación o la búsqueda está incompleta. Se desconoce la disponibilidad de actualizaciones; vuelva a buscar.</value></data>
   <data name="WU_SelectionSkipped" xml:space="preserve"><value>Se omitieron {0} actualizaciones seleccionadas, incluidas {1} con una revisión modificada. No se instaló ninguna revisión de reemplazo. Vuelva a buscar para seleccionar actualizaciones.</value></data>
   <data name="WU_SelectionUnavailable" xml:space="preserve"><value>Las actualizaciones seleccionadas ya no están disponibles con la directiva seleccionada. No se instaló nada. Vuelva a buscar.</value></data>
+  <data name="History_Empty" xml:space="preserve"><value>No hay ninguna ejecución registrada disponible.</value></data>
+  <data name="History_Value" xml:space="preserve"><value>{0} · {1} · {2}</value></data>
+  <data name="History_Type_Manual" xml:space="preserve"><value>Manual</value></data>
+  <data name="History_Type_Scheduled" xml:space="preserve"><value>Programada</value></data>
+  <data name="History_Type_Retry" xml:space="preserve"><value>Reintento</value></data>
+  <data name="History_Type_Startup" xml:space="preserve"><value>Al iniciar</value></data>
+  <data name="History_Type_Wake" xml:space="preserve"><value>Al reanudarse</value></data>
+  <data name="History_Result_Success" xml:space="preserve"><value>Completada correctamente</value></data>
+  <data name="History_Result_Partial" xml:space="preserve"><value>Completada con errores</value></data>
+  <data name="History_Result_NoUpdates" xml:space="preserve"><value>No se informaron actualizaciones aplicables</value></data>
+  <data name="History_Result_Reboot" xml:space="preserve"><value>Reinicio necesario</value></data>
+  <data name="History_Result_Retry" xml:space="preserve"><value>Reintento programado</value></data>
+  <data name="History_Result_Attention" xml:space="preserve"><value>Requiere atención</value></data>
+  <data name="History_Result_Skipped" xml:space="preserve"><value>Omitida</value></data>
+  <data name="History_Result_Cancelled" xml:space="preserve"><value>Cancelada</value></data>
+  <data name="History_Result_Unavailable" xml:space="preserve"><value>Actualizaciones seleccionadas no disponibles</value></data>
+  <data name="History_Result_Failed" xml:space="preserve"><value>Fallida</value></data>
+  <data name="History_Result_Incomplete" xml:space="preserve"><value>Registrada en curso; finalización desconocida</value></data>
 </root>

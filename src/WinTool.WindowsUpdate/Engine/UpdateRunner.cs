@@ -251,6 +251,8 @@ namespace WinTool.WindowsUpdate.Engine
                 }
 
                 Report(progress, RunStage.Installing, pass, 0, downloaded.Count, null);
+                if (cancellation.IsCancellationRequested)
+                    return Outcome(RunResult.Cancelled, "Cancelled before installation. Nothing from this pass was installed.", totalFound, passesCompleted, items, false);
                 var install = agent.Install(downloaded);
                 passesCompleted = pass;
                 items.AddRange(install.Items);

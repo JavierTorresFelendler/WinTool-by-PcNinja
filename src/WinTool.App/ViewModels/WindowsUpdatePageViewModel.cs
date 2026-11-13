@@ -108,6 +108,7 @@ namespace WinTool.App.ViewModels
         private CancellationTokenSource cancellation;
         private bool loaded;
         private bool busy;
+        private RunStage runStage = RunStage.Checking;
         private bool hasScanned;
         private DateTime? lastScan;
         private PendingRestartState pending = PendingRestartState.None;
@@ -142,7 +143,7 @@ namespace WinTool.App.ViewModels
             this.env = env;
             ScanCommand = new AsyncCommand(ScanAsync, () => !busy);
             InstallCommand = new AsyncCommand(InstallAsync, () => !busy && !pending.Pending && Rows.Any(r => r.IsSelected));
-            CancelCommand = new RelayCommand(() => cancellation?.Cancel(), () => busy && cancellation != null);
+            CancelCommand = new RelayCommand(CancelCurrentOperation, () => CanRequestCancellation);
             RestartCommand = new RelayCommand(RestartNow, () => pending.Pending && !busy);
             HealthCheckCommand = new AsyncCommand(() => HealthAsync(true), () => !busy);
             CollectLogsCommand = new AsyncCommand(CollectLogsAsync, () => !busy);
@@ -161,6 +162,21 @@ namespace WinTool.App.ViewModels
         public void RequestCancel()
         {
             if (CancelCommand.CanExecute(null)) CancelCommand.Execute(null);
+        }
+
+        private void CancelCurrentOperation()
+        {
+            if (!CanRequestCancellation) return;
+            var source = cancellation;
+            var requestedAt = DateTime.UtcNow;
+            var requestedStage = runStage;
+            // Signal before diagnostic I/O so logging cannot delay the boundary check.
+            source.Cancel();
+            env.Log.Write(EventIds.CancelRequested, EventLevel.Information,
+                "CancelRequested: UI stage=" + requestedStage + "; requestedAtUtc=" + requestedAt.ToString("O", CultureInfo.InvariantCulture) +
+                ". Waiting for the current Windows operation to finish.");
+            OnPropertyChanged(nameof(ProgressText));
+            CommandManager.InvalidateRequerySuggested();
         }
         public ICommand RestartCommand { get; }
 
@@ -201,7 +217,9 @@ namespace WinTool.App.ViewModels
         public bool HasMessage => !string.IsNullOrEmpty(Message);
         public bool MessageIsError { get => messageIsError; private set => Set(ref messageIsError, value); }
 
-        public string ProgressText { get => progressText; private set => Set(ref progressText, value); }
+        private bool CanRequestCancellation => busy && cancellation != null && !cancellation.IsCancellationRequested &&
+            (runStage == RunStage.Checking || runStage == RunStage.Searching || runStage == RunStage.Downloading);
+        public string ProgressText { get => cancellation?.IsCancellationRequested == true ? T["WU_CancelPending"] : progressText; private set => Set(ref progressText, value); }
         public double ProgressValue { get => progressValue; private set => Set(ref progressValue, value); }
         public bool ProgressIndeterminate { get => progressIndeterminate; private set => Set(ref progressIndeterminate, value); }
 
@@ -280,7 +298,11 @@ namespace WinTool.App.ViewModels
             if (!Begin(T["WU_Progress_Starting"], indeterminate: true)) return;
 
             cancellation = new CancellationTokenSource();
-            var progress = new Progress<RunProgress>(OnProgress);
+            var progressSource = cancellation;
+            var progress = new Progress<RunProgress>(value =>
+            {
+                if (ReferenceEquals(cancellation, progressSource)) OnProgress(value);
+            });
             var dispatcher = Application.Current.Dispatcher;
             var request = new RunRequest
             {
@@ -573,6 +595,8 @@ namespace WinTool.App.ViewModels
 
         private void OnProgress(RunProgress value)
         {
+            runStage = value.Stage;
+            CommandManager.InvalidateRequerySuggested();
             switch (value.Stage)
             {
                 case RunStage.Searching:
@@ -628,6 +652,7 @@ namespace WinTool.App.ViewModels
         private bool Begin(string text, bool indeterminate)
         {
             if (busy) return false;
+            runStage = RunStage.Checking;
             IsBusy = true;
             ProgressText = text;
             ProgressIndeterminate = indeterminate;

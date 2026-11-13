@@ -101,7 +101,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="{Binding ProgressText}" Style="{StaticResource Text.Body}" TextTrimming="CharacterEllipsis" Margin="0,0,0,8" />
+                    <TextBlock Text="{Binding ProgressText}" ToolTip="{Binding ProgressText}" Style="{StaticResource Text.Body}" TextTrimming="CharacterEllipsis" Margin="0,0,0,8" />
                     <ProgressBar Value="{Binding ProgressValue, Mode=OneWay}" IsIndeterminate="{Binding ProgressIndeterminate}" Maximum="100" />
                 </StackPanel>
                 <Button Grid.Column="1" Style="{StaticResource Button.Secondary}" Margin="14,0,0,0" VerticalAlignment="Center"

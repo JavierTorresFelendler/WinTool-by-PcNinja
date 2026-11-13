@@ -38,7 +38,7 @@ Line numbers refer to that commit.
 | WU-21 | Before each pass, a pending restart stops the run with `RebootRequired`. | Core 3094 | **Keep**. |
 | WU-22 | Accepts the EULA of each queued update automatically. | Core 3168 | **Keep**. |
 | WU-23 | Downloads all queued updates as one batch; continues when the result is Succeeded or SucceededWithErrors; installs only updates that are actually downloaded. | Core 3205 | **Keep**. |
-| WU-24 | Download and install are synchronous, with no progress and no cancel. | Core 3208, 3247 | **Change**. Use the asynchronous API (`BeginDownload` / `BeginInstall`) for progress per update and a Cancel button. |
+| WU-24 | Download and install are synchronous, with no progress and no cancel. | Core 3208, 3247 | **Partial, D-030 (1.0.3)**. Cooperative cancellation stops before a new installation batch, including after the final download. The GUI logs the request and shows pending cancellation while the current native operation finishes; during installation it offers stopping after the current batch. Full asynchronous `BeginDownload` / `BeginInstall` progress and abort support is deferred by owner decision D-030. |
 | WU-25 | Only the overall install result is logged. | Core 3248 | **Change**. Also log the result and HRESULT of each update (`GetUpdateResult(i)`), and show which ones failed. |
 | WU-26 | After each pass, a verification search is logged. | Core 3270 | **Keep**. |
 | WU-27 | Installs everything in scope; the user cannot pick single updates. | Core 3150 | **Change**. The Windows Update screen has a checkbox per update (approved mockup). Scheduled runs keep installing everything in scope. |

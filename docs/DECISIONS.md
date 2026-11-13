@@ -443,7 +443,31 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 - This clarification changes no packaging behavior and grants no merge, tag,
   release or publication authority. Review and owner VM gates remain in force.
 
+## D-030 Cooperative Windows Update cancellation in 1.0.3; native async deferred
+
+- **Status:** Accepted (2026-11-13), explicit owner approval following FABLE's
+  source review and the owner VM evidence. Narrows the 1.0.3 delivery of WU-24;
+  it does not mark full asynchronous cancellation complete.
+- **Decision:** Deliver A+B as a separate reviewed PR: check cancellation after
+  the Installing progress report and immediately before starting a native
+  installation batch, including cancellation during the final/only download.
+  The result states that nothing from this pass was installed; outcomes from
+  earlier passes and existing reboot-required precedence remain intact.
+- The GUI logs `CancelRequested` with the displayed stage and UTC request time.
+  It shows pending cancellation, disables repeated requests, and labels the
+  installation-stage action as stopping after the current batch. Current
+  synchronous Windows operations can continue until they return; no claim of
+  immediate native abort is made and no process/service is force-terminated.
+- Full WU-24 `BeginDownload` / `BeginInstall` progress, native abort requests,
+  callbacks, completion and cleanup are deferred to separate future work.
+  This is a scope deferral, not removal of that requirement or its acceptance
+  tests. Original decision entries remain unchanged.
+- **Validation:** focused regression tests, independent FABLE review, green CI,
+  and a targeted owner-VM download-cancel scenario on the new candidate hash.
+  Existing unrelated passing VM evidence can be reused with its stated limits.
+- No merge, tag, release or production rollout is authorized by this decision.
+
 ## Open questions
 
-None at the moment. D-027, D-028 and D-029 record the separately accepted owner
+None at the moment. D-027, D-028, D-029 and D-030 record the separately accepted owner
 decisions; their original predecessor entries remain intact.

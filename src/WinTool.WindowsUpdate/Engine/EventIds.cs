@@ -20,6 +20,7 @@ namespace WinTool.WindowsUpdate.Engine
         public const int DownloadResult = 2030;
         public const int InstallResult = 2031;
         public const int UpdateItemFailed = 2032;
+        public const int CancelRequested = 2033;
         public const int RetryScheduled = 2040;
         public const int RetryNotScheduled = 2041;
         public const int RetryCancelled = 2042;

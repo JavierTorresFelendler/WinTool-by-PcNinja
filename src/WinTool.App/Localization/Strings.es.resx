@@ -106,6 +106,8 @@ Cancelar: cerrar.</value></data>
   <data name="WU_RestartPrompt" xml:space="preserve"><value>La instalación de las actualizaciones terminó. Reinicia el equipo para completarla; puede que aparezcan más actualizaciones después del reinicio.</value></data>
   <data name="WU_InstallSelected" xml:space="preserve"><value>Instalar seleccionadas</value></data>
   <data name="WU_Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="WU_CancelAfterInstall" xml:space="preserve"><value>Detener después de este grupo</value></data>
+  <data name="WU_CancelPending" xml:space="preserve"><value>Se solicitó la cancelación. Esperando a que Windows termine la operación actual.</value></data>
   <data name="WU_Available" xml:space="preserve"><value>Actualizaciones disponibles</value></data>
   <data name="WU_PressCheck" xml:space="preserve"><value>Pulsa «Buscar actualizaciones» para ver qué hay disponible.</value></data>
   <data name="WU_NoUpdates" xml:space="preserve"><value>No hay actualizaciones disponibles. Este equipo está al día.</value></data>

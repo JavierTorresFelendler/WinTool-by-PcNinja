@@ -98,6 +98,23 @@ namespace WinTool.WindowsUpdate.Tests
             Assert.Equal(RunResult.Succeeded, s.Run().Result);
             Assert.Equal(9, s.Agent.Criteria.Count);
         }
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void One_off_firmware_install_does_not_include_remaining_firmware_in_snapshot(bool missingDiscovery)
+        {
+            var s = new Scenario(); var selected = U.Driver("Selected firmware", "Firmware"); var remaining = U.Driver("Other firmware", "Firmware");
+            s.Agent.Inner.Available.AddRange(new[] { selected, remaining });
+            s.Select(selected); // Discovery/settings scope keeps firmware excluded.
+            s.Request.Scope = UpdateScope.Default(includeFirmware: true); // Explicit one-off consent.
+            if (missingDiscovery) s.Request.Selection = null;
+            var result = s.Run();
+            Assert.Equal(RunResult.Succeeded, result.Result); Assert.False(result.PostScan.Scope.Firmware);
+            var row = result.PostScan.Updates.Single(u => u.Update.Key == remaining.Key);
+            Assert.Equal(ExclusionReason.Firmware, row.Excluded); Assert.False(row.Included);
+            Assert.Equal(new[] { selected.Title }, s.Agent.Inner.Installed);
+            Assert.Equal(9, s.Agent.Criteria.Count);
+        }
         [Fact]
         public void Driver_seen_by_broad_and_driver_uses_primary_broad_only()
         {

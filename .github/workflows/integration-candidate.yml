@@ -13,4 +13,4 @@ jobs:
     if: github.head_ref == 'codex/integrated-maintenance-candidate' || github.head_ref == 'codex/cancel-boundary-and-state' || github.head_ref == 'codex/selected-search-optimization'
     uses: ./.github/workflows/ci.yml
     with:
-      tag: v1.0.3-rc.4
+      tag: v1.0.3-rc.6

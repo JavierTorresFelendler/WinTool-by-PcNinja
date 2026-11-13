@@ -489,6 +489,9 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   verification. Failed Broad means verification Unknown; never infer installed
   or fully updated from absence. All skipped has no post-scan; request an
   explicit new user Scan.
+- If restart becomes pending at the former GUI refresh gate, save
+  RebootRequired (without advancing LastSuccessfulRun), matching the existing
+  native-reboot branch rather than RC3's saved Succeeded in that late case.
 - Report-only GUI Scan probes the operation lease and releases immediately,
   then searches without holding it. Busy is normal, never queued. The advisory
   probe can briefly collide with a scheduled run: the existing runner returns

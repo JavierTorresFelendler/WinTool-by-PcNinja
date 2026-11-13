@@ -350,7 +350,7 @@ namespace WinTool.WindowsUpdate.Engine
                     // before expanding Broad into the shared three-query snapshot.
                     if (probe.GetPendingRestart().Pending)
                         return Outcome(RunResult.RebootRequired, "Updates were installed. Restart the computer to finish.", totalFound, passesCompleted, items, true);
-                    selectionState.PostScan = scanner.CompleteSnapshot(scope, verification);
+                    selectionState.PostScan = scanner.CompleteSnapshot(request.Selection?.Scope ?? UpdateScope.Default(store.LoadSettings().InstallFirmwareUpdates), verification);
                 }
             }
 

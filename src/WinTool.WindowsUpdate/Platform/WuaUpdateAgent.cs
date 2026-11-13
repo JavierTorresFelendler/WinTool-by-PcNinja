@@ -11,7 +11,7 @@ namespace WinTool.WindowsUpdate.Platform
     /// The Windows Update Agent through COM late binding (WU-01). Late binding
     /// avoids a generated interop assembly, so WinTool-by-PcNinja.exe stays one file.
     /// </summary>
-    public sealed class WuaUpdateAgent : IUpdateAgent
+    public sealed class WuaUpdateAgent : IUpdateAgent, IObservedSearchAgent
     {
         public const string ClientApplicationId = "WinTool by PcNinja";
         public const string MicrosoftUpdateServiceId = "7971f918-a847-4430-9279-4a52d1efe18d";
@@ -68,10 +68,44 @@ namespace WinTool.WindowsUpdate.Platform
         }
 
         public IReadOnlyList<UpdateItem> Search(string criteria)
+            => PrepareSearch().Search(criteria);
+
+        public IPreparedUpdateSearch PrepareSearch()
+        {
+            try { return new PreparedSearch(this, session.CreateUpdateSearcher()); }
+            catch (Exception ex) when (IsComFailure(ex)) { throw new UpdateAgentException("Cannot prepare Windows Update search: " + ex.Message, ex.HResult, ex); }
+        }
+
+        private sealed class PreparedSearch : IPreparedUpdateSearch
+        {
+            private readonly WuaUpdateAgent owner;
+            private readonly dynamic searcher;
+            public PreparedSearch(WuaUpdateAgent owner, dynamic searcher)
+            { this.owner = owner; this.searcher = searcher; Context = ReadContext(); }
+            public SearchContext Context { get; }
+            public SearchContext ReadContext()
+            {
+                int? server = ReadOptional<int>(() => Convert.ToInt32(searcher.ServerSelection));
+                bool? online = ReadOptional<bool>(() => (bool)searcher.Online);
+                bool? registered = ReadOptional<bool>(() => IsMicrosoftUpdateRegistered());
+                string service = null;
+                var serviceKnown = false;
+                try { service = (string)searcher.ServiceID; serviceKnown = true; }
+                catch (Exception ex) when (IsComFailure(ex)) { }
+                return new SearchContext(server, service, serviceKnown, online, registered);
+            }
+            public IReadOnlyList<UpdateItem> Search(string criteria) => owner.SearchPrepared(searcher, criteria);
+        }
+        private static T? ReadOptional<T>(Func<T> read) where T : struct
+        {
+            try { return read(); }
+            catch (Exception ex) when (IsComFailure(ex)) { return null; }
+        }
+
+        private IReadOnlyList<UpdateItem> SearchPrepared(dynamic searcher, string criteria)
         {
             try
             {
-                dynamic searcher = session.CreateUpdateSearcher();
                 dynamic result = searcher.Search(criteria);
                 var updates = result.Updates;
                 int count = updates.Count;

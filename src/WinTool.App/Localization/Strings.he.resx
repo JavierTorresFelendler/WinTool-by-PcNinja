@@ -430,4 +430,7 @@
   <data name="Startup_DataInitializationFailed" xml:space="preserve"><value>לא ניתן לאתחל את הנתונים המוגנים של WinTool. לא הופעלה פעולת תחזוקה. בדוק את היומן ונסה שוב כמנהל מערכת.</value></data>
   <data name="WU_Schedule_TargetUnavailable" xml:space="preserve"><value>לא ניתן להכין את העותק המוגן לתזמון או את המתקין. לא נוצרה משימה לנתיב הנייד. בדוק את היומן ונסה שוב כמנהל מערכת.</value></data>
   <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>עדכן את היישום הנייד המקורי. ההפעלה הבאה שלו כמנהל מערכת תרענן אוטומטית את העותק המקומי המוגן.</value></data>
+  <data name="WU_SearchPartial" xml:space="preserve"><value>האימות או החיפוש לא הושלמו. זמינות העדכונים אינה ידועה; יש לחפש שוב.</value></data>
+  <data name="WU_SelectionSkipped" xml:space="preserve"><value>דולגו {0} עדכונים שנבחרו, מתוכם {1} שגרסתם השתנתה. לא הותקנה גרסה חלופית. יש לחפש שוב כדי לבחור עדכונים.</value></data>
+  <data name="WU_SelectionUnavailable" xml:space="preserve"><value>העדכונים שנבחרו אינם זמינים עוד במסגרת המדיניות שנבחרה. לא הותקן דבר. יש לחפש שוב.</value></data>
 </root>

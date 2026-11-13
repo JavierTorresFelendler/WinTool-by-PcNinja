@@ -228,7 +228,7 @@ namespace WinTool.WindowsUpdate.Tests
         {
             var expected = new Dictionary<RunResult, int>
             {
-                { RunResult.Succeeded, 0 }, { RunResult.NoUpdates, 0 }, { RunResult.MaxPassesReached, 0 },
+                { RunResult.Succeeded, 0 }, { RunResult.NoUpdates, 0 }, { RunResult.SelectionUnavailable, 0 }, { RunResult.MaxPassesReached, 0 },
                 { RunResult.RebootRequired, 10 }, { RunResult.SucceededWithErrors, 11 },
                 { RunResult.RetryScheduled, 20 },
                 { RunResult.SkippedInstalling, 21 }, { RunResult.SkippedBackgroundActivity, 21 }, { RunResult.CooldownActive, 21 }, { RunResult.AlreadyRunning, 21 },

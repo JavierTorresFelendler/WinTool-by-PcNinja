@@ -42,6 +42,8 @@ namespace WinTool.WindowsUpdate.Engine
 
         public RunOutcome Run(RunRequest request, IProgress<RunProgress> progress = null, CancellationToken cancellation = default(CancellationToken), bool interactive = false)
         {
+            request = new RunRequest { Type = request.Type, Scope = request.Scope, SelectedKeys = request.SelectedKeys == null ? null : new HashSet<string>(request.SelectedKeys),
+                SelectionWorkflow = request.SelectionWorkflow, Selection = request.Selection, MaxPasses = request.MaxPasses, OnWindowsBusy = request.OnWindowsBusy };
             var heldLock = acquireOperationLock();
             if (heldLock == null)
             {
@@ -56,6 +58,10 @@ namespace WinTool.WindowsUpdate.Engine
                 try
                 {
                     return RunLocked(request, settings, state, progress, cancellation, interactive);
+                }
+                catch (OperationCanceledException) when (request.SelectionWorkflow && cancellation.IsCancellationRequested)
+                {
+                    return Finish(request.Type, state, new RunOutcome(RunResult.Cancelled, "Cancelled before installation."), false);
                 }
                 catch (Exception ex)
                 {
@@ -165,6 +171,24 @@ namespace WinTool.WindowsUpdate.Engine
 
         private RunOutcome RunPasses(RunRequest request, UpdateScope scope, IProgress<RunProgress> progress, CancellationToken cancellation)
         {
+            var state = new SelectionRunState();
+            var outcome = RunPassesCore(request, scope, progress, cancellation, state);
+            outcome.PostScan = state.PostScan;
+            outcome.VerificationUnknown = state.VerificationUnknown;
+            outcome.SelectionSkipped.AddRange(state.Skipped);
+            return outcome;
+        }
+
+        private sealed class SelectionRunState
+        {
+            public ScanResult PostScan;
+            public bool VerificationUnknown;
+            public readonly List<SelectionSkip> Skipped = new List<SelectionSkip>();
+        }
+
+        private RunOutcome RunPassesCore(RunRequest request, UpdateScope scope, IProgress<RunProgress> progress, CancellationToken cancellation, SelectionRunState selectionState)
+        {
+            if (request.SelectionWorkflow && request.SelectedKeys == null) throw new ArgumentException("Selection workflow requires frozen update keys.");
             var scanner = new ScanService(agent, log);
             var maxPasses = request.SelectedKeys != null ? 1 : Math.Max(1, Math.Min(10, request.MaxPasses));
             var totalFound = 0;
@@ -191,7 +215,20 @@ namespace WinTool.WindowsUpdate.Engine
                 if (cancellation.IsCancellationRequested) return Outcome(RunResult.Cancelled, "Cancelled.", totalFound, passesCompleted, items, false);
 
                 Report(progress, RunStage.Searching, pass, 0, 0, null);
-                var scan = scanner.Scan(scope, request.SelectedKeys, "Pass " + pass);
+                var scan = request.SelectionWorkflow ? scanner.Revalidate(scope, request.SelectedKeys, request.Selection, cancellation) : scanner.Scan(scope, request.SelectedKeys, "Pass " + pass);
+                if (request.SelectionWorkflow)
+                {
+                    foreach (var key in request.SelectedKeys.Where(k => !scan.IncludedUpdates.Any(u => u.Key == k)))
+                    {
+                        var original = request.Selection?.Entries.FirstOrDefault(e => e.Key == key);
+                        var changed = original != null && scan.Updates.Any(u => (u.Update.Key == key || !string.IsNullOrEmpty(original.UpdateId) && u.Update.UpdateId == original.UpdateId) && u.Update.Revision != original.Revision);
+                        var reason = changed ? SelectionSkipReason.ChangedRevision : scan.Updates.Any(u => u.Update.Key == key) ? SelectionSkipReason.Policy : SelectionSkipReason.NoLongerOffered;
+                        selectionState.Skipped.Add(new SelectionSkip(key, reason));
+                        log.Write(EventIds.UpdateSkippedScope, EventLevel.Information, "Selection skipped: " + key + "; reason=" + reason + ". Scan again before choosing a replacement.");
+                    }
+                    if (selectionState.Skipped.Count > 0 && !scan.IncludedUpdates.Any())
+                        return Outcome(RunResult.SelectionUnavailable, "The selected updates changed or are no longer offered under the selected policy. No installation was started. Scan again.", totalFound, passesCompleted, items, false);
+                }
                 if (scan.Updates.Count == 0)
                 {
                     var none = passesCompleted == 0
@@ -281,13 +318,19 @@ namespace WinTool.WindowsUpdate.Engine
 
                 // WU-26: verification search, logged only.
                 Report(progress, RunStage.Verifying, pass, 0, 0, null);
+                SearchEvidence verification = null;
                 try
                 {
-                    var remaining = agent.Search(ScanService.BroadCriteria);
+                    verification = scanner.Query("Broad");
+                    if (verification.Error != null) throw verification.Error;
+                    var remaining = verification.Updates;
                     log.Write(EventIds.SearchResult, EventLevel.Information, "After pass " + pass + ", " + remaining.Count + " update(s) remain.");
+                    log.Write(EventIds.VerificationResult, EventLevel.Information, "Verification succeeded; sharedQuery=" + verification.Id + "; criteria=" + verification.Criteria + "; count=" + remaining.Count + ". Absence is not an installation result.");
                 }
                 catch (UpdateAgentException ex)
                 {
+                    selectionState.VerificationUnknown = true;
+                    log.Write(EventIds.VerificationResult, EventLevel.Warning, "Verification Unknown; sharedQuery=" + verification?.Id + "; " + ex.Describe());
                     log.Write(EventIds.SearchFailed, EventLevel.Warning, "Verification search after pass " + pass + " failed. " + ex.Describe());
                 }
 
@@ -300,6 +343,14 @@ namespace WinTool.WindowsUpdate.Engine
                 if (lastInstall == RunResult.Failed)
                 {
                     return Outcome(RunResult.Failed, "Installation failed. Result: " + install.Result + ".", totalFound, passesCompleted, items, false);
+                }
+                if (request.SelectionWorkflow)
+                {
+                    // RC3's GUI checks restart again before its refresh. Keep that gate
+                    // before expanding Broad into the shared three-query snapshot.
+                    if (probe.GetPendingRestart().Pending)
+                        return Outcome(RunResult.RebootRequired, "Updates were installed. Restart the computer to finish.", totalFound, passesCompleted, items, true);
+                    selectionState.PostScan = scanner.CompleteSnapshot(request.Selection?.Scope ?? UpdateScope.Default(store.LoadSettings().InstallFirmwareUpdates), verification);
                 }
             }
 

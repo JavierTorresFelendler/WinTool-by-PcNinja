@@ -109,6 +109,7 @@ namespace WinTool.App.ViewModels
         private bool loaded;
         private bool busy;
         private RunStage runStage = RunStage.Checking;
+        private ScanResult discoverySnapshot;
         private bool hasScanned;
         private DateTime? lastScan;
         private PendingRestartState pending = PendingRestartState.None;
@@ -198,7 +199,7 @@ namespace WinTool.App.ViewModels
         public bool IsIdle => !busy;
         public bool HasScanned => hasScanned;
         public bool HasUpdates => Rows.Count > 0;
-        public bool NoUpdatesFound => hasScanned && Rows.Count == 0;
+        public bool NoUpdatesFound => hasScanned && discoverySnapshot?.Complete == true && Rows.Count == 0;
         public int ImportantCount => Rows.Count(r => r.IsImportant);
         public int OtherCount => Rows.Count(r => !r.IsImportant);
 
@@ -273,11 +274,14 @@ namespace WinTool.App.ViewModels
             if (!Begin(T["WU_Progress_Searching"], indeterminate: true)) return;
             try
             {
+                if (OtherOperationRunning()) { SetMessage(() => T["WU_OperationRunning"], false); return; }
                 var settings = env.Store.LoadSettings();
-                var scan = await Task.Run(() => new ScanService(env.CreateAgent(), env.Log).Scan(UpdateScope.Default(settings.InstallFirmwareUpdates)));
+                var scan = await Task.Run(() => ReportOnlyScan.TryRun(env.TryAcquireOperationLock,
+                    () => new ScanService(env.CreateAgent(), env.Log).Scan(UpdateScope.Default(settings.InstallFirmwareUpdates))));
+                if (scan == null) { SetMessage(() => T["WU_OperationRunning"], false); return; }
                 ApplyScan(scan);
                 var none = Rows.Count == 0;
-                SetMessage(none ? () => T["WU_NoUpdates"] : (Func<string>)null, false);
+                SetMessage(!scan.Complete ? () => T["WU_SearchPartial"] : none ? () => T["WU_NoUpdates"] : (Func<string>)null, false);
             }
             catch (UpdateAgentException ex)
             {
@@ -308,6 +312,8 @@ namespace WinTool.App.ViewModels
             {
                 Type = RunType.Manual,
                 SelectedKeys = new HashSet<string>(selected.Select(r => r.Key)),
+                SelectionWorkflow = true,
+                Selection = discoverySnapshot?.Select(new HashSet<string>(selected.Select(r => r.Key))),
                 Scope = UpdateScope.Default(includeFirmware: selected.Any(r => r.Scanned.IsFirmware) || env.Store.LoadSettings().InstallFirmwareUpdates),
                 OnWindowsBusy = activity => (BusyDecision)dispatcher.Invoke(new Func<BusyDecision>(() =>
                     Dialogs.Confirm(T.Format("WU_Busy_Question", activity.Message)) ? BusyDecision.Snooze : BusyDecision.Cancel))
@@ -334,6 +340,7 @@ namespace WinTool.App.ViewModels
                 if (row != null) row.Result = item.Succeeded ? T["WU_Item_Installed"] : T.Format("WU_Item_Failed", HResults.ToHex(item.HResult));
             }
 
+            if (outcome.PostScan != null) ApplyScan(outcome.PostScan);
             SetMessage(() => Explain(outcome), outcome.Result == RunResult.Failed || outcome.Result == RunResult.DownloadFailed || outcome.Result == RunResult.SucceededWithErrors);
             pending = await Task.Run(() => env.Probe.GetPendingRestart());
             if (outcome.RebootRequired || pending.Pending)
@@ -345,7 +352,6 @@ namespace WinTool.App.ViewModels
                 return;
             }
 
-            if (outcome.Result == RunResult.Succeeded || outcome.Result == RunResult.SucceededWithErrors) await ScanAsync();
             RaiseSummary();
         }
 
@@ -586,6 +592,7 @@ namespace WinTool.App.ViewModels
 
         private void ApplyScan(ScanResult scan)
         {
+            discoverySnapshot = scan;
             Rows.Clear();
             foreach (var update in scan.Updates.Where(u => u.Excluded != ExclusionReason.Scope)) Rows.Add(new UpdateRowViewModel(update));
             hasScanned = true;
@@ -621,11 +628,19 @@ namespace WinTool.App.ViewModels
 
         private string Explain(RunOutcome outcome)
         {
+            var text = ExplainResult(outcome);
+            if (outcome.SelectionSkipped.Count > 0) text += " " + T.Format("WU_SelectionSkipped", outcome.SelectionSkipped.Count, outcome.SelectionSkipped.Count(s => s.Reason == SelectionSkipReason.ChangedRevision));
+            if (outcome.VerificationUnknown || outcome.PostScan != null && !outcome.PostScan.Complete) text += " " + T["WU_SearchPartial"];
+            return text;
+        }
+        private string ExplainResult(RunOutcome outcome)
+        {
             switch (outcome.Result)
             {
+                case RunResult.SelectionUnavailable: return T["WU_SelectionUnavailable"];
                 case RunResult.Succeeded: return T["WU_Result_Succeeded"];
                 case RunResult.SucceededWithErrors: return T["WU_Result_SomeFailed"];
-                case RunResult.NoUpdates: return T["WU_NoUpdates"];
+                case RunResult.NoUpdates: return outcome.SelectionSkipped.Count > 0 ? T["WU_SelectionUnavailable"] : T["WU_NoUpdates"];
                 case RunResult.RebootRequired:
                     return outcome.Items.Any(i => i.Succeeded) ? T["WU_Result_Restart"] : T["WU_Result_RestartBlocking"];
                 case RunResult.Cancelled: return T["WU_Result_Cancelled"];

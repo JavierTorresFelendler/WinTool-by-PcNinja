@@ -1,4 +1,5 @@
 using System;
+using WinTool.App.Presentation;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -110,6 +111,7 @@ namespace WinTool.App.ViewModels
         private bool busy;
         private RunStage runStage = RunStage.Checking;
         private ScanResult discoverySnapshot;
+        private LastRunPresentation lastRun = LastRunPresentation.Empty;
         private bool hasScanned;
         private DateTime? lastScan;
         private PendingRestartState pending = PendingRestartState.None;
@@ -198,6 +200,7 @@ namespace WinTool.App.ViewModels
         public bool IsBusy { get => busy; private set { if (Set(ref busy, value)) OnPropertyChanged(nameof(IsIdle)); } }
         public bool IsIdle => !busy;
         public bool HasScanned => hasScanned;
+        public string LastRunText => lastRun.Format(key => T[key], T.Culture);
         public bool HasUpdates => Rows.Count > 0;
         public bool NoUpdatesFound => hasScanned && discoverySnapshot?.Complete == true && Rows.Count == 0;
         public int ImportantCount => Rows.Count(r => r.IsImportant);
@@ -701,6 +704,8 @@ namespace WinTool.App.ViewModels
 
         private void RaiseSummary()
         {
+            lastRun = LastRunPresentation.Read(env.Store.LoadState);
+            OnPropertyChanged(nameof(LastRunText));
             foreach (var name in new[] { nameof(HasScanned), nameof(HasUpdates), nameof(NoUpdatesFound), nameof(ImportantCount), nameof(OtherCount),
                 nameof(LastCheckText), nameof(CountText), nameof(RestartPending), nameof(NoRestartPending), nameof(RestartReason) })
             {

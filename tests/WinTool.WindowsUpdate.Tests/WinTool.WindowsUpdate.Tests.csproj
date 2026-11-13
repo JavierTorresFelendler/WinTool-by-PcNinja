@@ -19,5 +19,7 @@
     <ProjectReference Include="..\..\src\WinTool.WindowsUpdate\WinTool.WindowsUpdate.csproj" />
     <ProjectReference Include="..\..\src\WinTool.Core\WinTool.Core.csproj" />
     <Compile Include="..\Fakes\WindowsUpdateFakes.cs" Link="Fakes.cs" />
+    <Compile Include="..\..\src\WinTool.App\Presentation\LastRunPresentation.cs" Link="Presentation\LastRunPresentation.cs" />
+    <Content Include="..\..\src\WinTool.App\Localization\Strings*.resx" Link="LastRunResources\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

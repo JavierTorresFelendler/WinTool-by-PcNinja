@@ -65,7 +65,7 @@
   <data name="Dash_OfficeEol" xml:space="preserve"><value>התמיכה בגרסת Office הזו הסתיימה.</value></data>
   <data name="Dash_VolumeLicense" xml:space="preserve"><value>רישוי ארגוני</value></data>
   <data name="Dash_ScheduleOff" xml:space="preserve"><value>כבוי</value></data>
-  <data name="Dash_LastRun" xml:space="preserve"><value>הרצה אחרונה</value></data>
+  <data name="Dash_LastRun" xml:space="preserve"><value>הריצה המתועדת האחרונה</value></data>
   <data name="Dash_Never" xml:space="preserve"><value>אף פעם</value></data>
   <data name="Dash_ThisComputer" xml:space="preserve"><value>המחשב הזה</value></data>
   <data name="Dash_ComputerName" xml:space="preserve"><value>שם המחשב</value></data>
@@ -433,4 +433,22 @@
   <data name="WU_SearchPartial" xml:space="preserve"><value>האימות או החיפוש לא הושלמו. זמינות העדכונים אינה ידועה; יש לחפש שוב.</value></data>
   <data name="WU_SelectionSkipped" xml:space="preserve"><value>דולגו {0} עדכונים שנבחרו, מתוכם {1} שגרסתם השתנתה. לא הותקנה גרסה חלופית. יש לחפש שוב כדי לבחור עדכונים.</value></data>
   <data name="WU_SelectionUnavailable" xml:space="preserve"><value>העדכונים שנבחרו אינם זמינים עוד במסגרת המדיניות שנבחרה. לא הותקן דבר. יש לחפש שוב.</value></data>
+  <data name="History_Empty" xml:space="preserve"><value>אין ריצה מתועדת זמינה.</value></data>
+  <data name="History_Value" xml:space="preserve"><value>{0} · {1} · {2}</value></data>
+  <data name="History_Type_Manual" xml:space="preserve"><value>ידנית</value></data>
+  <data name="History_Type_Scheduled" xml:space="preserve"><value>מתוזמנת</value></data>
+  <data name="History_Type_Retry" xml:space="preserve"><value>ניסיון חוזר</value></data>
+  <data name="History_Type_Startup" xml:space="preserve"><value>בעת הפעלה</value></data>
+  <data name="History_Type_Wake" xml:space="preserve"><value>בעת התעוררות</value></data>
+  <data name="History_Result_Success" xml:space="preserve"><value>הושלמה בהצלחה</value></data>
+  <data name="History_Result_Partial" xml:space="preserve"><value>הושלמה עם שגיאות</value></data>
+  <data name="History_Result_NoUpdates" xml:space="preserve"><value>לא דווחו עדכונים ישימים</value></data>
+  <data name="History_Result_Reboot" xml:space="preserve"><value>נדרש אתחול</value></data>
+  <data name="History_Result_Retry" xml:space="preserve"><value>תוזמן ניסיון חוזר</value></data>
+  <data name="History_Result_Attention" xml:space="preserve"><value>נדרשת בדיקה</value></data>
+  <data name="History_Result_Skipped" xml:space="preserve"><value>דולגה</value></data>
+  <data name="History_Result_Cancelled" xml:space="preserve"><value>בוטלה</value></data>
+  <data name="History_Result_Unavailable" xml:space="preserve"><value>העדכונים שנבחרו אינם זמינים</value></data>
+  <data name="History_Result_Failed" xml:space="preserve"><value>נכשלה</value></data>
+  <data name="History_Result_Incomplete" xml:space="preserve"><value>תועדה כפעילה; ההשלמה אינה ידועה</value></data>
 </root>

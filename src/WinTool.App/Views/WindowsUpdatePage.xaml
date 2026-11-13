@@ -31,6 +31,8 @@
             <StackPanel>
                 <TextBlock Text="{Binding Title}" Style="{StaticResource Text.PageTitle}" />
                 <TextBlock Text="{Binding LastCheckText}" Style="{StaticResource Text.Subtitle}" Margin="0,2,0,0" />
+                <TextBlock Text="{loc:Loc Dash_LastRun}" FontSize="12" Foreground="{DynamicResource Brush.Muted}" Margin="0,8,0,0" />
+                <TextBlock Text="{Binding LastRunText}" FontSize="12.5" TextWrapping="Wrap" />
             </StackPanel>
             <Button Grid.Column="1" Style="{StaticResource Button.Soft}" VerticalAlignment="Bottom"
                     Command="{Binding ScanCommand}" Content="{loc:Loc WU_CheckForUpdates}" />

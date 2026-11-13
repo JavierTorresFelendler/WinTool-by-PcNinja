@@ -199,7 +199,7 @@ namespace WinTool.App.ViewModels
         public bool IsIdle => !busy;
         public bool HasScanned => hasScanned;
         public bool HasUpdates => Rows.Count > 0;
-        public bool NoUpdatesFound => hasScanned && Rows.Count == 0;
+        public bool NoUpdatesFound => hasScanned && discoverySnapshot?.Complete == true && Rows.Count == 0;
         public int ImportantCount => Rows.Count(r => r.IsImportant);
         public int OtherCount => Rows.Count(r => !r.IsImportant);
 

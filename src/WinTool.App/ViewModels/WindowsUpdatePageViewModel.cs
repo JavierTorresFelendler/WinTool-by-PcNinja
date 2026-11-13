@@ -168,10 +168,13 @@ namespace WinTool.App.ViewModels
         {
             var source = cancellation;
             if (source == null || source.IsCancellationRequested) return;
-            env.Log.Write(EventIds.CancelRequested, EventLevel.Information,
-                "CancelRequested: UI stage=" + runStage + "; requestedAtUtc=" + DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture) +
-                ". Waiting for the current Windows operation to finish.");
+            var requestedAt = DateTime.UtcNow;
+            var requestedStage = runStage;
+            // Signal before diagnostic I/O so logging cannot delay the boundary check.
             source.Cancel();
+            env.Log.Write(EventIds.CancelRequested, EventLevel.Information,
+                "CancelRequested: UI stage=" + requestedStage + "; requestedAtUtc=" + requestedAt.ToString("O", CultureInfo.InvariantCulture) +
+                ". Waiting for the current Windows operation to finish.");
             OnPropertyChanged(nameof(ProgressText));
             CommandManager.InvalidateRequerySuggested();
         }

@@ -45,6 +45,13 @@ See [the short final RC visit](testing/FINAL-RC.md).
 After that accepted visit, use [the stable-file finishing visit](testing/FINAL-STABLE.md)
 for exact production-stamped files. A later tag build can have different bytes;
 compare hashes and smoke changed final artifacts before publishing.
+For 1.0.3, D-035 records the accepted evidence limits. D-036 proposes the shortest
+remaining route: one combined final-file Windows 11 Smoke/Defender visit, then
+one immediate real 1.0.2 public-feed/download visit after publication. Reuse
+accepted campaigns; do not generate another RC just for documentation changes.
+D-036 remains proposed: obtain actual merge/tag/publication and conditional
+withdrawal authority separately before acting. No release file is uploaded or
+published by recording these decisions.
 
 1. Only after the above gates and explicit owner authorization, merge the work
    to `main` and wait for green CI.

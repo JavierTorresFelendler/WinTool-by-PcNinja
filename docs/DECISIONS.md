@@ -579,7 +579,48 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   feed gates, or supply permission to merge, tag or publish. Preserve the D-033
   limits and obtain the owner's separate decision before any such action.
 
+## D-035 Accept bounded stable-file evidence limits for 1.0.3
+
+- **Status:** Accepted (2026-11-14), explicit owner response accepting the
+  documented coverage limits. This grants no merge, tag or publication authority.
+- **Decision:** Accept the Windows 10 stable Smoke as owner console/GUI
+  attestation without its lost raw archive. Retain the raw RC8 Windows 10
+  evidence on identical product source and raw stable Windows 11 evidence;
+  never describe the missing stable archive as independently inspected.
+- **Limits:** Windows 10 22H2/build 19045 remains untested. SmartScreen
+  UNRECOGNIZED is accepted as an unsigned-app observation, not positive
+  reputation. No per-file cloud verdict was established; the owner accepts
+  that coverage limit for 1.0.3. Existing D-033 deferrals remain explicit.
+- **Consequences:** No repeat of those completed campaigns solely to reconstruct
+  evidence. Hash-bound observations apply only to the files actually checked.
+  Actual final changed-byte checks, public-feed validation and operational
+  authorization remain separate. Owner requested changes to the proposed
+  execution/rollback route; this acceptance does not approve that route.
+
+## D-036 Two final visits for 1.0.3 (proposed operational route)
+
+- **Status:** Proposed (2026-11-14). The owner requests the shortest route;
+  merge/tag/publication and conditional withdrawal are not yet authorized.
+- **Proposal:** Freeze product code and reuse all accepted evidence under
+  D-033/D-035. No additional RC or intermediate stable rebuild. After separate
+  authorization and green release CI, keep the actual release draft private.
+  Check source isolation and hashes; changed product code needs review.
+  For changed final files, combine one Windows 11 Smoke and one local Defender
+  custom scan in a single visit. Record actual final hashes and scan completion.
+  Do not transfer earlier security observations to different bytes.
+- **Post-publication proposal:** One immediate disposable-VM visit using
+  unchanged shipped 1.0.2 portable, default public feed, no overrides or
+  test-version opt-in. Verify offer, real self-update, exact published hash,
+  backup and startup. During that visit record actual public-browser download
+  behavior. Matching bytes need no second Smoke or local scan.
+- **Failure proposal requiring explicit approval:** Stop distribution and return
+  the release to draft, retain tag/assets/logs, verify previous public feed.
+  Do not automatically downgrade users or silently replace assets. Conditional
+  withdrawal must be decided with publication authorization; this proposal
+  does not grant it. No unconditional release action may be inferred.
+
 ## Open questions
 
-None at the moment. D-027, D-028, D-029, D-030, D-031, D-032, D-033 and D-034 record the separately accepted owner
-decisions; their original predecessor entries remain intact.
+D-036 operational approval, including conditional withdrawal, remains pending.
+D-027 through D-035 record separately accepted owner decisions; their original
+predecessor entries remain intact. No merge or publication authorization exists.

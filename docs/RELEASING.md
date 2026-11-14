@@ -49,9 +49,11 @@ For 1.0.3, D-035 records the accepted evidence limits. D-036 proposes the shorte
 remaining route: one combined final-file Windows 11 Smoke/Defender visit, then
 one immediate real 1.0.2 public-feed/download visit after publication. Reuse
 accepted campaigns; do not generate another RC just for documentation changes.
-D-036 remains proposed: obtain actual merge/tag/publication and conditional
-withdrawal authority separately before acting. No release file is uploaded or
-published by recording these decisions.
+D-037 records the owner's subsequent approval of that plan and the Portable-only
+public-feed scope. Already updated clients remain on their received version
+pending a separately validated fix. Obtain actual merge/tag/draft/publication
+and conditional withdrawal authority separately before acting. No release file
+is uploaded or published by recording these decisions.
 
 1. Only after the above gates and explicit owner authorization, merge the work
    to `main` and wait for green CI.

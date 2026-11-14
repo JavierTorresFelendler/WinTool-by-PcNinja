@@ -619,8 +619,31 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   withdrawal must be decided with publication authorization; this proposal
   does not grant it. No unconditional release action may be inferred.
 
+## D-037 Accept the D-036 route with explicit post-publication limits
+
+- **Status:** Accepted (2026-11-14), explicit owner approval of D-036 and the
+  two clarifications below. This supersedes D-036's proposed status while
+  preserving its original entry. Approval is for the plan, not execution now.
+- **Decision:** Use the two visits proposed in D-036: one combined actual-final-
+  file Windows 11 Smoke/local Defender visit before publication, and one
+  immediate public-feed/update/download visit afterward. Preserve source/hash
+  checks; changed final bytes need their own evidence. No intermediate RC or
+  repeated accepted campaign is required solely for these documentation changes.
+- **Already updated machines:** Returning a release to draft does not undo
+  updates already taken. Those machines remain on 1.0.3 pending a separately
+  validated fix through the pipeline; no automatic downgrade or silent asset
+  replacement. Individual remediation requires separate authority.
+- **Public-feed scope:** Exercise shipped 1.0.2 Portable only. Public installed-
+  MSI updating is not tested by that visit; rely on RC8's local-feed installed
+  route and the final MSI Smoke. Record this choice, not a public MSI pass.
+- **Failure plan:** The proposed withdrawal to draft retains tag/assets/logs
+  and verifies the previous public feed. Actual merge, tag, draft creation and
+  publication still need separate owner authorization. Include the conditional
+  failure action when obtaining publication authority; nothing is executed by
+  this planning approval. D-033, D-034 and D-035 limits remain unchanged.
+
 ## Open questions
 
-D-036 operational approval, including conditional withdrawal, remains pending.
-D-027 through D-035 record separately accepted owner decisions; their original
-predecessor entries remain intact. No merge or publication authorization exists.
+D-037 accepts D-036's plan and clarifications. Actual merge/tag/draft/publication
+authorization, including the conditional action at publication, remains pending.
+Earlier entries remain intact. No operational authorization is inferred.

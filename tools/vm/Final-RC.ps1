@@ -1,5 +1,6 @@
 [CmdletBinding()]
 param(
+    [ValidateSet('Upgrade','Smoke')][string]$Mode='Upgrade',
     [switch]$ConfirmDisposableVM,
     [switch]$ConfirmReviewedCandidate,
     [Parameter(Mandatory=$true)][string]$SnapshotLabel
@@ -102,6 +103,7 @@ try {
     if ($candidate.Version -ne '1.0.3-rc.8') { throw 'Wrong candidate metadata.' }
     $os=Get-CimInstance Win32_OperatingSystem
     if ($os.ProductType -ne 1 -or [int]$os.BuildNumber -lt 18362) { throw 'Windows 10 1903+ or Windows 11 client VM required.' }
+    if ($Mode -eq 'Smoke' -and [int]$os.BuildNumber -ge 22000) { throw 'The separate Smoke mode is specifically the Windows 10 compatibility gate.' }
     [pscustomobject]@{Build=$os.BuildNumber;Caption=$os.Caption;Snapshot=$SnapshotLabel;Candidate=$candidate} |
         ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $ev 'identity.json') -Encoding UTF8
     $installed=Join-Path $env:ProgramFiles 'PcNinja\WinTool\WinTool-by-PcNinja.exe'
@@ -139,30 +141,38 @@ try {
     $feedPath=Join-Path $feed 'releases.json'
     ConvertTo-Json -InputObject @($release) -Depth 6 | Set-Content -LiteralPath $feedPath -Encoding UTF8
     $env:WINTOOL_UPDATE_FEED=$feedPath; $env:WINTOOL_DATA_ROOT=$null
-    Copy-Item -LiteralPath (Join-Path $kit 'Baseline-1.0.2\WinTool-by-PcNinja.exe') -Destination $portable
     $exe=Join-Path $portable 'WinTool-by-PcNinja.exe'
-    $offer=Run-Json $exe 'app-update check --test-versions --json' 'portable-offer'
-    Assert-Offer $offer $candidate.Version $false
-    $upgrade=Run-Json $exe 'app-update install --yes --test-versions --json' 'portable-update'
-    Assert-UpgradeResult $upgrade $candidate.Version $false
+    if ($Mode -eq 'Upgrade') {
+        Copy-Item -LiteralPath (Join-Path $kit 'Baseline-1.0.2\WinTool-by-PcNinja.exe') -Destination $portable
+        $offer=Run-Json $exe 'app-update check --test-versions --json' 'portable-offer'
+        Assert-Offer $offer $candidate.Version $false
+        $upgrade=Run-Json $exe 'app-update install --yes --test-versions --json' 'portable-update'
+        Assert-UpgradeResult $upgrade $candidate.Version $false
+        Assert-Hash (Join-Path $portable 'WinTool-by-PcNinja-v1.0.2.9000.exe') $candidate.BaselineExeSha256
+    } else {
+        Copy-Item -LiteralPath (Join-Path $kit 'Candidate\WinTool-by-PcNinja.exe') -Destination $portable
+    }
     Assert-Hash $exe $candidate.UniversalSha256
-    Assert-Hash (Join-Path $portable 'WinTool-by-PcNinja-v1.0.2.9000.exe') $candidate.BaselineExeSha256
     $version=Run-Json $exe 'version --json' 'portable-version'
     Assert-CandidateVersion $version $candidate
-    Observe-Gui $exe 'updated-portable'
+    Observe-Gui $exe 'candidate-portable'
     Assert-NoTasks
-    Run-Msi '/i' (Join-Path $kit 'Baseline-1.0.2\WinTool-by-PcNinja.msi') 'baseline-install'
-    $offer=Run-Json $installed 'app-update check --test-versions --json' 'installed-offer'
-    Assert-Offer $offer $candidate.Version $true
-    $upgrade=Run-Json $installed 'app-update install --yes --test-versions --json' 'installed-download'
-    Assert-UpgradeResult $upgrade $candidate.Version $true
-    Assert-Hash $upgrade.Installer $candidate.MsiSha256
-    # Run only the hash-checked MSI path, never the returned command string.
-    Run-Msi '/i' $upgrade.Installer 'rc-msi-upgrade'
+    if ($Mode -eq 'Upgrade') {
+        Run-Msi '/i' (Join-Path $kit 'Baseline-1.0.2\WinTool-by-PcNinja.msi') 'baseline-install'
+        $offer=Run-Json $installed 'app-update check --test-versions --json' 'installed-offer'
+        Assert-Offer $offer $candidate.Version $true
+        $upgrade=Run-Json $installed 'app-update install --yes --test-versions --json' 'installed-download'
+        Assert-UpgradeResult $upgrade $candidate.Version $true
+        Assert-Hash $upgrade.Installer $candidate.MsiSha256
+        # Run only the hash-checked MSI path, never the returned command string.
+        Run-Msi '/i' $upgrade.Installer 'rc-msi-upgrade'
+    } else {
+        Run-Msi '/i' (Join-Path $kit 'Candidate\WinTool-by-PcNinja.msi') 'rc-clean-install'
+    }
     Assert-Hash $installed $candidate.PlainSha256
     $version=Run-Json $installed 'version --json' 'installed-version'
     Assert-CandidateVersion $version $candidate
-    Observe-Gui $installed 'updated-installed'
+    Observe-Gui $installed 'candidate-installed'
     Assert-NoTasks
     Run-Msi '/x' (Join-Path $kit 'Candidate\WinTool-by-PcNinja.msi') 'rc-uninstall'
     if (Test-Path -LiteralPath $installed) { throw 'Installed EXE remained after uninstall.' }
@@ -172,7 +182,7 @@ try {
     $failure=$_.Exception.Message; Write-Warning $failure
 } finally {
     $env:WINTOOL_UPDATE_FEED=$oldFeed; $env:WINTOOL_DATA_ROOT=$oldData
-    [pscustomobject]@{Result=$result;Error=$failure;Steps=@($steps.ToArray());RebootRequested=$rebootRequested;NoWindowsUpdateOperation=$true;PublicFeedTested=$false} |
+    [pscustomobject]@{Result=$result;Mode=$Mode;Error=$failure;Steps=@($steps.ToArray());RebootRequested=$rebootRequested;NoWindowsUpdateOperation=$true;PublicFeedTested=$false} |
         ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $ev 'summary.json') -Encoding UTF8
     $zip=$ev+'.zip'
     try { Compress-Archive -LiteralPath $ev -DestinationPath $zip; if (-not (Test-Path -LiteralPath $zip -PathType Leaf)) { throw 'Archive missing.' }; Write-Host ('Return privately: '+$zip) }

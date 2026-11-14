@@ -3,8 +3,10 @@
 Do not run until independent review passes the exact source head and the kit
 hash is checked. No merge, tag, release or production rollout is authorized.
 
-Use a clean disposable **Windows 10 x64, 1903 or newer** VM with .NET Framework
-4.8 and a working rollback snapshot. Record the actual build and snapshot; one
+Use a clean disposable Windows client x64 VM with .NET Framework 4.8 and a
+working rollback snapshot. Preserve accepted evidence outside the VM first.
+Keep the existing Windows 11 VM; do not overwrite it to obtain Windows 10.
+Prefer a temporary separate Windows 10 VM. Record the actual build and snapshot; one
 Windows 10 build does not establish every supported Windows 10 configuration.
 An existing WinTool installation/data/task or WinUpdate Tool uninstall
 registration fails preflight without cleanup. Use a snapshot without V1/V2.
@@ -15,11 +17,20 @@ the controlled local-feed upgrade.
 
 ```powershell
 cd C:\WinTool-FinalRC
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Final-RC.ps1 -ConfirmDisposableVM -ConfirmReviewedCandidate -SnapshotLabel (Read-Host 'Actual restored clean snapshot name')
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Final-RC.ps1 -Mode Upgrade -ConfirmDisposableVM -ConfirmReviewedCandidate -SnapshotLabel (Read-Host 'Actual restored clean snapshot name')
 ```
 
-This single visit combines Windows 10 compatibility with both shipped **1.0.2**
-update routes. It uses the unchanged published universal EXE and MSI, not the
+Choose one of these two arrangements; do not run both unnecessarily:
+
+- Run `-Mode Upgrade` once on **Windows 10 x64, 1903 or newer**: it combines
+  compatibility and both upgrade routes, so no additional Windows 11 visit.
+- If Windows 10 is not ready, run `-Mode Upgrade` on the existing Windows 11 VM.
+  Later, use the same command with **`-Mode Smoke`** on a separate clean Windows
+  10 VM. Smoke opens the RC portable GUI, installs the RC MSI directly, opens
+  the installed GUI, and uninstalls. It never installs or updates 1.0.2.
+  A Windows 11 result cannot close the Windows 10 gate.
+
+Upgrade uses the unchanged published **1.0.2** universal EXE and MSI, not the
 re-versioned updater driver from the earlier test. The process-only local feed
 offers the exact final RC universal EXE/MSI. The old stable 1.0.2 accepts the
 feed override under its historical policy; the new RC accepts it under S3.

@@ -95,10 +95,12 @@ if($Phase -eq 'StandardUser') {
     $target=$saved.ProtectedTarget
     if((Get-FileHash -LiteralPath $source).Hash -ne $rcHash -or (Get-FileHash -LiteralPath $target).Hash -ne $rcHash){throw 'Fixture bytes changed'}
     $sourceWritable=ProbeWrite $source; $targetWritable=ProbeWrite $target
-    $probe=Join-Path (Split-Path $target) ('Boundary-'+[Guid]::NewGuid().ToString('N')+'.tmp');$folderDenied=$false
-    try {$stream=[IO.File]::Open($probe,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None);$stream.Dispose();Remove-Item -LiteralPath $probe}
+    $probe=Join-Path (Split-Path $target) ('Boundary-'+[Guid]::NewGuid().ToString('N')+'.tmp');$folderDenied=$false;$folderCreated=$false
+    try {$stream=[IO.File]::Open($probe,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None);$stream.Dispose();$folderCreated=$true}
     catch {if($_.Exception.GetBaseException() -is [UnauthorizedAccessException]){$folderDenied=$true}else{throw}}
-    $proof=[ordered]@{RunId=$saved.RunId;IsAdministrator=$false;UserSid=$identity.User.Value;SourceWritable=$sourceWritable;ProtectedTargetWritable=$targetWritable;ProtectedFolderCreateDenied=$folderDenied;Result=$(if($sourceWritable -and -not $targetWritable -and $folderDenied){'PASS'}else{'FAIL'})}
+    $cleanupError=$null
+    if($folderCreated){try {Remove-Item -LiteralPath $probe}catch {$cleanupError=$_.Exception.Message}}
+    $proof=[ordered]@{RunId=$saved.RunId;IsAdministrator=$false;UserSid=$identity.User.Value;SourceWritable=$sourceWritable;ProtectedTargetWritable=$targetWritable;ProtectedFolderCreateDenied=$folderDenied;ProtectedFolderFileCreated=$folderCreated;ProbeCleanupError=$cleanupError;Result=$(if($sourceWritable -and -not $targetWritable -and $folderDenied -and -not $folderCreated){'PASS'}else{'FAIL'})}
     $proof | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $userEv 'proof.json') -Encoding utf8
     $proof | ConvertTo-Json
     Write-Output 'Return to administrator; Finish only after PASS. No executable contents changed.'
@@ -111,6 +113,7 @@ try {
         if((Test-Path -LiteralPath $checkpoint) -or (Test-Path -LiteralPath $custom) -or (Test-Path -LiteralPath $data) -or (Test-Path -LiteralPath (Join-Path $env:ProgramData 'PcNinja\WinTool')) -or (OwnTasks).Count -or (Test-Path -LiteralPath 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\PcNinja\WinTool')) {throw 'Restore clean pre-WinTool snapshot first; preserve older evidence. No fixture removed.'}
         GrantFolder $lab $false
         Msi '/i' $baseline 'ownership-baseline-install'
+        if([Diagnostics.FileVersionInfo]::GetVersionInfo($installed).FileVersion -ne '1.0.2.9000'){throw 'Baseline must be older than portable; avoid a downgrade-guard false pass'}
         SetFutureTask $installed 'ownership-baseline-schedule'; AssertTask $installed
         InvokeExe $rc '--initialize-data' 'initialize-data'
         ImportStore
@@ -152,7 +155,7 @@ try {
     } else {
         $saved=Get-Content -LiteralPath $checkpoint -Raw | ConvertFrom-Json
         $proof=Get-Content -LiteralPath (Join-Path $userEv 'proof.json') -Raw | ConvertFrom-Json
-        if($proof.RunId -ne $saved.RunId -or $proof.Result -ne 'PASS' -or $proof.IsAdministrator -or -not $proof.SourceWritable -or $proof.ProtectedTargetWritable -or -not $proof.ProtectedFolderCreateDenied){throw 'Matching standard-user PASS required'}
+        if($proof.RunId -ne $saved.RunId -or $proof.Result -ne 'PASS' -or $proof.IsAdministrator -or -not $proof.SourceWritable -or $proof.ProtectedTargetWritable -or -not $proof.ProtectedFolderCreateDenied -or $proof.ProtectedFolderFileCreated){throw 'Matching standard-user PASS required'}
         if((Get-FileHash -LiteralPath $source).Hash -ne $rcHash -or (Get-FileHash -LiteralPath $saved.ProtectedTarget).Hash -ne $rcHash){throw 'Source/target changed; do not launch uninstall from unexpected bytes'}
         AssertTask $saved.ProtectedTarget
         Msi '/x' $msi 'custom-uninstall'

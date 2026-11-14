@@ -28,6 +28,29 @@ function InvokeExe([string]$file,[string]$arguments,[string]$label,[int]$expecte
 }
 function Msi([string]$op,[string]$package,[string]$label,[string]$extra='') {
     InvokeExe 'msiexec.exe' ($op+' "'+$package+'" '+$extra+' /qn /norestart /L*v "'+(Join-Path $ev ($label+'-msi.log'))+'"') $label
+    if($op -eq '/i') { WaitInstallerWorkers $label }
+}
+function WaitInstallerWorkers([string]$label,[ValidateRange(1,120)][int]$TimeoutSeconds=120) {
+    # MSI commit may leave an asynchronous import-v2 worker holding the gate.
+    # Observe only: never stop a worker, retry an installer or acquire its gate.
+    $timer=[Diagnostics.Stopwatch]::StartNew();$quiet=0;$nextNotice=0
+    $seen=New-Object 'System.Collections.Generic.HashSet[int]'
+    while($timer.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
+        $workers=@(Get-Process -Name 'WinTool-by-PcNinja' -ErrorAction SilentlyContinue)
+        foreach($worker in $workers) { $null=$seen.Add([int]$worker.Id) }
+        if($workers.Count -eq 0) { $quiet++ } else { $quiet=0 }
+        if($quiet -ge 3) {
+            $result.Steps+=@{Name=$label+'-worker-wait';Result='QUIET';ElapsedSeconds=$timer.Elapsed.TotalSeconds;ObservedProcessIds=@($seen | Sort-Object)}
+            return
+        }
+        if($timer.Elapsed.TotalSeconds -ge $nextNotice) {
+            Write-Host ('Waiting passively for installer workers: '+$label+'; '+[int]$timer.Elapsed.TotalSeconds+' seconds')
+            $nextNotice+=15
+        }
+        Start-Sleep -Seconds 1
+    }
+    $result.Steps+=@{Name=$label+'-worker-wait';Result='TIMEOUT';ElapsedSeconds=$timer.Elapsed.TotalSeconds;ObservedProcessIds=@($seen | Sort-Object)}
+    throw ('Installer worker wait timed out after '+$TimeoutSeconds+' seconds; no process was stopped. Return evidence, do not continue or rerun blindly.')
 }
 function AssertTask([string]$target) {
     $task=MainTask
@@ -136,7 +159,9 @@ try {
         $stream=[IO.File]::Open($logFile,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::ReadWrite)
         try {$stream.Position=$offset;$reader=New-Object IO.StreamReader($stream);try {$newLog=$reader.ReadToEnd()}finally{$reader.Dispose()}}finally{$stream.Dispose()}
         $newLog | Set-Content -LiteralPath (Join-Path $ev 'portable-update-run-new-log.txt') -Encoding utf8
-        if($newLog -notmatch 'Cooldown active' -or $newLog -match 'Worker refresh deferred|Task maintenance deferred|Query begin|Pass \d+ (downloaded|installed)|Starting service:|Microsoft Update registered'){throw 'Unexpected native work or refresh error; review evidence, no repeat'}
+        $commandAt=$newLog.IndexOf('Command: update run --scheduled --json',[StringComparison]::Ordinal)
+        $cooldownAt=$newLog.IndexOf('Cooldown active',[StringComparison]::Ordinal)
+        if($commandAt -lt 0 -or $cooldownAt -le $commandAt -or $newLog -match 'Worker refresh deferred|Task maintenance deferred|Query begin|Pass \d+ (downloaded|installed)|Starting service:|Microsoft Update registered'){throw 'Expected CLI-command-then-cooldown sequence missing, or native work/refresh error; review evidence, no repeat'}
         $result.Ownership='PASS';$result.NoNativeScanClaim=$true
         Msi '/x' $baseline 'ownership-baseline-uninstall'
         if((OwnTasks).Count){throw 'Baseline own tasks remain'}

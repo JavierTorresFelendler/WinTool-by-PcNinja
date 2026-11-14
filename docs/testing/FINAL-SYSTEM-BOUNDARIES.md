@@ -28,7 +28,11 @@ disconnected throughout. Do not start any task or open the GUI. Setup/Finish
 run elevated in 64-bit Windows PowerShell 5.1; StandardUser runs in the actual
 standard account, not an administrator with a filtered token.
 
-1. Setup installs baseline 1.0.2, creates a future schedule and disables the task.
+1. Setup installs baseline 1.0.2, then passively waits up to 120 seconds for
+   installer-started WinTool workers to exit (three consecutive one-second
+   observations with none present). It never kills a process, acquires the
+   worker's operation gate or retries a failed step. A timeout stops Setup and
+   returns evidence. It then creates a future schedule and disables the task.
    It initializes RC7 data, then seeds a synthetic last-finished timestamp and
    a 1440-minute cooldown, with auto retry off. This is test input, not a prior
    successful update. The real newer portable command is
@@ -39,10 +43,14 @@ standard account, not an administrator with a filtered token.
    Offline networking is an additional guard, not evidence of a successful run.
    Assert unchanged protected Program Files task XML and Scheduler file hashes,
    no task refresh errors or new native query/install/service-start markers.
+   The captured log must contain the exact CLI `Command: update run --scheduled
+   --json` line followed by `Cooldown active`, not just an exit code.
    Exit 21 with `AlreadyRunning` is NOT a pass for this test.
 2. Setup normally uninstalls the baseline, then installs the RC7 MSI into a
    lab-only folder with Users Modify. It creates another future, disabled SYSTEM
-   task. Its action must point at a protected managed copy matching RC7, never
+   task after the same bounded passive installer-worker wait. That wait observes
+   WinTool processes only; it does not prove an otherwise idle Windows machine.
+   Its action must point at a protected managed copy matching RC7, never
    the writable installed source. If MSI hardens the source so it is not writable,
    the intended writable-source fixture is unavailable, not silently counted.
 3. StandardUser opens the actual source EXE for writing without writing bytes;

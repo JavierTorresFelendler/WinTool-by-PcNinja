@@ -109,7 +109,18 @@ try {
         try {$events=@(Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-Windows Defender/Operational';StartTime=$scanStart.AddSeconds(-2);Id=1000,1001,1002,1116,1117} -ErrorAction Stop |
             ForEach-Object {[pscustomobject]@{Id=$_.Id;RecordId=$_.RecordId;TimeUtc=$_.TimeCreated.ToUniversalTime();Xml=$_.ToXml()}})} catch {$eventError=$_.Exception.Message}
         Save-Json ([pscustomobject]@{Events=$events;QueryError=$eventError}) 'defender-events.json'
-        Save-Json @(Get-MpThreatDetection) 'defender-detections.json'
+        $detections=@(Get-MpThreatDetection)
+        Save-Json $detections 'defender-detections.json'
+        $candidateFolder=Join-Path $kit 'Candidate'
+        $affected=@($detections | Where-Object {
+            @($_.Resources | Where-Object {
+                $_.IndexOf($candidateFolder,[StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+                $_.IndexOf($download,[StringComparison]::OrdinalIgnoreCase) -ge 0
+            }).Count -gt 0
+        })
+        if ($affected.Count -gt 0 -or @($events | Where-Object {$_.Id -eq 1116}).Count -gt 0) {
+            throw 'Defender reported a detection. Stop before opening the EXE; preserve evidence and do not bypass protection.'
+        }
         $smartSettings=@(foreach ($key in @('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','HKLM:\SOFTWARE\Policies\Microsoft\Windows\System')) {
             if (Test-Path -LiteralPath $key) {
                 $settings=Get-ItemProperty -LiteralPath $key

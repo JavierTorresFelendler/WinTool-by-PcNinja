@@ -67,7 +67,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Final-Stable.ps1 -Phas
 
 It verifies exact bytes and Internet zone, records Defender status/preferences,
 requests a custom scan of the kit's final universal EXE/MSI, and collects Defender
-events/detections privately. It selects the download in Explorer; double-click
+events/detections privately. A matching detection or new threat-detection event
+stops before Explorer opens the EXE. Otherwise it selects the download; double-click
 it manually, capture any warning and choose Run portable if the app opens.
 Report `NORMAL`, `UNRECOGNIZED`, `BLOCKED` or `UNAVAILABLE`, then close the app.
 An unrecognized unsigned-app warning is an observation requiring review, not a

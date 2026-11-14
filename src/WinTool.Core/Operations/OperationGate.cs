@@ -1,4 +1,5 @@
 // Ported from Windows Upgrade Tool by PcNinja (AppOperationGate, 1.3.0) for WinTool: one machine-wide gate for every WinTool operation.
+// The currently unused handoff protocol and its tests are deliberately retained to match upstream and simplify UPSTREAM-SYNC reviews.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

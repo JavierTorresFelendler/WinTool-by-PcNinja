@@ -78,7 +78,7 @@ namespace WinTool.Core.Tests
             try { Directory.Delete(folder, true); } catch (IOException) { }
         }
 
-        private static string Release(string tag, bool prerelease, bool draft = false, bool complete = true, string host = "https://github.com/")
+        private static string Release(string tag, bool prerelease, bool draft = false, bool complete = true, string host = ProductInfo.RepositoryUrl + "/releases/")
         {
             var assets = new List<string>
             {
@@ -91,7 +91,7 @@ namespace WinTool.Core.Tests
         }
 
         private static string Asset(string name, string host, string tag) =>
-            "{\"name\":\"" + name + "\",\"browser_download_url\":\"" + host + "dl/" + tag + "/" + name + "\"}";
+            "{\"name\":\"" + name + "\",\"browser_download_url\":\"" + host + "download/" + tag + "/" + name + "\"}";
 
         private static string Feed(params string[] releases) => "[" + string.Join(",", releases) + "]";
 

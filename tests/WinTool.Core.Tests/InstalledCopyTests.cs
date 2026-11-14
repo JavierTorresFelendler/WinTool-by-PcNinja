@@ -7,6 +7,18 @@ namespace WinTool.Core.Tests
 {
     public class InstalledCopyTests
     {
+        [Theory]
+        [InlineData(@"C:\Program Files\PcNinja\WinTool\WinTool-by-PcNinja.exe", @"C:\Program Files\PcNinja\WinTool", true)]
+        [InlineData(@"C:\PROGRAM FILES\PCNINJA\WINTOOL\WINTOOL-BY-PCNINJA.EXE", @"C:\Program Files\PcNinja\WinTool", true)]
+        [InlineData(@"C:\Program Files (x86)\PcNinja\WinTool\WinTool-by-PcNinja.exe", @"C:\Program Files\PcNinja\WinTool", false)]
+        [InlineData(@"C:\Program Files Evil\PcNinja\WinTool\WinTool-by-PcNinja.exe", @"C:\Program Files\PcNinja\WinTool", false)]
+        [InlineData(@"D:\Tools\Custom\WinTool-by-PcNinja.exe", @"D:\Tools\Custom\", true)]
+        [InlineData(@"D:\Tools\Custom Other\WinTool-by-PcNinja.exe", @"D:\Tools\Custom", false)]
+        [InlineData(@"D:\Tools\Custom\other.exe", @"D:\Tools\Custom", false)]
+        [InlineData(@"D:\Tools\Custom\WinTool-by-PcNinja.exe", null, false)]
+        public void Installed_identity_uses_the_exact_registered_executable(string exe, string folder, bool expected) =>
+            Assert.Equal(expected, InstalledCopy.IsInstalled(exe, folder));
+
         private static readonly string Downloaded = Path.Combine(Path.GetTempPath(), "Downloads", "WinTool-by-PcNinja.exe");
         private static readonly string Installed = Path.Combine(Path.GetTempPath(), "PcNinja", "WinTool", "WinTool-by-PcNinja.exe");
         private static readonly Version Alpha2 = new Version(1, 0, 0, 1002);

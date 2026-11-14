@@ -34,6 +34,24 @@ namespace WinTool.Core.Tests
         }
 
         [Fact]
+        public void Machine_access_refusal_uses_a_per_user_log_and_records_the_fallback()
+        {
+            using (var temp = new TempDirectory())
+            {
+                var machine = temp.File("Machine");
+                var user = temp.File("User");
+                var log = AppLog.CreateDefault(machine, user, () => { throw new UnauthorizedAccessException(); });
+                log.Info("App", "Started without elevation");
+                Assert.Equal(user, log.Directory);
+                Assert.False(Directory.Exists(machine));
+                var lines = File.ReadAllLines(log.CurrentFilePath);
+                Assert.Equal(2, lines.Length);
+                Assert.Contains("per-user log", lines[0]);
+                Assert.Contains("Started without elevation", lines[1]);
+            }
+        }
+
+        [Fact]
         public void Unwritable_location_does_not_throw()
         {
             var log = new AppLog("\0invalid");

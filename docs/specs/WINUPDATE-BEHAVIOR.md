@@ -38,7 +38,7 @@ Line numbers refer to that commit.
 | WU-21 | Before each pass, a pending restart stops the run with `RebootRequired`. | Core 3094 | **Keep**. |
 | WU-22 | Accepts the EULA of each queued update automatically. | Core 3168 | **Keep**. |
 | WU-23 | Downloads all queued updates as one batch; continues when the result is Succeeded or SucceededWithErrors; installs only updates that are actually downloaded. | Core 3205 | **Keep**. |
-| WU-24 | Download and install are synchronous, with no progress and no cancel. | Core 3208, 3247 | **Change**. Use the asynchronous API (`BeginDownload` / `BeginInstall`) for progress per update and a Cancel button. |
+| WU-24 | Download and install are synchronous, with no progress and no cancel. | Core 3208, 3247 | **Partial, D-030 (1.0.3)**. Cooperative cancellation stops before a new installation batch, including after the final download. The GUI logs the request and shows pending cancellation while the current native operation finishes. Cancel is disabled during installation and final verification because the GUI run is one pass. Full asynchronous `BeginDownload` / `BeginInstall` progress and abort support is deferred by owner decision D-030. |
 | WU-25 | Only the overall install result is logged. | Core 3248 | **Change**. Also log the result and HRESULT of each update (`GetUpdateResult(i)`), and show which ones failed. |
 | WU-26 | After each pass, a verification search is logged. | Core 3270 | **Keep**. |
 | WU-27 | Installs everything in scope; the user cannot pick single updates. | Core 3150 | **Change**. The Windows Update screen has a checkbox per update (approved mockup). Scheduled runs keep installing everything in scope. |
@@ -99,7 +99,7 @@ Line numbers refer to that commit.
 
 | Id | V2 behavior | Source | WinTool |
 | --- | --- | --- | --- |
-| WU-80 | Machine config `%ProgramData%\PcNinja\WinUpdateTool\config.json` and state `state.json`, written atomically; version-based migration of old defaults. | Core 1177–1340 | **Keep** the content, new folder `%ProgramData%\PcNinja\WinTool`. Import the V2 file on takeover (D-015). |
+| WU-80 | Machine config `%ProgramData%\PcNinja\WinUpdateTool\config.json` and state `state.json`, written atomically; version-based migration of old defaults. | Core 1177–1340 | **Keep** the content, new folder `%ProgramData%\PcNinja-WinTool` (D-028). Import the V2 file on takeover (D-015). |
 | WU-81 | State: last run started/finished/type/result/message, last success, retry scheduled/reason/count, restart required. | Core 1282 | **Keep**. Shown on the Dashboard and the Windows Update screen. |
 | WU-82 | Run lock file with process id and a 6-hour stale timeout. | Core 1359 | **Change**. The machine-wide operation lock (`OperationLock`) replaces it; the system releases it if the process dies. |
 | WU-83 | Every log line also goes to the Windows Application event log (source "PcNinja WinUpdate Tool"). Event ids are reused for different meanings (for example 1080–1086). | Core 1097 | **Change** (owner, Q-WU-4): keep the event log with source `WinTool by PcNinja`, one fixed event id per meaning, documented in a table. |
@@ -129,6 +129,28 @@ Line numbers refer to that commit.
 ---
 
 ## Owner decisions (2026-11-06)
+
+### D-031 selected-update GUI refinement (2026-11-13, issue #22)
+
+WU-03's full three-query discovery remains for report-only Scan and automatic/
+CLI passes. The GUI captures the retained object's primary source and reported
+context, then revalidates frozen selections with one to three existing query
+classes under the operation lease. Unknown/changed context completes full
+validation without repeating completed classes; required failure aborts.
+Provider observations do not prove the contacted endpoint or all policy changes.
+
+WU-26 Broad evidence is shared with a three-query engine snapshot instead of a
+separate GUI refresh. Known restart-required outcomes remain Broad-only; the
+GUI refresh restart check is preserved before snapshot expansion. Failed Broad
+is Verification Unknown, logged against the shared query ID, never proof of
+installation or a fully updated machine. Partial snapshots remain explicit.
+
+Changed revisions are skipped/reported without replacement or automatic rescan.
+All unavailable returns SelectionUnavailable (code0, no installation or last-
+successful-run claim), with a request for the user to Scan again. Report-only
+GUI Scan probes/releases the lease before querying; another operation can start
+afterward. Collision at the brief probe yields existing AlreadyRunning/21 with
+no WinTool automatic Retry. No automatic launch discovery scan is introduced.
 
 | Id | Question | Decision |
 | --- | --- | --- |

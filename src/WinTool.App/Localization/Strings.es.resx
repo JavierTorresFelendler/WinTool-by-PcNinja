@@ -65,7 +65,7 @@ Cancelar: cerrar.</value></data>
   <data name="Dash_OfficeEol" xml:space="preserve"><value>El soporte de esta versión de Office ha terminado.</value></data>
   <data name="Dash_VolumeLicense" xml:space="preserve"><value>Licencia por volumen</value></data>
   <data name="Dash_ScheduleOff" xml:space="preserve"><value>Desactivada</value></data>
-  <data name="Dash_LastRun" xml:space="preserve"><value>Última ejecución</value></data>
+  <data name="Dash_LastRun" xml:space="preserve"><value>Última ejecución registrada</value></data>
   <data name="Dash_Never" xml:space="preserve"><value>Nunca</value></data>
   <data name="Dash_ThisComputer" xml:space="preserve"><value>Este equipo</value></data>
   <data name="Dash_ComputerName" xml:space="preserve"><value>Nombre del equipo</value></data>
@@ -106,6 +106,7 @@ Cancelar: cerrar.</value></data>
   <data name="WU_RestartPrompt" xml:space="preserve"><value>La instalación de las actualizaciones terminó. Reinicia el equipo para completarla; puede que aparezcan más actualizaciones después del reinicio.</value></data>
   <data name="WU_InstallSelected" xml:space="preserve"><value>Instalar seleccionadas</value></data>
   <data name="WU_Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="WU_CancelPending" xml:space="preserve"><value>Se solicitó la cancelación. Esperando a que Windows termine la operación actual.</value></data>
   <data name="WU_Available" xml:space="preserve"><value>Actualizaciones disponibles</value></data>
   <data name="WU_PressCheck" xml:space="preserve"><value>Pulsa «Buscar actualizaciones» para ver qué hay disponible.</value></data>
   <data name="WU_NoUpdates" xml:space="preserve"><value>No hay actualizaciones disponibles. Este equipo está al día.</value></data>
@@ -417,7 +418,7 @@ No se puede deshacer desde WinTool.</value></data>
 {0}
 
 Sí: instalar WinTool ahora; el instalador crea esta programación y esta ventana se cierra.
-No: programar esta copia portable de todos modos (no muevas ni elimines el archivo).
+No: crear una copia local protegida para esta programación, sin instalar el MSI. Después se puede retirar el archivo portable original.
 Cancelar: no hacer nada.</value></data>
   <data name="UPD_NoInstallerForVersion" xml:space="preserve"><value>No se pudo descargar el instalador de WinTool {0}. Descarga WinTool-by-PcNinja.msi desde {1}.</value></data>
   <data name="Settings_Spanish_Review" xml:space="preserve"><value>El español es una primera traducción, pendiente de revisión por un hablante nativo.</value></data>
@@ -426,4 +427,28 @@ Cancelar: no hacer nada.</value></data>
   <data name="WU_InstallAfterRestart" xml:space="preserve"><value>Reinicia primero el equipo y luego vuelve a buscar e instalar.</value></data>
   <data name="WU_Restart_Busy" xml:space="preserve"><value>Hay otra operación de WinTool en curso, quizá una actualización programada. Reinicia cuando termine.</value></data>
   <data name="WU_Restart_WindowsBusy" xml:space="preserve"><value>Windows sigue instalando una actualización en segundo plano. Reiniciar ahora puede hacer que el reinicio tarde más. ¿Reiniciar de todos modos?</value></data>
+  <data name="Startup_DataInitializationFailed" xml:space="preserve"><value>WinTool no pudo inicializar sus datos protegidos. No se inició ninguna operación de mantenimiento. Revise el registro e inténtelo de nuevo como administrador.</value></data>
+  <data name="WU_Schedule_TargetUnavailable" xml:space="preserve"><value>No se pudo preparar la copia protegida o el instalador. No se creó ninguna tarea para la ruta portable. Revise el registro e inténtelo como administrador.</value></data>
+  <data name="UPD_ManagedTaskCopy" xml:space="preserve"><value>Actualice la aplicación portable original. Su próximo inicio como administrador renovará automáticamente la copia local protegida.</value></data>
+  <data name="WU_SearchPartial" xml:space="preserve"><value>La verificación o la búsqueda está incompleta. Se desconoce la disponibilidad de actualizaciones; vuelva a buscar.</value></data>
+  <data name="WU_SelectionSkipped" xml:space="preserve"><value>Se omitieron {0} actualizaciones seleccionadas, incluidas {1} con una revisión modificada. No se instaló ninguna revisión de reemplazo. Vuelva a buscar para seleccionar actualizaciones.</value></data>
+  <data name="WU_SelectionUnavailable" xml:space="preserve"><value>Las actualizaciones seleccionadas ya no están disponibles con la directiva seleccionada. No se instaló nada. Vuelva a buscar.</value></data>
+  <data name="History_Empty" xml:space="preserve"><value>No hay ninguna ejecución registrada disponible.</value></data>
+  <data name="History_Value" xml:space="preserve"><value>{0} · {1} · {2}</value></data>
+  <data name="History_Type_Manual" xml:space="preserve"><value>Manual</value></data>
+  <data name="History_Type_Scheduled" xml:space="preserve"><value>Programada</value></data>
+  <data name="History_Type_Retry" xml:space="preserve"><value>Reintento</value></data>
+  <data name="History_Type_Startup" xml:space="preserve"><value>Al iniciar</value></data>
+  <data name="History_Type_Wake" xml:space="preserve"><value>Al reanudarse</value></data>
+  <data name="History_Result_Success" xml:space="preserve"><value>Completada correctamente</value></data>
+  <data name="History_Result_Partial" xml:space="preserve"><value>Completada con errores</value></data>
+  <data name="History_Result_NoUpdates" xml:space="preserve"><value>No se informaron actualizaciones aplicables</value></data>
+  <data name="History_Result_Reboot" xml:space="preserve"><value>Reinicio necesario</value></data>
+  <data name="History_Result_Retry" xml:space="preserve"><value>Reintento programado</value></data>
+  <data name="History_Result_Attention" xml:space="preserve"><value>Requiere atención</value></data>
+  <data name="History_Result_Skipped" xml:space="preserve"><value>Omitida</value></data>
+  <data name="History_Result_Cancelled" xml:space="preserve"><value>Cancelada</value></data>
+  <data name="History_Result_Unavailable" xml:space="preserve"><value>Actualizaciones seleccionadas no disponibles</value></data>
+  <data name="History_Result_Failed" xml:space="preserve"><value>Fallida</value></data>
+  <data name="History_Result_Incomplete" xml:space="preserve"><value>Registrada en curso; finalización desconocida</value></data>
 </root>

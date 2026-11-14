@@ -165,6 +165,7 @@ namespace WinTool.WindowsUpdate.Tests
         public List<TaskEntry> All { get; } = new List<TaskEntry>();
         public HashSet<string> Undeletable { get; } = new HashSet<string>();
         public List<string> Started { get; } = new List<string>();
+        public Action BeforeRun { get; set; }
 
         public void Register(string name, string xml)
         {
@@ -180,7 +181,7 @@ namespace WinTool.WindowsUpdate.Tests
 
         public TaskEntry Get(string name) => All.FirstOrDefault(t => t.Folder == TaskNames.Folder && t.Name == name);
         public IReadOnlyList<TaskEntry> Find(Func<string, bool> nameMatches) => All.Where(t => nameMatches(t.Name)).ToList();
-        public void Run(string name) => Started.Add(name);
+        public void Run(string name) { BeforeRun?.Invoke(); Started.Add(name); }
     }
 
     internal sealed class Harness

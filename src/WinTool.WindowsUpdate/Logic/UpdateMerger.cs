@@ -18,6 +18,7 @@ namespace WinTool.WindowsUpdate.Logic
                     UpdateItem existing;
                     if (!byKey.TryGetValue(update.Key, out existing))
                     {
+                        update.PrimarySource = search.Key;
                         if (!update.Sources.Contains(search.Key)) update.Sources.Add(search.Key);
                         byKey[update.Key] = update;
                         order.Add(update);

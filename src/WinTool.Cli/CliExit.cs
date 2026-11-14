@@ -13,6 +13,7 @@ namespace WinTool.Cli
         public const int AdministratorRequired = 5;
         public const int Warning = 11;
         public const int Busy = 21;
+        public const int InstalledCopyRequired = 23;
 
         // Windows Upgrade (decision D-021).
         public const int UpgradeBlocked = 30;

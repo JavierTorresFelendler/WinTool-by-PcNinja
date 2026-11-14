@@ -39,8 +39,11 @@ public static class UpgradeHistory
         try
         {
             if (!File.Exists(StatePath)) return null;
-            var attempt = JsonData.Deserialize<UpgradeAttempt>(File.ReadAllText(StatePath));
+            var text = WinTool.Core.Security.ProtectedMachineData.IsMachinePath(StatePath)
+                ? WinTool.Core.Security.ProtectedMachineData.ReadProtectedFile(StatePath) : File.ReadAllText(StatePath);
+            var attempt = JsonData.Deserialize<UpgradeAttempt>(text);
             if (attempt is null) return null;
+            if (attempt.State == "LegacyStateUnconfirmed") return attempt;
             using var setup = Registry.LocalMachine.OpenSubKey(@"SYSTEM\Setup");
             var current = CurrentWindows.Read();
             var inProgress = Convert.ToInt32(setup?.GetValue("SystemSetupInProgress") ?? 0) != 0;
@@ -49,7 +52,7 @@ public static class UpgradeHistory
                     Environment.GetFolderPath(Environment.SpecialFolder.Windows))!) : null;
             return Reconcile(attempt, current, inProgress, failure);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException or WinTool.Core.Operations.OperationBusyException)
         { AppLog.Error($"Cannot read previous upgrade status: {ex.Message}"); return null; }
     }
 
@@ -71,5 +74,16 @@ public static class UpgradeHistory
         Directory.CreateDirectory(AppLog.Folder);
         WinTool.Core.IO.AtomicFile.WriteAllText(StatePath, JsonData.Serialize(attempt));
         AppLog.Info($"Upgrade state: {attempt.State}. Target build: {attempt.TargetBuild}; image: {attempt.ImageIndex}.");
+    }
+
+    public static string ValidateLegacyState(string json)
+    {
+        var value = JsonData.Deserialize<UpgradeAttempt>(json);
+        if (value is null || value.ImageIndex < 1 || value.ImageIndex > 65535 || value.OriginalBuild < 1 || value.TargetBuild < 1 ||
+            value.StartedUtc.Year < 2000 || value.StartedUtc > DateTimeOffset.UtcNow.AddDays(1)) throw new FormatException("Invalid legacy upgrade state.");
+        foreach (var text in new[] { value.SourceRoot, value.ImagePath, value.TargetEdition })
+            if (text is null || text.Length > 1024 || text.IndexOfAny(new[] { '\0', '\r', '\n' }) >= 0) throw new FormatException("Invalid legacy upgrade metadata.");
+        return JsonData.Serialize(value with { State = "LegacyStateUnconfirmed", ProcessExitCode = null, SetupFailure = null,
+            Message = "Legacy history imported; Setup and final upgrade outcomes require independent verification." });
     }
 }

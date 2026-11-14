@@ -31,6 +31,39 @@ Scheduled tasks and the MSI always wait.
 
 ## Schedule
 
+D-027 applies to every SYSTEM task: normal schedules, automatic retries and
+`update start-as-system`. A portable or writable custom MSI location provisions a
+protected copy under `%ProgramData%\PcNinja-WinTool\Scheduler\<SHA256>\`. The
+original file may then be removed without changing the task target. MSI
+registration alone does not prove a location is protected.
+
+The CLI never prompts or installs an MSI for scheduling. An explicit scheduling
+command provisions the copy as administrator; preparation failure returns exit
+23 before task removal. Manual updates start normally with automatic retry
+enabled; if a retry is needed but preparation fails, exit 22 reports that no
+retry was scheduled. Inspection, removal and disabling remain available from a
+portable copy. The GUI offers Install, protected copy (No), or Cancel.
+
+Removing tasks retires only unreferenced managed copies. A busy executable is
+retained with retirement.pending; cleanup retries on a later administrative
+task change or elevated manual start. MSI install/upgrade automatically refreshes
+all existing task targets; elevated manual GUI starts queue the same refresh
+without enabling a disabled main schedule. A managed worker never updates itself.
+Schedule status reports each worker's version and whether its bytes match the
+running image; a mismatch is reported while refresh is pending. Busy startup
+refresh waits in the background for up to 15 minutes; closing the application
+before it succeeds leaves the next elevated launch to retry. Only changing update
+and schedule CLI commands attempt refresh; read-only commands never refresh.
+Portable refresh preserves protected installed targets: only managed workers or
+unprotected legacy targets are eligible. The installed copy may refresh any task.
+A successful portable self-update starts the new EXE's internal waiting refresh.
+MSI refresh is best-effort and never blocks installation. Explicit schedule
+application and uninstall wait up to 15 minutes on busy. Uninstall logs other
+maintenance errors and continues; remaining tasks may require administrator
+cleanup. Maintenance exits 1 on refresh errors, 21 on uninstall busy timeout,
+and 0 on successful or best-effort removal. See
+docs/reviews/S2-PROTECTED-COPY-PLAN.md for limitations and VM checks.
+
 | Command | Admin | What it does |
 | --- | --- | --- |
 | `schedule show` | No | Settings, task state, next run, whether the task matches the settings. |
@@ -132,7 +165,7 @@ start /wait WinTool-by-PcNinja.exe office install --family ltsc --languages he-i
 | Command | What it does |
 | --- | --- |
 | `app-update check [--test-versions] [--json]` | Is a newer WinTool published on GitHub? Test versions only with `--test-versions` (D-023). |
-| `app-update install --yes [--test-versions] [--json]` | Portable: downloads and verifies the new EXE and replaces this one; the old one stays as `WinTool-by-PcNinja-v<file version>.exe` (D-018). Installed: downloads and verifies the MSI and prints the `msiexec` command to run once WinTool is closed. |
+| `app-update install --yes [--test-versions] [--json]` | Managed task copy: refused; update the original, whose next elevated launch refreshes workers. Portable: downloads and verifies the new EXE and replaces this one; the old one stays as `WinTool-by-PcNinja-v<file version>.exe` (D-018), then queues worker refresh from the new EXE. Installed: downloads and verifies the MSI and prints the `msiexec` command to run once WinTool is closed. |
 | `version [--json]` | Version; with `--json` also the file and MSI versions (D-024). |
 
 ## Other
@@ -140,16 +173,31 @@ start /wait WinTool-by-PcNinja.exe office install --family ltsc --languages he-i
 | Command | What it does |
 | --- | --- |
 | `status` | Version, computer, Windows, last update run, schedule, pending restart. |
-| `logs collect [--output folder\|file.zip]` | Zip with logs, settings, state, task XML and status. Default: `%ProgramData%\PcNinja\WinTool\LogPackages`. |
+| `logs collect [--output folder\|file.zip]` | Zip with logs, settings, state, task XML and status. Default: `%ProgramData%\PcNinja-WinTool\LogPackages`. |
 | `version`, `help`, `--self-test` | Version, this summary, completeness check of the EXE. |
+
+## Machine data
+
+D-028 moves machine data to %ProgramData%\PcNinja-WinTool. Elevated startup and
+changing commands perform a once-only, locked migration of validated legacy
+settings/state. Existing untrusted objects are retained separately and replaced
+with fresh protected objects. Updates and logs are not migrated. The Logs page
+and logs collect retain read-only access to old logs at
+%ProgramData%\PcNinja\WinTool\Logs. See docs/testing/MACHINE-DATA.md for the
+migration report, rejection behavior and pending VM checks.
+
+Initialization failure returns exit 24; no changing command starts.
 
 ## Test environment variables
 
-For testing only; WinTool works without them.
+Supported only in **Debug builds** or versions explicitly marked **alpha, beta
+or rc** (`AppVersion.IsTest`). A stable Release build ignores both variables
+and logs one notice per process. This applies equally to GUI, CLI and processes
+that were already started elevated. WinTool works without these variables.
 
 | Variable | Effect |
 | --- | --- |
-| `WINTOOL_DATA_ROOT` | An absolute folder. WinTool keeps its machine data (logs, Windows Update and upgrade state, downloaded updates, log packages) in `<root>\ProgramData` and its user settings in `<root>\User`, instead of `%ProgramData%\PcNinja\WinTool` and `%LocalAppData%\PcNinja\WinTool`. The log's first line says so. A relative or empty value is ignored. It does not move the old WinUpdate Tool's configuration, scheduled tasks, the registry or the installed program. |
+| `WINTOOL_DATA_ROOT` | Debug or alpha/beta/rc builds only; stable Release builds ignore it and log once. An absolute folder. WinTool keeps its machine data (logs, Windows Update and upgrade state, downloaded updates, log packages) in `<root>\ProgramData` and its user settings in `<root>\User`, instead of `%ProgramData%\PcNinja-WinTool` and `%LocalAppData%\PcNinja\WinTool`. The log's first line says so. A relative or empty value is ignored. It does not move the old WinUpdate Tool's configuration, scheduled tasks, the registry or the installed program. |
 | `WINTOOL_UPDATE_FEED` | Another releases JSON (https or a local file) for `app-update` and the update question; files beside a local JSON are used as the downloads. |
 
 Windows does not pass a process's variables to the copy it starts with administrator rights. When either variable is set and WinTool is not already running as administrator, the window does not restart itself elevated: it says so and exits with code 5. Set the variables in a command prompt opened as administrator and start WinTool from there. (Passing them on the command line instead would let a standard user steer an administrator process.)
@@ -167,7 +215,8 @@ Windows does not pass a process's variables to the copy it starts with administr
 | 11 | Completed, but some updates failed | Completed with warnings (health warnings, reset warnings) |
 | 20 | Retry scheduled | — |
 | 21 | Skipped: Windows busy, cooldown, or another WinTool operation running | Another WinTool operation is running |
-| 22 | Needs attention: retry limit reached or automatic retry off | — |
+| 22 | Needs attention: retry limit reached, automatic retry off, or protected target unavailable | — |
+| 23 | — | Protected local task target could not be prepared |
 | 30–33 | — | Windows Upgrade results, see above |
 | 40 | — | Office: the Office Deployment Tool could not be downloaded or extracted |
 | 41 | — | Office: the Office Deployment Tool is not signed by Microsoft; nothing ran |

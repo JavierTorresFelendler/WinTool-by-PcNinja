@@ -70,13 +70,13 @@ namespace WinTool.Core.Updates
 
         /// <summary>
         /// Where releases are read from. The environment variable WINTOOL_UPDATE_FEED may point to
-        /// another releases JSON (https or a local file) for testing before the repository is public.
+        /// another releases JSON (https or a local file) only in Debug or alpha/beta/rc builds.
         /// </summary>
         public static string FeedUrl
         {
             get
             {
-                var custom = Environment.GetEnvironmentVariable(FeedVariable);
+                var custom = TestEnvironment.Get(FeedVariable);
                 return string.IsNullOrWhiteSpace(custom) ? ReleaseFeed.ApiUrl : custom.Trim();
             }
         }
@@ -112,7 +112,7 @@ namespace WinTool.Core.Updates
                 throw new UpdateVerificationException(ReleaseFeed.ChecksumsFile + " of " + release.Tag + " has no line for " + assetName + ".");
 
             var folder = Path.Combine(downloadFolder, release.Version.ToString());
-            Directory.CreateDirectory(folder);
+            WinToolPaths.EnsureMachineDataDirectory(folder);
             var path = Path.Combine(folder, assetName);
             var partial = path + ".partial";
             if (File.Exists(partial)) File.Delete(partial);
@@ -175,7 +175,9 @@ namespace WinTool.Core.Updates
             if (File.Exists(url))
             {
                 // A local test feed's asset (only accepted beside a local feed file, see ReleaseFeed).
-                File.Copy(url, path, false);
+                if (Security.ProtectedMachineData.IsMachinePath(path))
+                { using (var input = File.OpenRead(url)) using (var output = Security.ProtectedMachineData.OpenWriter(path, false)) input.CopyTo(output); }
+                else File.Copy(url, path, false);
                 progress?.Report(new FileInfo(path).Length);
                 return;
             }
@@ -184,7 +186,9 @@ namespace WinTool.Core.Updates
             {
                 response.EnsureSuccessStatusCode();
                 using (var input = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                using (var output = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
+                using (var output = Security.ProtectedMachineData.IsMachinePath(path)
+                    ? Security.ProtectedMachineData.OpenWriter(path, false)
+                    : new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
                 {
                     var buffer = new byte[81920];
                     long total = 0;
@@ -219,6 +223,7 @@ namespace WinTool.Core.Updates
         /// <summary>Returns the path the previous copy was moved to.</summary>
         public static string Apply(string runningExe, string downloadedExe, Version runningFileVersion)
         {
+            if (Security.ProtectedTaskCopy.IsManagedPath(runningExe)) throw new UpdateVerificationException("Update the original portable application; its next elevated launch refreshes the protected task copy.");
             var folder = Path.GetDirectoryName(Path.GetFullPath(runningExe));
             var target = Path.Combine(folder, ReleaseFiles.Executable);
             var archive = Path.Combine(folder, ReleaseFiles.PreviousCopyName(runningFileVersion));

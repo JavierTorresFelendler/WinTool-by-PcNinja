@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using WinTool.Core;
 using WinTool.Core.Machine;
+using WinTool.App.Presentation;
 using WinTool.Upgrade;
 using WinTool.WindowsUpdate.Engine;
 using WinTool.WindowsUpdate.Schedule;
@@ -27,7 +28,7 @@ namespace WinTool.App.ViewModels
         private OfficeInfo office;
         private bool officeChecked;
         private string wan;
-        private WindowsUpdateState state = new WindowsUpdateState();
+        private LastRunPresentation lastRun = LastRunPresentation.Empty;
         private WindowsUpdateSettings settings = new WindowsUpdateSettings();
         private bool loading;
 
@@ -70,9 +71,7 @@ namespace WinTool.App.ViewModels
         public string UpdatesText => windowsUpdate.CountText;
         public bool RestartPending => windowsUpdate.RestartPending;
         public string ScheduleText => WinTool.App.Localization.ScheduleWords.Describe(settings, T);
-        public string LastRunText => string.IsNullOrEmpty(state.LastRunFinished)
-            ? T["Dash_Never"]
-            : FormatStamp(state.LastRunFinished) + " · " + (state.LastResult ?? string.Empty);
+        public string LastRunText => lastRun.Format(key => T[key], T.Culture);
 
         // Windows card
         public string WindowsName => machine?.Os?.FriendlyName ?? string.Empty;
@@ -163,7 +162,7 @@ namespace WinTool.App.ViewModels
             try
             {
                 settings = env.Store.LoadSettings();
-                state = env.Store.LoadState();
+                lastRun = LastRunPresentation.Read(env.Store.LoadState);
                 machine = await Task.Run(() => MachineInfo.ReadCurrent());
                 office = await Task.Run(() =>
                 {
@@ -208,14 +207,8 @@ namespace WinTool.App.ViewModels
         private void Refresh()
         {
             settings = env.Store.LoadSettings();
-            state = env.Store.LoadState();
+            lastRun = LastRunPresentation.Read(env.Store.LoadState);
             OnPropertyChanged(string.Empty);
-        }
-
-        private string FormatStamp(string stamp)
-        {
-            var parsed = WindowsUpdateState.Parse(stamp);
-            return parsed.HasValue ? parsed.Value.ToString("g", T.Culture) : stamp;
         }
 
         private string FormatUptime(TimeSpan uptime)

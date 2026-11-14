@@ -46,8 +46,18 @@ namespace WinTool.Core.Updates
 
         public static IReadOnlyList<ReleaseInfo> Parse(string json) => Parse(json, IsGitHubAsset);
 
-        /// <summary>Assets of published releases come from github.com only.</summary>
-        public static bool IsGitHubAsset(string url) => url.StartsWith("https://github.com/", StringComparison.Ordinal);
+        /// <summary>Accept only this repository's HTTPS release-download paths.</summary>
+        public static bool IsGitHubAsset(string url)
+        {
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps ||
+                !string.Equals(uri.Host, "github.com", StringComparison.OrdinalIgnoreCase) || !uri.IsDefaultPort ||
+                !string.IsNullOrEmpty(uri.UserInfo) || !string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment)) return false;
+            var prefix = new Uri(ProductInfo.RepositoryUrl).AbsolutePath + "/releases/download/";
+            if (!uri.AbsolutePath.StartsWith(prefix, StringComparison.Ordinal)) return false;
+            var parts = uri.AbsolutePath.Substring(prefix.Length).Split('/');
+            return parts.Length == 2 && parts[0].Length > 0 && parts[1].Length > 0 &&
+                uri.AbsolutePath.IndexOf('%') < 0 && url.IndexOf('\\') < 0;
+        }
 
         /// <summary>
         /// For a local test feed (WINTOOL_UPDATE_FEED set to a file): assets must be files in that

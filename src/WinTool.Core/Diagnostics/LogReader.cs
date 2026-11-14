@@ -39,7 +39,7 @@ namespace WinTool.Core.Diagnostics
         public static IReadOnlyList<DateTime> Days(string directory)
         {
             if (!Directory.Exists(directory)) return new DateTime[0];
-            return Directory.GetFiles(directory, "WinTool-*.log")
+            return Security.ProtectedMachineData.PlainFiles(directory).Where(path => Path.GetFileName(path).StartsWith("WinTool-", StringComparison.Ordinal) && path.EndsWith(".log", StringComparison.OrdinalIgnoreCase))
                 .Select(path => Path.GetFileNameWithoutExtension(path).Substring("WinTool-".Length))
                 .Select(stamp => DateTime.TryParseExact(stamp, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var day) ? day : (DateTime?)null)
                 .Where(day => day.HasValue).Select(day => day.Value)
@@ -55,7 +55,7 @@ namespace WinTool.Core.Diagnostics
             if (!File.Exists(path)) return new LogEntry[0];
             var lines = new List<string>();
             // Other WinTool processes (the scheduled task, the command line) may be writing.
-            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            using (var stream = Security.ProtectedMachineData.OpenLog(path))
             using (var reader = new StreamReader(stream, Encoding.UTF8))
             {
                 string line;
@@ -76,5 +76,30 @@ namespace WinTool.Core.Diagnostics
                 ? new LogEntry(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value.TrimStart())
                 : new LogEntry(string.Empty, string.Empty, string.Empty, line ?? string.Empty);
         }
+
+        public static IEnumerable<string> Directories(string current)
+        {
+            yield return current;
+            if (WinToolPaths.DataRootOverride == null) yield return Path.Combine(WinToolPaths.LegacyMachineData, "Logs");
+        }
+
+        public static IReadOnlyList<DateTime> AvailableDays(string current) => Directories(current).SelectMany(directory =>
+        {
+            try { return Days(directory); }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) { return new DateTime[0]; }
+        }).Distinct().OrderByDescending(day => day).ToList();
+
+        public static IReadOnlyList<LogEntry> ReadDay(string current, DateTime day, int count) => ReadDayFrom(Directories(current), day, count);
+        public static IReadOnlyList<LogEntry> ReadDayFrom(IEnumerable<string> directories, DateTime day, int count, string legacyDirectory = null) => directories.SelectMany(directory =>
+        {
+            try
+            {
+                var entries = ReadTail(PathFor(directory, day), count);
+                if (string.Equals(Path.GetFullPath(directory), Path.GetFullPath(legacyDirectory ?? Path.Combine(WinToolPaths.LegacyMachineData, "Logs")), StringComparison.OrdinalIgnoreCase))
+                    return entries.Select(entry => new LogEntry(entry.Time, entry.Level, "Legacy / " + entry.Area, entry.Message)).ToList();
+                return entries;
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) { return new LogEntry[0]; }
+        }).OrderBy(entry => entry.Time, StringComparer.Ordinal).Reverse().Take(count).Reverse().ToList();
     }
 }

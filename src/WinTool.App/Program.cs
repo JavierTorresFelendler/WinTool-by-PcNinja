@@ -99,6 +99,11 @@ namespace WinTool.App
                 // Started with administrator rights already: asked here, after a running window was activated instead.
                 if (askHere && !AskInstallOrPortable()) return ExitOk;
 
+                try { MachineDataTransition.Initialize(deferWhenBusy: true); }
+                catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
+                { AppLog.Current.Error("Storage", "Machine data initialization failed.", ex); ShowMessage(Loc.Instance["Startup_DataInitializationFailed"], MessageBoxImage.Stop); return 24; }
+                TaskMaintenance.OnElevatedStart();
+
                 var app = new App();
                 app.InitializeComponent();
                 return app.RunMainWindow(settings);
@@ -154,8 +159,8 @@ namespace WinTool.App
         }
 
         private static bool TestOverridesSet() =>
-            !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinToolPaths.DataRootVariable)) ||
-            !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(WinTool.Core.Updates.AppUpdater.FeedVariable));
+            !string.IsNullOrWhiteSpace(TestEnvironment.Get(WinToolPaths.DataRootVariable)) ||
+            !string.IsNullOrWhiteSpace(TestEnvironment.Get(WinTool.Core.Updates.AppUpdater.FeedVariable));
 
         /// <summary>Internal: the elevated restart after the user chose Run portable; not a command.</summary>
         internal const string PortableChosenArgument = "--portable-chosen";
@@ -169,7 +174,8 @@ namespace WinTool.App
         {
             if (!EmbeddedInstaller.IsPresent) return true;
             var exe = Process.GetCurrentProcess().MainModule.FileName;
-            if (exe.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), StringComparison.OrdinalIgnoreCase)) return true;
+            if (WinTool.Core.Security.ProtectedTaskCopy.IsManagedPath(exe) && WinTool.Core.Security.ProtectedMachineData.IsProtectedExecutable(exe)) return true;
+            if (WinTool.Core.Updates.InstalledCopy.IsInstalled(exe)) return true;
 
             // The installed copy itself (also outside Program Files) never asks.
             var installed = FindInstalledCopy();

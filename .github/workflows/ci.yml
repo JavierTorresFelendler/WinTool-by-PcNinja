@@ -10,6 +10,10 @@ on:
         description: Optional RC artifact version (v1.0.3-rc.8); builds only, never creates a tag or release
         type: string
         default: ""
+      stable_candidate_tag:
+        description: Optional stable-stamped validation artifacts (v1.0.3); no tag or release is created
+        type: string
+        default: ""
   # The release workflow runs this whole pipeline on a tag, stamped with the release version.
   workflow_call:
     inputs:
@@ -32,7 +36,9 @@ jobs:
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
-      WINTOOL_REQUESTED_TAG: ${{ inputs.tag || inputs.candidate_tag || '' }}
+      WINTOOL_REQUESTED_TAG: ${{ inputs.tag || inputs.candidate_tag || inputs.stable_candidate_tag || '' }}
+      WINTOOL_MANUAL_STABLE: ${{ inputs.stable_candidate_tag || '' }}
+      WINTOOL_MANUAL_RC: ${{ inputs.candidate_tag || '' }}
     steps:
       - uses: actions/checkout@v5
 
@@ -45,17 +51,30 @@ jobs:
         run: |
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File tools/vm/tests/TaskBoundary.Contracts.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File tools/vm/tests/FinalStable.Contracts.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File tools/vm/tests/FinalRc.Contracts.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Release version (D-024)
-        if: inputs.tag != '' || inputs.candidate_tag != ''
+        if: inputs.tag != '' || inputs.candidate_tag != '' || inputs.stable_candidate_tag != ''
         shell: pwsh
         run: |
           $tag = $env:WINTOOL_REQUESTED_TAG
-          if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and $tag -notmatch '^v\d+\.\d+\.\d+-rc\.[1-9]\d*$') {
-            Write-Host '::error title=version::Manual candidate builds accept only v<major>.<minor>.<patch>-rc.<n>'
-            exit 1
+          if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch') {
+            if ($env:WINTOOL_MANUAL_STABLE -and $env:WINTOOL_MANUAL_RC) {
+              Write-Host '::error title=version::Choose one manual version input, not both'
+              exit 1
+            }
+            if ($env:WINTOOL_MANUAL_STABLE) {
+              if ($tag -ne $env:WINTOOL_MANUAL_STABLE -or $tag -notmatch '^v\d+\.\d+\.\d+$') {
+                Write-Host '::error title=version::Use only stable_candidate_tag=v<major>.<minor>.<patch> for stable validation'
+                exit 1
+              }
+            } elseif ($tag -notmatch '^v\d+\.\d+\.\d+-rc\.[1-9]\d*$') {
+              Write-Host '::error title=version::candidate_tag accepts RC versions only'
+              exit 1
+            }
           }
           if ($tag -notmatch '^v(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?$') {
             Write-Host "::error title=version::Tag '$tag' is not v<major>.<minor>.<patch> or v<...>-alpha|beta|rc.<n>"

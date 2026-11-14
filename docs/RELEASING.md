@@ -35,10 +35,16 @@ and public-feed checks remain explicit gates, not RC passes.
 
 The existing **CI** workflow accepts optional manual `candidate_tag`, for example
 `v1.0.3-rc.8`, on the candidate branch. That input only stamps validation artifacts;
-it creates no tag or release and retains read-only permissions. Manual candidates
-accept RC versions only. Normal dispatch without it keeps the development version;
+it creates no tag or release and retains read-only permissions. `candidate_tag`
+accepts RC versions only. A separate optional `stable_candidate_tag=v1.0.3`
+produces stable-stamped validation artifacts after owner authorization, also
+without a tag or release; never supply both inputs. This is not publication or
+merge permission. Normal dispatch without either keeps the development version;
 the release workflow's existing `tag` input is unchanged.
 See [the short final RC visit](testing/FINAL-RC.md).
+After that accepted visit, use [the stable-file finishing visit](testing/FINAL-STABLE.md)
+for exact production-stamped files. A later tag build can have different bytes;
+compare hashes and smoke changed final artifacts before publishing.
 
 1. Only after the above gates and explicit owner authorization, merge the work
    to `main` and wait for green CI.

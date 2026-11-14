@@ -27,6 +27,12 @@ evidence out first. Extract the kit to `C:\WinTool-SystemVM`; keep network
 disconnected throughout. Do not start any task or open the GUI. Setup/Finish
 run elevated in 64-bit Windows PowerShell 5.1; StandardUser runs in the actual
 standard account, not an administrator with a filtered token.
+Preflight records existing own tasks and checks both registry views (product and
+uninstall keys), both standard installed-file locations and the data folders.
+It refuses existing fixtures without uninstalling or repairing them. PowerShell
+5.1 singleton CIM outputs are explicitly materialized before counting; zero,
+one and multiple tasks are distinguished. Every task assertion records observed
+actions/principal and each condition before it can fail.
 
 1. Setup installs baseline 1.0.2, then passively waits up to 120 seconds for
    installer-started WinTool workers to exit (three consecutive one-second
@@ -62,6 +68,8 @@ standard account, not an administrator with a filtered token.
    Return the single Finish ZIP containing all phases. On FAIL, stop and return
    the current phase ZIP; do not start a task or retry blindly. MSI 3010 is a
    review condition here, not silently treated as exit 0 or an automatic reboot.
+   If no ZIP is available, copy the Evidence folder as-is; do not rerun Setup to
+   recreate evidence. A printed archive path is not independent receipt of it.
 
 The helper sets only lab ACLs, installs/uninstalls the two exact MSI fixtures,
 creates/removes disabled WinTool tasks, and seeds fresh lab machine data.

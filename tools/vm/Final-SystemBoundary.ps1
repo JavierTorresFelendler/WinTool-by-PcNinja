@@ -52,10 +52,34 @@ function WaitInstallerWorkers([string]$label,[ValidateRange(1,120)][int]$Timeout
     $result.Steps+=@{Name=$label+'-worker-wait';Result='TIMEOUT';ElapsedSeconds=$timer.Elapsed.TotalSeconds;ObservedProcessIds=@($seen | Sort-Object)}
     throw ('Installer worker wait timed out after '+$TimeoutSeconds+' seconds; no process was stopped. Return evidence, do not continue or rerun blindly.')
 }
-function AssertTask([string]$target) {
-    $task=MainTask
-    if((OwnTasks).Count -ne 1 -or @($task.Actions).Count -ne 1 -or $task.Actions[0].Execute -ne $target -or $task.Actions[0].Arguments -ne 'update run --scheduled' -or $task.Principal.UserId -notin @('SYSTEM','S-1-5-18')) { throw 'Unexpected SYSTEM task definition.' }
-    if($task.State -eq 'Running') { throw 'Task running; do not stop or modify it. Return evidence.' }
+function AssertTask([string]$target,[string]$label) {
+    # PS5 singleton CimInstance.Count is null: materialize the pipeline at caller.
+    $own=@(OwnTasks)
+    $main=@($own | Where-Object {$_.TaskName -eq 'WinTool by PcNinja' -and $_.TaskPath -eq '\PcNinja\'})
+    $task=$null;$actions=@();if($main.Count -eq 1){$task=$main[0];$actions=@($task.Actions)}
+    $checks=[ordered]@{OneOwnTask=($own.Count -eq 1);OneMainTask=($main.Count -eq 1);OneAction=($actions.Count -eq 1);CorrectPath=($actions.Count -eq 1 -and $actions[0].Execute -eq $target);CorrectArguments=($actions.Count -eq 1 -and $actions[0].Arguments -eq 'update run --scheduled');SystemPrincipal=($null -ne $task -and $task.Principal.UserId -in @('SYSTEM','S-1-5-18'));NotRunning=($null -ne $task -and $task.State -ne 'Running')}
+    $observed=@($own | Select-Object TaskName,TaskPath,State,@{n='UserId';e={$_.Principal.UserId}},@{n='Actions';e={@($_.Actions | Select-Object Execute,Arguments,WorkingDirectory)}})
+    [ordered]@{Label=$label;ExpectedTarget=$target;OwnTaskCount=$own.Count;Checks=$checks;Observed=$observed} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $ev ($label+'-task-check.json')) -Encoding utf8
+    if($checks.Values -contains $false){throw ('Unexpected SYSTEM task definition; inspect '+$label+'-task-check.json. No task was started.')}
+}
+function FindInstalledFixtures {
+    foreach($folder in @($env:ProgramFiles,${env:ProgramFiles(x86)}) | Where-Object {$_} | Select-Object -Unique){
+        $path=Join-Path $folder 'PcNinja\WinTool\WinTool-by-PcNinja.exe'
+        if(Test-Path -LiteralPath $path){[pscustomobject]@{Kind='Executable';Path=$path}}
+    }
+    foreach($view in @([Microsoft.Win32.RegistryView]::Registry64,[Microsoft.Win32.RegistryView]::Registry32)){
+        $base=$null;$key=$null;$uninstall=$null
+        try {
+            $base=[Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,$view)
+            $key=$base.OpenSubKey('SOFTWARE\PcNinja\WinTool')
+            if($null -ne $key){[pscustomobject]@{Kind='ProductKey';View=$view.ToString();Path='SOFTWARE\PcNinja\WinTool'}}
+            $uninstall=$base.OpenSubKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall')
+            if($uninstall){foreach($name in $uninstall.GetSubKeyNames()){
+                $item=$uninstall.OpenSubKey($name)
+                try {if($item -and [string]$item.GetValue('DisplayName') -eq 'WinTool by PcNinja'){[pscustomobject]@{Kind='UninstallEntry';View=$view.ToString();Path=$name;Version=$item.GetValue('DisplayVersion')}}}finally{if($item){$item.Dispose()}}
+            }}
+        } finally {foreach($handle in @($key,$uninstall,$base)){if($handle){$handle.Dispose()}}}
+    }
 }
 function SchedulerSnapshot {
     if(-not (Test-Path -LiteralPath $scheduler)){return 'ABSENT'}
@@ -133,11 +157,14 @@ New-Item -ItemType Directory -Path $ev -Force | Out-Null
 try {
     if($Phase -eq 'Setup') {
         if([string]::IsNullOrWhiteSpace($SnapshotLabel)){throw 'Supply actual restored clean snapshot name.'}
-        if((Test-Path -LiteralPath $checkpoint) -or (Test-Path -LiteralPath $custom) -or (Test-Path -LiteralPath $data) -or (Test-Path -LiteralPath (Join-Path $env:ProgramData 'PcNinja\WinTool')) -or (OwnTasks).Count -or (Test-Path -LiteralPath 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\PcNinja\WinTool')) {throw 'Restore clean pre-WinTool snapshot first; preserve older evidence. No fixture removed.'}
+        $existingTasks=@(OwnTasks);$existingInstall=@(FindInstalledFixtures)
+        $preflight=[ordered]@{CheckpointExists=(Test-Path -LiteralPath $checkpoint);CustomFolderExists=(Test-Path -LiteralPath $custom);MachineDataExists=(Test-Path -LiteralPath $data);LegacyDataExists=(Test-Path -LiteralPath (Join-Path $env:ProgramData 'PcNinja\WinTool'));OwnTaskCount=$existingTasks.Count;InstalledFixtures=$existingInstall}
+        $preflight | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $ev 'preflight.json') -Encoding utf8
+        if($preflight.CheckpointExists -or $preflight.CustomFolderExists -or $preflight.MachineDataExists -or $preflight.LegacyDataExists -or $existingTasks.Count -gt 0 -or $existingInstall.Count -gt 0) {throw 'Clean pre-WinTool snapshot required; inspect preflight.json. Nothing was uninstalled, repaired or removed.'}
         GrantFolder $lab $false
         Msi '/i' $baseline 'ownership-baseline-install'
         if([Diagnostics.FileVersionInfo]::GetVersionInfo($installed).FileVersion -ne '1.0.2.9000'){throw 'Baseline must be older than portable; avoid a downgrade-guard false pass'}
-        SetFutureTask $installed 'ownership-baseline-schedule'; AssertTask $installed
+        SetFutureTask $installed 'ownership-baseline-schedule'; AssertTask $installed 'ownership-baseline'
         InvokeExe $rc '--initialize-data' 'initialize-data'
         ImportStore
         if(-not (IsProtected $installed)){throw 'Baseline installed target not protected'}
@@ -151,7 +178,7 @@ try {
         $outcome=Get-Content -LiteralPath (Join-Path $ev 'portable-update-run-stdout.txt') -Raw | ConvertFrom-Json
         $kind=if($outcome.Result -is [string]){$outcome.Result}else{[Enum]::GetName($wu.GetType('WinTool.WindowsUpdate.Engine.RunResult',$true),[int]$outcome.Result)}
         if($kind -ne 'CooldownActive'){throw 'Not cooldown branch; do not classify AlreadyRunning/21 as this test passing'}
-        AssertTask $installed
+        AssertTask $installed 'ownership-after-update'
         $xmlAfter=MainXml;$treeAfter=SchedulerSnapshot
         $xmlAfter | Set-Content -LiteralPath (Join-Path $ev 'ownership-after.xml') -Encoding utf8
         $treeAfter | Set-Content -LiteralPath (Join-Path $ev 'scheduler-after.json') -Encoding utf8
@@ -164,12 +191,12 @@ try {
         if($commandAt -lt 0 -or $cooldownAt -le $commandAt -or $newLog -match 'Worker refresh deferred|Task maintenance deferred|Query begin|Pass \d+ (downloaded|installed)|Starting service:|Microsoft Update registered'){throw 'Expected CLI-command-then-cooldown sequence missing, or native work/refresh error; review evidence, no repeat'}
         $result.Ownership='PASS';$result.NoNativeScanClaim=$true
         Msi '/x' $baseline 'ownership-baseline-uninstall'
-        if((OwnTasks).Count){throw 'Baseline own tasks remain'}
+        if(@(OwnTasks).Count -gt 0){throw 'Baseline own tasks remain'}
         New-Item -ItemType Directory -Path $custom | Out-Null;GrantFolder $custom $true
         Msi '/i' $msi 'custom-install' ('INSTALLFOLDER="'+$custom+'"')
         if((Get-FileHash -LiteralPath $source).Hash -ne $rcHash -or (IsProtected $source)){throw 'Custom install fixture is not expected writable RC7 source'}
         SetFutureTask $source 'custom-schedule'
-        $target=(MainTask).Actions[0].Execute;AssertTask $target
+        $target=(MainTask).Actions[0].Execute;AssertTask $target 'custom-after-schedule'
         if($target -eq $source -or -not (IsProtected $target) -or -not $core.GetType('WinTool.Core.Security.ProtectedTaskCopy',$true).GetMethod('IsManagedPath').Invoke($null,[object[]]@($target)) -or (Get-FileHash -LiteralPath $target).Hash -ne $rcHash){throw 'Writable source not converted to valid protected managed target'}
         MainXml | Set-Content -LiteralPath (Join-Path $ev 'custom-task.xml') -Encoding utf8
         Get-Acl -LiteralPath $custom | Format-List * | Out-File -LiteralPath (Join-Path $ev 'custom-source-acl.txt') -Encoding utf8
@@ -182,9 +209,9 @@ try {
         $proof=Get-Content -LiteralPath (Join-Path $userEv 'proof.json') -Raw | ConvertFrom-Json
         if($proof.RunId -ne $saved.RunId -or $proof.Result -ne 'PASS' -or $proof.IsAdministrator -or -not $proof.SourceWritable -or $proof.ProtectedTargetWritable -or -not $proof.ProtectedFolderCreateDenied -or $proof.ProtectedFolderFileCreated){throw 'Matching standard-user PASS required'}
         if((Get-FileHash -LiteralPath $source).Hash -ne $rcHash -or (Get-FileHash -LiteralPath $saved.ProtectedTarget).Hash -ne $rcHash){throw 'Source/target changed; do not launch uninstall from unexpected bytes'}
-        AssertTask $saved.ProtectedTarget
+        AssertTask $saved.ProtectedTarget 'custom-before-uninstall'
         Msi '/x' $msi 'custom-uninstall'
-        if((OwnTasks).Count){throw 'Own tasks remain after normal uninstall'}
+        if(@(OwnTasks).Count -gt 0){throw 'Own tasks remain after normal uninstall'}
         $result.Result='PASS';$result.StandardUser=$proof;$result.NoNativeScanClaim=$true
     }
 } catch {$result.Error=$_.Exception.ToString();$result.Result='FAIL';Write-Warning $_.Exception.Message}
@@ -204,5 +231,6 @@ $archive=Join-Path $lab ('SYSTEM-'+$Phase+'-'+[DateTime]::UtcNow.ToString('yyyyM
 $manifest=@(Get-ChildItem -LiteralPath $ev -Recurse -File | Where-Object Name -ne 'manifest.json' | ForEach-Object {[pscustomobject]@{Name=$_.FullName.Substring($ev.Length+1);SHA256=(Get-FileHash -LiteralPath $_.FullName).Hash}})
 ConvertTo-Json -InputObject $manifest | Set-Content -LiteralPath (Join-Path $ev 'manifest.json') -Encoding utf8
 Compress-Archive -Path (Join-Path $ev '*') -DestinationPath $archive
+if(-not (Test-Path -LiteralPath $archive -PathType Leaf)){throw 'Archive missing after compression; preserve and copy Evidence folder directly.'}
 Write-Output ($Phase+': '+$result.Result+'; return ZIP privately: '+$archive)
 Write-Output 'No task was started. No update Search/Download/Install intended; fixture scheduled CLI must end CooldownActive before probes. Stop on any FAIL. No merge/tag/release.'

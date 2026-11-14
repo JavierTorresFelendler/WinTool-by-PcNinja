@@ -34,6 +34,12 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: VM helper task contracts (PowerShell 5.1, client-only CIM)
+        shell: pwsh
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File tools/vm/tests/TaskBoundary.Contracts.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Release version (D-024)
         if: inputs.tag != ''
         shell: pwsh

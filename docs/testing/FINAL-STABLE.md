@@ -67,7 +67,12 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Final-Stable.ps1 -Phas
 
 It verifies exact bytes and Internet zone, records Defender status/preferences,
 requests a custom scan of the kit's final universal EXE/MSI, and collects Defender
-events/detections privately. A matching detection or new threat-detection event
+events/detections privately. It also scans the actual browser-download folder.
+Each scan requires fresh UTC-filtered events1000/1001 sharing a Scan ID; a
+bounded30-second passive event wait never launches another scan. Missing,
+failed, stopped or uncorrelated evidence stops with REVIEW before opening the
+EXE. The literal UTC XPath form follows the corrected RC7 collector.
+A matching detection or new threat-detection event
 stops before Explorer opens the EXE. Otherwise it selects the download; double-click
 it manually, capture any warning and choose Run portable if the app opens.
 Report `NORMAL`, `UNRECOGNIZED`, `BLOCKED` or `UNAVAILABLE`, then close the app.
@@ -88,3 +93,9 @@ Microsoft references: [Start-MpScan](https://learn.microsoft.com/en-us/powershel
 Raw evidence can contain local paths/security policy details; return ZIPs
 privately and sanitize any eventual public summary. The actual public-feed
 check stays separate and cannot be claimed from this unpublished preparation.
+
+Helper-only revisions retain the original003cce6 stable product files and their
+hashes. Candidate.Head identifies the binary build; Candidate.HelperHead records
+the separate helper review head. Do not rebuild or repeat an accepted Smoke
+because of a Security-only helper change. These files report stable1.0.3 and
+will not offer another1.0.3 with different bytes; keep them on disposable VMs.

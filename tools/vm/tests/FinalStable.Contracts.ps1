@@ -7,6 +7,25 @@ if (@($errors).Count) {throw ($errors.Message -join '; ')}
 $definition=$ast.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Assert-StableVersion'},$true)
 if (-not $definition) {throw 'Missing stable runtime guard.'}
 . ([scriptblock]::Create($definition.Extent.Text))
+$scanGuard=$ast.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Assert-DefenderScanComplete'},$true)
+if (-not $scanGuard) {throw 'Missing scan completion guard.'}
+. ([scriptblock]::Create($scanGuard.Extent.Text))
+function Event([int]$id,[string]$scanId) {
+    [pscustomobject]@{Id=$id;Xml=('<Event><EventData><Data Name="Scan ID">'+$scanId+'</Data></EventData></Event>')}
+}
+$start=Event 1000 'one';$end=Event 1001 'one'
+$null=Assert-DefenderScanComplete @($start,$end) ''
+$scanCases=@(
+    @{Events=@();Error=''},
+    @{Events=@($start,$end);Error='query failed'},
+    @{Events=@($start);Error=''},
+    @{Events=@($end);Error=''},
+    @{Events=@($start,(Event 1001 'other'));Error=''},
+    @{Events=@($start,$end,(Event 1002 'one'));Error=''},
+    @{Events=@((Event 1000 ''),$end);Error=''},
+    @{Events=@([pscustomobject]@{Id=1000;Xml='invalid'});Error=''}
+)
+foreach($case in $scanCases){$rejected=$false;try{$null=Assert-DefenderScanComplete $case.Events $case.Error}catch{$rejected=$true};if(-not $rejected){throw 'Incomplete/broken Defender scan evidence accepted.'}}
 $candidate=[pscustomobject]@{Head=('a'*40)}
 $value=[pscustomobject]@{Version='1.0.3';FileVersion='1.0.3.9000';MsiVersion='1.0.3999';IsTest=$false;InformationalVersion=('1.0.3+'+('a'*40))}
 Assert-StableVersion $value $candidate
@@ -48,4 +67,4 @@ try {
         elseif(Test-Path -LiteralPath $env:GITHUB_ENV){throw 'Rejected input wrote version environment.'}
     }
 } finally {foreach($name in $names){[Environment]::SetEnvironmentVariable($name,$savedEnv[$name],'Process')}}
-Write-Host 'Stable preparation: 6 runtime guard and 6 actual workflow version cases passed under PS5.1; no product/security/GitHub mutation.'
+Write-Host 'Stable preparation: 6 runtime, 9 Defender evidence, 6 workflow version cases passed under PS5.1; no product/security/GitHub mutation.'

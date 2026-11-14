@@ -19,6 +19,24 @@ function Assert-StableVersion($value, $candidate) {
 function Save-Json($value, [string]$name) {
     ConvertTo-Json -InputObject $value -Depth 9 | Set-Content -LiteralPath (Join-Path $ev $name) -Encoding UTF8
 }
+function Assert-DefenderScanComplete($events, [string]$queryError) {
+    if (-not [string]::IsNullOrEmpty($queryError)) { throw ('Defender event query failed: '+$queryError) }
+    $started=@();$finished=@()
+    foreach ($event in @($events)) {
+        if ($event.Id -notin @(1000,1001)) { continue }
+        [xml]$xml=$event.Xml
+        $scanIds=@($xml.SelectNodes("//*[local-name()='EventData']/*[local-name()='Data']") | Where-Object {
+            ($_.GetAttribute('Name') -replace '[^a-zA-Z0-9]','') -ieq 'ScanID'
+        })
+        if ($scanIds.Count -ne 1 -or [string]::IsNullOrWhiteSpace($scanIds[0].InnerText)) { throw 'Defender scan event lacks a unique Scan ID.' }
+        $id=$scanIds[0].InnerText.Trim()
+        if ($event.Id -eq 1000) { $started+=$id } else { $finished+=$id }
+    }
+    if (@($events | Where-Object {$_.Id -eq 1002}).Count) { throw 'Defender scan stopped; review before launch.' }
+    $matched=@($started | Where-Object {$_ -in $finished} | Select-Object -Unique)
+    if ($matched.Count -eq 0) { throw 'No correlated Defender scan start/completion (1000/1001). Stop before launch.' }
+    return $matched
+}
 
 if (-not $ConfirmDisposableVM -or -not $ConfirmReviewedCandidate) { throw 'Disposable rollback VM and exact-head FABLE PASS required.' }
 if ($PSVersionTable.PSEdition -ne 'Desktop' -or [IntPtr]::Size -ne 8) { throw 'Use 64-bit Windows PowerShell 5.1.' }
@@ -102,13 +120,29 @@ try {
         Save-Json ($status | Select-Object AMServiceEnabled,AntivirusEnabled,RealTimeProtectionEnabled,AntivirusSignatureVersion,AntivirusSignatureLastUpdated,AMEngineVersion,AMProductVersion) 'defender-before.json'
         Save-Json (Get-MpPreference | Select-Object MAPSReporting,SubmitSamplesConsent,DisableBlockAtFirstSeen,CloudBlockLevel,ExclusionPath,ExclusionProcess,ExclusionExtension) 'defender-preferences.json'
         if (-not $status.AntivirusEnabled -or -not $status.RealTimeProtectionEnabled) { throw 'Defender not active. Preserve evidence; do not change security settings.' }
-        $scanStart=Get-Date
-        Save-Json ([pscustomobject]@{StartedUtc=$scanStart.ToUniversalTime();ScanPath=(Join-Path $kit 'Candidate')}) 'scan-request.json'
-        Start-MpScan -ScanType CustomScan -ScanPath (Join-Path $kit 'Candidate')
-        $eventError=$null;$events=@()
-        try {$events=@(Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-Windows Defender/Operational';StartTime=$scanStart.AddSeconds(-2);Id=1000,1001,1002,1116,1117} -ErrorAction Stop |
-            ForEach-Object {[pscustomobject]@{Id=$_.Id;RecordId=$_.RecordId;TimeUtc=$_.TimeCreated.ToUniversalTime();Xml=$_.ToXml()}})} catch {$eventError=$_.Exception.Message}
-        Save-Json ([pscustomobject]@{Events=$events;QueryError=$eventError}) 'defender-events.json'
+        $events=@();$scanIndex=0
+        # Scan both distribution assets and the actual internet-marked copy.
+        foreach ($scanPath in @((Join-Path $kit 'Candidate'),(Split-Path -Parent $download)) | Select-Object -Unique) {
+            $scanIndex++;$scanStart=[DateTime]::UtcNow
+            Save-Json ([pscustomobject]@{StartedUtc=$scanStart;ScanPath=$scanPath}) ('scan-request-'+$scanIndex+'.json')
+            Start-MpScan -ScanType CustomScan -ScanPath $scanPath
+            $deadline=[Diagnostics.Stopwatch]::StartNew()
+            do {
+                $eventError=$null;$batch=@()
+                $from=$scanStart.ToString('o');$until=[DateTime]::UtcNow.ToString('o')
+                $xpath="*[System[TimeCreated[@SystemTime >= '$from' and @SystemTime <= '$until'] and (EventID=1000 or EventID=1001 or EventID=1002 or EventID=1116 or EventID=1117)]]"
+                try {$batch=@(Get-WinEvent -LogName 'Microsoft-Windows-Windows Defender/Operational' -FilterXPath $xpath -ErrorAction Stop |
+                    ForEach-Object {[pscustomobject]@{Id=$_.Id;RecordId=$_.RecordId;TimeUtc=$_.TimeCreated.ToUniversalTime();Xml=$_.ToXml()}})}
+                catch {if ($_.FullyQualifiedErrorId -notlike 'NoMatchingEventsFound*') {$eventError=$_.Exception.Message}}
+                Save-Json ([pscustomobject]@{ScanPath=$scanPath;XPath=$xpath;Events=$batch;QueryError=$eventError}) ('defender-events-'+$scanIndex+'.json')
+                if ($eventError -or @($batch | Where-Object {$_.Id -in @(1002,1116)}).Count) { throw 'Defender query, stopped scan or detection requires review before launch.' }
+                $complete=$false
+                try {$matched=@(Assert-DefenderScanComplete $batch $eventError);$complete=$true} catch {if ($deadline.Elapsed.TotalSeconds -ge 30) {throw}}
+                if (-not $complete) {Start-Sleep -Seconds 2}
+            } while (-not $complete)
+            Save-Json ([pscustomobject]@{ScanPath=$scanPath;MatchedScanIds=$matched}) ('scan-completion-'+$scanIndex+'.json')
+            $events+=$batch
+        }
         $detections=@(Get-MpThreatDetection)
         Save-Json $detections 'defender-detections.json'
         $candidateFolder=Join-Path $kit 'Candidate'

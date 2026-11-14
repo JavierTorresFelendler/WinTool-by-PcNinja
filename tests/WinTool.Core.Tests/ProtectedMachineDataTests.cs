@@ -160,6 +160,65 @@ namespace WinTool.Core.Tests
         private sealed class Callback : IDisposable
         { private readonly Action action; public Callback(Action action) { this.action = action; } public void Dispose() { action(); } }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Busy_migration_preserves_inputs_and_retries_once_after_the_lease_is_available(bool nullLease)
+        {
+            using (var temp = new TempDirectory())
+            {
+                var legacy = temp.File("Legacy"); Directory.CreateDirectory(legacy);
+                var source = Path.Combine(legacy, "state.json");
+                const string untrusted = "  original state  ";
+                File.WriteAllText(source, untrusted);
+                var root = temp.File("Protected");
+                var busy = true; var held = false; var acquisitions = 0; var validations = 0;
+                var writes = new System.Collections.Generic.List<string>();
+                Action run = () => MachineDataMigration.Run(root, legacy,
+                    new[] { new MigrationRule("state.json", value =>
+                    {
+                        Assert.True(held); validations++; return "validated:" + value.Trim();
+                    }) },
+                    () =>
+                    {
+                        acquisitions++;
+                        if (busy)
+                        {
+                            if (nullLease) return null;
+                            throw new WinTool.Core.Operations.OperationBusyException();
+                        }
+                        Assert.False(held); held = true;
+                        return new Callback(() => held = false);
+                    },
+                    path => { Assert.True(held); Directory.CreateDirectory(path); },
+                    File.ReadAllText,
+                    (path, value) => { Assert.True(held); writes.Add(Path.GetFileName(path)); File.WriteAllText(path, value); });
+
+                if (nullLease) Assert.Throws<IOException>(run);
+                else Assert.Throws<WinTool.Core.Operations.OperationBusyException>(run);
+                Assert.Equal(untrusted, File.ReadAllText(source));
+                Assert.False(Directory.Exists(root));
+                Assert.Equal(0, validations); Assert.Empty(writes); Assert.False(held);
+
+                busy = false;
+                run();
+                Assert.False(held);
+                Assert.Equal("validated:original state", File.ReadAllText(Path.Combine(root, "state.json")));
+                Assert.Equal(untrusted, File.ReadAllText(source));
+                Assert.Equal(new[] { "state.json", "migration-v1.report.txt", "migration-v1.complete.json" }, writes);
+                var report = File.ReadAllText(Path.Combine(root, "migration-v1.report.txt"));
+                Assert.Contains("validated and reserialized", report);
+                Assert.Equal("{\"schemaVersion\":1,\"complete\":true}", File.ReadAllText(Path.Combine(root, "migration-v1.complete.json")));
+
+                busy = true;
+                File.WriteAllText(source, "changed legacy input");
+                run(); // A completed migration must not reacquire or re-import.
+                Assert.Equal(2, acquisitions); Assert.Equal(1, validations); Assert.Equal(3, writes.Count);
+                Assert.Equal("validated:original state", File.ReadAllText(Path.Combine(root, "state.json")));
+                Assert.Equal(report, File.ReadAllText(Path.Combine(root, "migration-v1.report.txt")));
+            }
+        }
+
         [Fact]
         public void Destination_write_failure_does_not_complete_the_migration()
         {

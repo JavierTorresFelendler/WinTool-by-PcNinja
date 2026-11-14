@@ -533,7 +533,38 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
     by separate implementation review and validation. This entry does not
     authorize that work or a silent change to the current policy.
 
+## D-033 Bounded coverage acceptance and deferred work for 1.0.3
+
+- **Status:** Accepted (2026-11-14), explicit owner approval of the two final
+  coverage additions and the listed deferrals. No merge or release authority.
+- **Decision:** Preserve the accepted A/B, Cancel, RC7 search/history and T24/T25
+  results with their recorded limits; do not repeat those test campaigns.
+  Before final-change preparation, add automated coverage for busy migration
+  followed by a successful once-only retry, and prepare a short owner-VM check
+  for writable custom MSI task targets and newer portable CLI task ownership.
+- **Accepted coverage limits for this release:**
+  - Native selected-search single-query validation, no-reboot shared discovery
+    snapshot and remaining-firmware defaults rely on automated tests and code
+    review. The real RC7 run covered full context fallback and reboot-required
+    verification, not those other paths or a measured speed improvement.
+  - Additional VM root-file/link/hard-link cases rely on existing automated
+    coverage; the accepted planted-junction and migration evidence is retained.
+  - Additional USB/drive-letter substitution, referenced/active worker
+    retirement and other unexecuted scheduling/installer edge options are
+    deferred. This does not waive the two explicit SYSTEM-boundary checks above.
+  - A valid unsigned PE fixture and an end-to-end trusted non-Microsoft signer
+    CI regression remain follow-ups. The native Broadcom rejection remains
+    sample evidence; malformed-input refusal is not a valid-unsigned-PE test.
+  - Low review notes L1-L3 and U1-U4, and investigation of the pre-existing
+    Upgrade status "operation busy" launch message, remain nonblocking work.
+- **Consequences:** Record deferred checks as unexecuted/accepted risk, never
+  as passes. Keep existing installer/security behavior and the accepted RC7
+  artifacts unchanged. Helpers must be reviewed before owner-VM execution.
+  Final-head CI, temporary candidate-workflow removal and separately authorized
+  production-artifact smoke tests (including Windows 10), update discovery and
+  security verdicts remain required. This is not shipping approval.
+
 ## Open questions
 
-None at the moment. D-027, D-028, D-029, D-030, D-031 and D-032 record the separately accepted owner
+None at the moment. D-027, D-028, D-029, D-030, D-031, D-032 and D-033 record the separately accepted owner
 decisions; their original predecessor entries remain intact.

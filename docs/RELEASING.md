@@ -26,7 +26,22 @@ publication. The steps below describe the separately authorized release flow.
 
 ## Release flow
 
-1. Merge the work to `main` and wait for green CI.
+Before step 1, apply D-034: final-head RC CI, independent review and owner VM
+acceptance (including Windows 10 and the shipped predecessor update path) must
+be recorded. Reuse earlier accepted tests within their limits. Do not merge just
+because a preparation PR or CI passed. The owner treats `main` as user-update
+readiness and separately authorizes merging and publication; production-file
+and public-feed checks remain explicit gates, not RC passes.
+
+The existing **CI** workflow accepts optional manual `candidate_tag`, for example
+`v1.0.3-rc.8`, on the candidate branch. That input only stamps validation artifacts;
+it creates no tag or release and retains read-only permissions. Manual candidates
+accept RC versions only. Normal dispatch without it keeps the development version;
+the release workflow's existing `tag` input is unchanged.
+See [the short final RC visit](testing/FINAL-RC.md).
+
+1. Only after the above gates and explicit owner authorization, merge the work
+   to `main` and wait for green CI.
 2. Tag the commit: `v1.2.3` for a stable release, `v1.2.3-rc.1`,
    `-beta.1` or `-alpha.1` for a test version (D-023, D-024), and push the tag.
 3. The **Release** workflow runs the whole CI with that version stamped in.

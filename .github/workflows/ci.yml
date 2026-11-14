@@ -5,6 +5,11 @@ on:
     branches: [main, "phase*/**"]
   pull_request:
   workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Optional RC artifact version (v1.0.3-rc.8); builds only, never creates a tag or release
+        type: string
+        default: ""
   # The release workflow runs this whole pipeline on a tag, stamped with the release version.
   workflow_call:
     inputs:
@@ -27,6 +32,7 @@ jobs:
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
+      WINTOOL_REQUESTED_TAG: ${{ inputs.tag || inputs.candidate_tag || '' }}
     steps:
       - uses: actions/checkout@v5
 
@@ -39,12 +45,18 @@ jobs:
         run: |
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File tools/vm/tests/TaskBoundary.Contracts.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File tools/vm/tests/FinalRc.Contracts.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Release version (D-024)
-        if: inputs.tag != ''
+        if: inputs.tag != '' || inputs.candidate_tag != ''
         shell: pwsh
         run: |
-          $tag = "${{ inputs.tag }}"
+          $tag = $env:WINTOOL_REQUESTED_TAG
+          if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and $tag -notmatch '^v\d+\.\d+\.\d+-rc\.[1-9]\d*$') {
+            Write-Host '::error title=version::Manual candidate builds accept only v<major>.<minor>.<patch>-rc.<n>'
+            exit 1
+          }
           if ($tag -notmatch '^v(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?$') {
             Write-Host "::error title=version::Tag '$tag' is not v<major>.<minor>.<patch> or v<...>-alpha|beta|rc.<n>"
             exit 1

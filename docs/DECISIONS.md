@@ -564,7 +564,22 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   production-artifact smoke tests (including Windows 10), update discovery and
   security verdicts remain required. This is not shipping approval.
 
+## D-034 Final RC acceptance precedes the main merge decision
+
+- **Status:** Accepted (2026-11-14), explicit owner clarification that `main`
+  represents readiness for updating users. No merge or publication is authorized.
+- **Decision:** Prepare a final-head, version-stamped RC with full CI and an
+  exact-head independent review before the owner runs the short finishing VM
+  visit. Include Windows 10 compatibility and the shipped 1.0.2 self-update
+  path. Reuse prior accepted evidence under D-033 rather than repeat campaigns.
+- **Consequences:** A preparation/code-review PASS alone is not merge readiness.
+  RC artifacts may be produced by read-only CI dispatch without any Git tag or
+  GitHub release. A local-feed upgrade rehearsal is not public-feed validation.
+  RC acceptance does not waive production-stamped artifact smoke, security and
+  feed gates, or supply permission to merge, tag or publish. Preserve the D-033
+  limits and obtain the owner's separate decision before any such action.
+
 ## Open questions
 
-None at the moment. D-027, D-028, D-029, D-030, D-031, D-032 and D-033 record the separately accepted owner
+None at the moment. D-027, D-028, D-029, D-030, D-031, D-032, D-033 and D-034 record the separately accepted owner
 decisions; their original predecessor entries remain intact.

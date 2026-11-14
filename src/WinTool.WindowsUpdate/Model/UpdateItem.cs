@@ -43,6 +43,7 @@ namespace WinTool.WindowsUpdate.Model
 
         /// <summary>Which searches found it (Broad, Driver, Optional) - WU-04.</summary>
         public List<string> Sources { get; }
+        public string PrimarySource { get; internal set; }
 
         /// <summary>The native update object; only the agent that created it reads it.</summary>
         internal object Native { get; set; }

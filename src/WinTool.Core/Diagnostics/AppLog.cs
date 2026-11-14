@@ -25,11 +25,40 @@ namespace WinTool.Core.Diagnostics
 
         public string Directory { get; }
 
-        /// <summary>The process-wide log, under %ProgramData%\PcNinja\WinTool\Logs by default.</summary>
+        /// <summary>The process-wide log, under %ProgramData%\PcNinja-WinTool\Logs by default.</summary>
         public static AppLog Current
         {
-            get { return current ?? (current = new AppLog(DefaultDirectory)); }
+            get { return current ?? (current = CreateDefault()); }
             set { current = value; }
+        }
+
+        private static AppLog CreateDefault()
+        {
+            return CreateDefault(DefaultDirectory, Path.Combine(WinToolPaths.UserData, "Logs"), () =>
+            {
+                if (WinToolPaths.DataRootOverride == null)
+                {
+                    using (var identity = System.Security.Principal.WindowsIdentity.GetCurrent())
+                        if (!new System.Security.Principal.WindowsPrincipal(identity).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator))
+                            throw new UnauthorizedAccessException("Machine logs are writable only by administrators and SYSTEM.");
+                }
+                WinToolPaths.EnsureMachineDataDirectory(DefaultDirectory);
+            });
+        }
+
+        internal static AppLog CreateDefault(string machineDirectory, string userDirectory, Action prepareMachine)
+        {
+            try
+            {
+                prepareMachine();
+                return new AppLog(machineDirectory);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException || ex is Operations.OperationBusyException)
+            {
+                var fallback = new AppLog(userDirectory);
+                fallback.Warn("Storage", "Machine logging is unavailable; using the per-user log. " + ex.GetType().Name);
+                return fallback;
+            }
         }
 
         public static string DefaultDirectory
@@ -70,8 +99,13 @@ namespace WinTool.Core.Diagnostics
                 var line = FormatLine(clock(), level, area, message) + Environment.NewLine;
                 lock (gate)
                 {
-                    System.IO.Directory.CreateDirectory(Directory);
-                    File.AppendAllText(CurrentFilePath, line, Utf8NoBom);
+                    WinToolPaths.EnsureMachineDataDirectory(Directory);
+                    if (Security.ProtectedMachineData.IsMachinePath(CurrentFilePath))
+                    {
+                        using (var stream = Security.ProtectedMachineData.OpenWriter(CurrentFilePath, true))
+                        { var bytes = Utf8NoBom.GetBytes(line); stream.Write(bytes, 0, bytes.Length); }
+                    }
+                    else File.AppendAllText(CurrentFilePath, line, Utf8NoBom);
                 }
             }
             catch (Exception)

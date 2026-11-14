@@ -94,6 +94,7 @@ namespace WinTool.WindowsUpdate.Platform
         public IEnumerable<string> LogSources()
         {
             yield return AppLog.DefaultDirectory;
+            yield return Path.Combine(WinTool.Core.WinToolPaths.LegacyMachineData, "Logs");
             yield return WindowsUpdateStore.DefaultFolder;
         }
     }

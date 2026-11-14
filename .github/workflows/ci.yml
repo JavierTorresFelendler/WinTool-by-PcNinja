@@ -5,6 +5,11 @@ on:
     branches: [main, "phase*/**"]
   pull_request:
   workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Optional RC artifact version (v1.0.3-rc.8); builds only, never creates a tag or release
+        type: string
+        default: ""
   # The release workflow runs this whole pipeline on a tag, stamped with the release version.
   workflow_call:
     inputs:
@@ -27,18 +32,31 @@ jobs:
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
+      WINTOOL_REQUESTED_TAG: ${{ inputs.tag || inputs.candidate_tag || '' }}
     steps:
       - uses: actions/checkout@v5
 
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
-      - name: Release version (D-024)
-        if: inputs.tag != ''
+      - name: VM helper task contracts (PowerShell 5.1, client-only CIM)
         shell: pwsh
         run: |
-          $tag = "${{ inputs.tag }}"
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File tools/vm/tests/TaskBoundary.Contracts.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File tools/vm/tests/FinalRc.Contracts.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Release version (D-024)
+        if: inputs.tag != '' || inputs.candidate_tag != ''
+        shell: pwsh
+        run: |
+          $tag = $env:WINTOOL_REQUESTED_TAG
+          if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and $tag -notmatch '^v\d+\.\d+\.\d+-rc\.[1-9]\d*$') {
+            Write-Host '::error title=version::Manual candidate builds accept only v<major>.<minor>.<patch>-rc.<n>'
+            exit 1
+          }
           if ($tag -notmatch '^v(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?$') {
             Write-Host "::error title=version::Tag '$tag' is not v<major>.<minor>.<patch> or v<...>-alpha|beta|rc.<n>"
             exit 1
@@ -88,6 +106,12 @@ jobs:
             foreach ($line in $lines) { Write-Output ("::error title=tests::" + ($line -replace '%', '%25')) }
             exit $LASTEXITCODE
           }
+
+      - name: RC local-feed lifecycle (isolated files only)
+        shell: pwsh
+        run: |
+          dotnet test tests/WinTool.Core.Tests/WinTool.Core.Tests.csproj -c Release -p:Version=0.1.0-rc.1 --artifacts-path "$env:RUNNER_TEMP/lifecycle-build" --filter FullyQualifiedName~LocalFeedLifecycleTests --logger "console;verbosity=normal"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Portable EXE self-test (WinTool-by-PcNinja.exe alone in an empty folder)
         shell: pwsh
@@ -146,18 +170,15 @@ jobs:
           }
           Invoke-WinTool @('status', '--json') @(0) | Out-Null
           Invoke-WinTool @('schedule', 'set', '--enable', '--frequency', 'Weekly', '--day', 'Sunday', '--time', '03:00', '--wake') @(0) | Out-Null
+          # Run-once SYSTEM execution is covered by fakes only: never start a real update install on CI.
           $show = Invoke-WinTool @('schedule', 'show', '--json') @(0)
-          if ($show -notmatch '"matchesSettings": true') {
-            Invoke-WinTool @('schedule', 'show') @(0) | Out-Null
-            Write-Host "::error title=cli::registered task does not match the settings"
-            exit 1
-          }
-          # Monthly too: Task Scheduler stores its elements in another order (found on Windows 11 23H2).
-          Invoke-WinTool @('schedule', 'set', '--frequency', 'Monthly', '--month-day', '15', '--at-startup') @(0) | Out-Null
-          $monthly = Invoke-WinTool @('schedule', 'show', '--json') @(0)
-          if ($monthly -notmatch '"matchesSettings": true') {
-            Invoke-WinTool @('schedule', 'show') @(0) | Out-Null
-            Write-Host "::error title=cli::monthly task does not match the settings"
+          $status = $show | ConvertFrom-Json
+          [xml]$definition = $status.task.xml
+          $target = [string]$definition.Task.Actions.Exec.Command
+          $expected = Join-Path $env:ProgramData 'PcNinja-WinTool\Scheduler\'
+          if (-not $target.StartsWith($expected, [StringComparison]::OrdinalIgnoreCase) -or -not (Test-Path -LiteralPath $target) -or
+              (Get-FileHash -LiteralPath $target).Hash -ne (Get-FileHash -LiteralPath $exe).Hash) {
+            Write-Host "::error title=cli::portable task did not use a verified protected local copy"
             exit 1
           }
           Invoke-WinTool @('update', 'health', '--no-network') @(0, 1, 11) | Out-Null
@@ -256,9 +277,24 @@ jobs:
           $r = Msi @('/i', "`"$msi`"", 'WINTOOL_ENABLE_SCHEDULE=1', 'WINTOOL_FREQUENCY=Weekly', 'WINTOOL_DAY_OF_WEEK=Friday', 'WINTOOL_TIME=04:30', 'WINTOOL_WAKE_TO_RUN=1', 'WINTOOL_DESKTOP_SHORTCUT=1', 'WINTOOL_LANGUAGE=he') 'install'
           if ($r.Code -ne 0) { Fail "install failed with $($r.Code)" $r }
           if (-not (Test-Path $installed)) { Fail "WinTool-by-PcNinja.exe was not installed" $r }
+          $data = Join-Path $env:ProgramData 'PcNinja-WinTool'
+          $acl = Get-Acl -LiteralPath $data
+          $owner = $acl.GetOwner([System.Security.Principal.SecurityIdentifier]).Value
+          if ($owner -notin @('S-1-5-18', 'S-1-5-32-544') -or -not $acl.AreAccessRulesProtected) {
+            Fail 'Machine data must have a trusted owner and a protected ACL' $r
+          }
+          foreach ($rule in $acl.GetAccessRules($true, $true, [System.Security.Principal.SecurityIdentifier])) {
+            if ($rule.AccessControlType -eq 'Allow' -and $rule.IdentityReference.Value -notin @('S-1-5-18', 'S-1-5-32-544') -and
+                (([int]$rule.FileSystemRights -band (-bnot [int]([System.Security.AccessControl.FileSystemRights]::ReadAndExecute -bor [System.Security.AccessControl.FileSystemRights]::Synchronize))) -ne 0)) {
+              Fail 'Machine data contains an unexpected write grant' $r
+            }
+          }
           $show = Show
           Write-Host $show
           if ($show -notmatch '"matchesSettings": true' -or $show -notmatch '"dayOfWeek": "Friday"' -or $show -notmatch '"wakeToRun": true') { Fail "schedule from MSI properties is wrong" $r }
+          $installedStatus = $show | ConvertFrom-Json
+          [xml]$installedDefinition = $installedStatus.task.xml
+          if ([string]$installedDefinition.Task.Actions.Exec.Command -ne $installed) { Fail 'protected MSI task did not point at the installed EXE' $r }
           if ((Get-ItemProperty 'HKLM:\SOFTWARE\PcNinja\WinTool').Language -ne 'he') { Fail "language default was not written" $r }
           if (-not (Test-Path (Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'WinTool by PcNinja.lnk'))) { Fail "desktop shortcut missing" $r }
 
@@ -266,6 +302,10 @@ jobs:
           $r = Msi @('/i', "`"$msi`"", 'REINSTALL=ALL', 'REINSTALLMODE=vomus') 'repair'
           if ($r.Code -ne 0) { Fail "repair failed with $($r.Code)" $r }
           if ((Show) -notmatch '"dayOfWeek": "Friday"') { Fail "repair changed the schedule" $r }
+
+          # Positive registration uses the MSI-installed copy, including the monthly XML round trip.
+          $monthly = Start-Process -FilePath $installed -ArgumentList @('schedule', 'set', '--frequency', 'Monthly', '--month-day', '15', '--at-startup') -Wait -PassThru -NoNewWindow
+          if ($monthly.ExitCode -ne 0 -or (Show) -notmatch '"matchesSettings": true') { Fail 'installed monthly task does not match settings' $null }
 
           # 4. Uninstall removes the files and the scheduled task.
           $r = Msi @('/x', "`"$msi`"") 'uninstall'

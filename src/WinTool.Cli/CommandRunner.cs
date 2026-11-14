@@ -7,6 +7,7 @@ using System.Linq;
 using WinTool.Core;
 using WinTool.Core.IO;
 using WinTool.Core.Json;
+using WinTool.Core.Updates;
 using WinTool.WindowsUpdate.Engine;
 using WinTool.WindowsUpdate.Logic;
 using WinTool.WindowsUpdate.Migration;
@@ -27,12 +28,14 @@ namespace WinTool.Cli
         private readonly IWindowsUpdateEnvironment env;
         private readonly TextWriter output;
         private readonly TextWriter error;
+        private readonly Func<string, string> target;
 
-        public CommandRunner(IWindowsUpdateEnvironment env, TextWriter output, TextWriter error)
+        public CommandRunner(IWindowsUpdateEnvironment env, TextWriter output, TextWriter error, Func<string, string> target = null)
         {
             this.env = env;
             this.output = output;
             this.error = error;
+            this.target = target;
         }
 
         /// <summary>Areas this runner handles; the app handles version, help and self-test.</summary>
@@ -100,6 +103,24 @@ namespace WinTool.Cli
                 }
 
                 throw new UsageException("Unknown command: " + string.Join(" ", args.Take(2)) + ". Run \"WinTool-by-PcNinja.exe help\".");
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException)
+            {
+                error.WriteLine("Protected data is unavailable; no settings were saved. " + ex.Message);
+                return 24;
+            }
+            catch (WinTool.Core.Operations.OperationBusyException ex)
+            {
+                if (args.Any(a => a == "--json")) Json(new { Result = "Busy", ExitCode = 21, Message = ex.Message });
+                else error.WriteLine(ex.Message);
+                return 21;
+            }
+            catch (InstalledCopyRequiredException ex)
+            {
+                if (args.Any(a => a == "--json")) Json(new { Result = "InstalledCopyRequired", ExitCode = CliExit.InstalledCopyRequired, Message = ex.Message });
+                else error.WriteLine(ex.Message);
+                return CliExit.InstalledCopyRequired;
+
             }
             catch (UsageException ex)
             {
@@ -314,11 +335,13 @@ namespace WinTool.Cli
             var status = Schedule().GetStatus(settings);
             if (a.Has("json"))
             {
-                Json(new { Settings = settings, Description = ScheduleService.Describe(settings), status.MatchesSettings, status.Differences, Task = status.Main, RetryTask = status.Retry });
+                Json(new { Settings = settings, Description = ScheduleService.Describe(settings), status.MatchesSettings, status.Differences, status.Workers, Task = status.Main, RetryTask = status.Retry });
                 return CliExit.Ok;
             }
 
             output.WriteLine("Schedule: " + (settings.ScheduleEnabled ? "on, " + ScheduleService.Describe(settings) : "off"));
+            foreach (var worker in status.Workers)
+                output.WriteLine("Worker: " + worker.Task + ", version " + (worker.Version ?? "unknown") + ", matches running image: " + (worker.MatchesRunningImage?.ToString() ?? "unknown"));
             if (settings.ScheduleEnabled)
             {
                 output.WriteLine("Task: " + (status.Main == null ? "missing" : status.Main.State + ", next run " + Format(status.Main.NextRunTime) + ", last run " + Format(status.Main.LastRunTime)));
@@ -433,6 +456,7 @@ namespace WinTool.Cli
 
             // --keep-schedule: the WinTool installer was given its own schedule, which wins over the old tool's.
             var settings = legacy == null || a.Has("keep-schedule") ? null : LegacyWinUpdateConfig.Import(legacy);
+            if (settings != null && settings.ScheduleEnabled) Schedule().PrepareTarget();
             Note(EventLevel.Information, "found " + (legacy != null ? "its settings file" : "no settings file") + ", " +
                 tasks.Count + " scheduled task(s) and " + installs.Count + " installation(s)" +
                 (installs.Count > 0 ? " (" + string.Join("; ", installs.Select(i => i.ToString())) + ")" : "") + ".");
@@ -571,6 +595,8 @@ namespace WinTool.Cli
             {
                 Schedule().Apply(settings);
             }
+            catch (WinTool.Core.Operations.OperationBusyException) { throw; }
+            catch (InstalledCopyRequiredException) { throw; }
             catch (Exception ex) when (ex is InvalidOperationException || ex is UnauthorizedAccessException || ex is System.Runtime.InteropServices.COMException)
             {
                 return Fail(a, "The schedule was not saved: " + ex.Message);
@@ -653,9 +679,10 @@ namespace WinTool.Cli
             try
             {
                 Directory.CreateDirectory(staging);
+                var sourceIndex = 0;
                 foreach (var source in env.LogSources())
                 {
-                    if (Directory.Exists(source)) CopyFolder(source, Path.Combine(staging, new DirectoryInfo(source).Name));
+                    if (Directory.Exists(source)) CopyFolder(source, Path.Combine(staging, sourceIndex++.ToString(CultureInfo.InvariantCulture) + "-" + new DirectoryInfo(source).Name));
                     else if (File.Exists(source)) File.Copy(source, Path.Combine(staging, Path.GetFileName(source)), true);
                 }
 
@@ -668,9 +695,21 @@ namespace WinTool.Cli
                 }
 
                 File.WriteAllText(Path.Combine(staging, "status.json"), JsonText.Serialize(StatusObject()));
-                Directory.CreateDirectory(Path.GetDirectoryName(zipPath));
-                if (File.Exists(zipPath)) File.Delete(zipPath);
-                ZipFile.CreateFromDirectory(staging, zipPath);
+                WinToolPaths.EnsureMachineDataDirectory(Path.GetDirectoryName(zipPath));
+                if (File.Exists(zipPath))
+                {
+                    if (WinTool.Core.Security.ProtectedMachineData.IsMachinePath(zipPath) && !WinTool.Core.Security.ProtectedMachineData.IsProtectedExecutable(zipPath))
+                        throw new UnauthorizedAccessException("Existing log package is not protected.");
+                    File.Delete(zipPath);
+                }
+                if (WinTool.Core.Security.ProtectedMachineData.IsMachinePath(zipPath))
+                {
+                    using (var stream = WinTool.Core.Security.ProtectedMachineData.OpenWriter(zipPath, false))
+                    using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
+                        foreach (var file in Directory.GetFiles(staging, "*", SearchOption.AllDirectories))
+                            archive.CreateEntryFromFile(file, file.Substring(staging.Length + 1).Replace('\\', '/'));
+                }
+                else ZipFile.CreateFromDirectory(staging, zipPath);
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
@@ -688,7 +727,7 @@ namespace WinTool.Cli
 
         // --------------------------------------------------------------- helpers
 
-        private ScheduleService Schedule() => new ScheduleService(env.Tasks, env.Log, env.ExecutablePath, env.Clock);
+        private ScheduleService Schedule() => new ScheduleService(env.Tasks, env.Log, env.ExecutablePath, env.Clock, target);
 
         private IRetryScheduler Retries() => Schedule();
 
@@ -739,7 +778,11 @@ namespace WinTool.Cli
         private static void CopyFolder(string source, string target)
         {
             Directory.CreateDirectory(target);
-            foreach (var file in Directory.GetFiles(source)) File.Copy(file, Path.Combine(target, Path.GetFileName(file)), true);
+            foreach (var file in WinTool.Core.Security.ProtectedMachineData.PlainFiles(source))
+            {
+                using (var input = WinTool.Core.Security.ProtectedMachineData.OpenLog(file))
+                using (var output = File.Create(Path.Combine(target, Path.GetFileName(file)))) input.CopyTo(output);
+            }
             foreach (var folder in Directory.GetDirectories(source)) CopyFolder(folder, Path.Combine(target, Path.GetFileName(folder)));
         }
 

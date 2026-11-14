@@ -30,7 +30,8 @@ namespace WinTool.WindowsUpdate.Engine
         Cancelled,
         DownloadFailed,
         NoDownloadedUpdates,
-        Failed
+        Failed,
+        SelectionUnavailable
     }
 
     /// <summary>What Windows is doing when a manual run starts, and what the user chose (WU-31).</summary>
@@ -48,6 +49,8 @@ namespace WinTool.WindowsUpdate.Engine
 
         /// <summary>WU-27: when set, only these update keys are installed, in one pass.</summary>
         public ISet<string> SelectedKeys { get; set; }
+        public bool SelectionWorkflow { get; set; }
+        public SelectionSnapshot Selection { get; set; }
 
         /// <summary>Manual runs only: asked when Windows Update is busy. Null = treat as RetryLater.</summary>
         public Func<Logic.WindowsUpdateActivity, BusyDecision> OnWindowsBusy { get; set; }
@@ -98,6 +101,9 @@ namespace WinTool.WindowsUpdate.Engine
         public int PassesCompleted { get; set; }
         public bool RebootRequired { get; set; }
         public DateTime? RetryAt { get; set; }
+        public ScanResult PostScan { get; set; }
+        public bool VerificationUnknown { get; set; }
+        public List<SelectionSkip> SelectionSkipped { get; } = new List<SelectionSkip>();
 
         /// <summary>Per-update download and install results across passes (WU-25).</summary>
         public List<ItemResult> Items { get; }

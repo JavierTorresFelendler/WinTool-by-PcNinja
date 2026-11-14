@@ -331,6 +331,74 @@ namespace WinTool.WindowsUpdate.Tests
         }
 
         [Fact]
+        public void Cancel_during_the_only_download_never_starts_installation()
+        {
+            var h = new Harness();
+            h.Agent.Available.Add(U.Windows("Only update"));
+            using (var cts = new CancellationTokenSource())
+            {
+                h.Agent.OnDownload = () => cts.Cancel();
+                var outcome = h.Run(cancellation: cts.Token);
+                Assert.Equal(RunResult.Cancelled, outcome.Result);
+                Assert.Empty(h.Agent.Installed);
+                Assert.Equal(0, outcome.PassesCompleted);
+                Assert.Contains("Nothing from this pass was installed", outcome.Message);
+            }
+        }
+
+        [Fact]
+        public void Cancel_during_the_final_download_never_starts_installation()
+        {
+            var h = new Harness();
+            h.Agent.Available.Add(U.Windows("First update"));
+            h.Agent.Available.Add(U.Windows("Last update"));
+            using (var cts = new CancellationTokenSource())
+            {
+                var downloads = 0;
+                h.Agent.OnDownload = () => { if (++downloads == 2) cts.Cancel(); };
+                var outcome = h.Run(cancellation: cts.Token);
+                Assert.Equal(2, downloads);
+                Assert.Equal(RunResult.Cancelled, outcome.Result);
+                Assert.Empty(h.Agent.Installed);
+                Assert.Equal(0, outcome.PassesCompleted);
+            }
+        }
+
+        [Fact]
+        public void Cancel_from_installing_progress_stops_before_the_native_call()
+        {
+            var h = new Harness();
+            h.Agent.Available.Add(U.Windows("Only update"));
+            using (var cts = new CancellationTokenSource())
+            {
+                var progress = new SyncProgress(value => { if (value.Stage == RunStage.Installing) cts.Cancel(); });
+                var outcome = h.Runner.Run(new RunRequest(), progress, cts.Token);
+                Assert.Equal(RunResult.Cancelled, outcome.Result);
+                Assert.Empty(h.Agent.Installed);
+                Assert.Contains("Nothing from this pass was installed", outcome.Message);
+            }
+        }
+
+        [Fact]
+        public void Cancel_before_a_later_pass_installs_preserves_previous_results()
+        {
+            var h = new Harness();
+            h.Agent.Available.Add(U.Windows("First pass"));
+            h.Agent.AppearAfterInstall.Enqueue(new List<UpdateItem> { U.Windows("Second pass") });
+            using (var cts = new CancellationTokenSource())
+            {
+                var progress = new SyncProgress(value => { if (value.Stage == RunStage.Installing && value.Pass == 2) cts.Cancel(); });
+                var outcome = h.Runner.Run(new RunRequest(), progress, cts.Token);
+                Assert.Equal(RunResult.Cancelled, outcome.Result);
+                Assert.Equal(new[] { "First pass" }, h.Agent.Installed);
+                Assert.Equal(1, outcome.PassesCompleted);
+                Assert.Single(outcome.Items);
+                Assert.True(outcome.Items[0].Succeeded);
+                Assert.Contains("Nothing from this pass was installed", outcome.Message);
+            }
+        }
+
+        [Fact]
         public void Licenses_are_accepted_before_download()
         {
             var h = new Harness();

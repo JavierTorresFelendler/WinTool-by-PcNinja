@@ -388,6 +388,198 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ---
 
+## D-027 Portable scheduling uses a protected local task copy
+
+- **Status:** Accepted (2026-11-11). Explicit owner choice of option 3 after
+  independent review of S2. Amends D-014 and the scheduling part of D-026.
+- **Decision (owner):**
+  - Portable use continues to support scanning and installing updates,
+    Windows upgrades and Office installation without installing WinTool.
+  - Scheduling from a portable copy creates a dedicated, protected local copy
+    and points the SYSTEM task at that copy. It never schedules the original
+    portable path, including a USB or user-writable location.
+  - This does not require an MSI, Start menu entry or ordinary application
+    installation. The existing MSI installation option remains available.
+  - Removing the portable schedule also cleans up its protected task copy;
+    cleanup must respect any operation still using it.
+- **Consequences:** The current S2 draft's installed-copy-only refusal and
+  default refusal of portable `update run` do not satisfy this decision and
+  must be revised. GUI resources, CLI documentation, task lifecycle and tests
+  must be updated together. The detailed design in
+  [S2-PROTECTED-COPY-PLAN.md](reviews/S2-PROTECTED-COPY-PLAN.md) remains a
+  candidate implementation undergoing independent re-review; accepting this
+  decision does not establish VM validation. Earlier installed-only behavior is
+  superseded by the candidate described there.
+- **Boundaries:** No host scheduling, copying to production data folders,
+  installers, servicing, merge, tag or release is authorized by this entry.
+  Existing CI and owner-designated disposable-VM acceptance gates remain.
+
+## D-028 Dedicated protected machine data and one-time migration
+
+- **Status:** Accepted (2026-11-11), explicit owner approval. Supersedes the
+  previous machine-data location and in-place adoption/repair policy.
+- **Decision:** Machine data moves to `%ProgramData%\PcNinja-WinTool`.
+  A pre-existing root not owned by Administrators or SYSTEM is renamed aside
+  and replaced with a fresh protected directory; it is never adopted or repaired
+  in place. The shared `%ProgramData%\PcNinja` parent remains unchanged.
+- Legacy settings and state are untrusted: parse, validate and serialize new
+  files, without raw copying or following reparse points/hard links.
+  `Updates\` and logs are not migrated. Migration runs once under the
+  machine-wide operation lock and records completion.
+- The Logs page and `logs collect` retain read-only access to old logs.
+  D-027's task copy lives under the new root or Program Files.
+- No merge, tag or release. Revised S1/S2 require independent re-review before
+  owner VM testing; no production-machine migration is authorized as a test.
+
+## D-029 Limited clarification of D-009 for the universal MSI payload
+
+- **Status:** Accepted (2026-11-11), explicit owner approval. Supersedes
+  D-009 only to the extent described here; the original entry remains intact.
+- **Decision:** D-009 permits only the D-026 universal EXE's embedded WinTool
+  MSI to be extracted to a new temporary folder, checked against its embedded
+  build-time SHA-256 and opened through Windows Installer in the existing
+  approved installation flow. The restriction on dropped executable payloads
+  otherwise remains.
+- This clarification changes no packaging behavior and grants no merge, tag,
+  release or publication authority. Review and owner VM gates remain in force.
+
+## D-030 Cooperative Windows Update cancellation in 1.0.3; native async deferred
+
+- **Status:** Accepted (2026-11-13), explicit owner approval following FABLE's
+  source review and the owner VM evidence. Narrows the 1.0.3 delivery of WU-24;
+  it does not mark full asynchronous cancellation complete.
+- **Decision:** Deliver A+B as a separate reviewed PR: check cancellation after
+  the Installing progress report and immediately before starting a native
+  installation batch, including cancellation during the final/only download.
+  The result states that nothing from this pass was installed; outcomes from
+  earlier passes and existing reboot-required precedence remain intact.
+- The GUI logs `CancelRequested` with the displayed stage and UTC request time.
+  It shows pending cancellation and disables repeated requests. Cancel is also
+  disabled during installation and final verification: a selected-update GUI
+  run is one pass, with no later batch to cancel. Current
+  synchronous Windows operations can continue until they return; no claim of
+  immediate native abort is made and no process/service is force-terminated.
+- Full WU-24 `BeginDownload` / `BeginInstall` progress, native abort requests,
+  callbacks, completion and cleanup are deferred to separate future work.
+  This is a scope deferral, not removal of that requirement or its acceptance
+  tests. Original decision entries remain unchanged.
+- **Validation:** focused regression tests, independent FABLE review, green CI,
+  and a targeted owner-VM download-cancel scenario on the new candidate hash.
+  Existing unrelated passing VM evidence can be reused with its stated limits.
+- No merge, tag, release or production rollout is authorized by this decision.
+
+## D-031 Selected-update revalidation and shared verification (issue #22)
+
+- **Status:** Accepted (2026-11-13), owner request and independently reviewed
+  bounded implementation plan. No merge or release authority.
+- Preserve full Broad/Driver/Optional discovery. For the GUI selected-update
+  operation, freeze identities, revisions, scope and primary retained-object
+  source/context; revalidate with fresh objects using only necessary existing
+  query classes. No new native criteria or routing assignments.
+- A changed revision is skipped and reported. Do not install a replacement or
+  automatically rescan. Missing items are neutrally unavailable, not inferred
+  installed. Required-query failure stops the operation before installation.
+- Unknown/mismatched requested/reported context falls back to the full three
+  queries. Reuse completed query classes; an unstable batch completes with fresh
+  objects and records the RC3-equivalent exposure rather than aborting for that
+  reason alone. Context records do not prove the actual contacted server or
+  detect every policy/WSUS change.
+- After installation share the engine-owned Broad verification with the GUI
+  discovery snapshot. Known restart-required outcomes retain Broad-only
+  verification. Failed Broad means verification Unknown; never infer installed
+  or fully updated from absence. All skipped has no post-scan; request an
+  explicit new user Scan.
+- If restart becomes pending at the former GUI refresh gate, save
+  RebootRequired (without advancing LastSuccessfulRun), matching the existing
+  native-reboot branch rather than RC3's saved Succeeded in that late case.
+- Report-only GUI Scan probes the operation lease and releases immediately,
+  then searches without holding it. Busy is normal, never queued. The advisory
+  probe can briefly collide with a scheduled run: the existing runner returns
+  AlreadyRunning/21 without requesting Retry or changing state. A scheduled run
+  that starts after release can proceed while the GUI scan is active.
+- Preserve D-030 cancellation boundaries. Test call budgets, fresh/revision
+  checks, partial results, fallback reuse, cancellation, and probe races; green
+  CI and exact-head independent review precede one focused owner-VM check.
+  Original A/B evidence is reused with its existing limits. No full native
+  asynchronous cancellation, service deadline or security/installer change.
+
+## D-032 Retain cache-only Microsoft-file verification without revocation for 1.0.3
+
+- **Status:** Accepted (2026-11-13), explicit owner approval after the scoped
+  T24/T25 signature review. This records the existing behavior for this release;
+  it does not authorize a merge, tag, release or production rollout.
+- **Context:** The Microsoft-file verifier uses WinVerifyTrust with
+  `WTD_CACHE_ONLY_URL_RETRIEVAL | WTD_REVOCATION_CHECK_NONE` and no revocation
+  requests. Technicians must be able to verify files on disconnected machines.
+  The existing implementation and the accepted RC7 binaries are unchanged.
+- **Decision:** Retain that cache-only, no-revocation policy for 1.0.3. Continue
+  to require valid Authenticode integrity, the verified signer's exact Microsoft
+  organization attribute, and the complementary Microsoft-root policy. This
+  decision permits no test roots, invalid signatures or publisher-pin bypass.
+- **Reason:** Preserve the disconnected technician workflow without depending
+  on reachable online CRL/OCSP services, and keep the existing trust behavior
+  bounded during this release.
+- **Consequences and limits:**
+  - No current certificate-revocation status or revocation freshness is
+    established. Later revocation of a Microsoft certificate may go undetected;
+    the remaining integrity, signer and root checks still apply. Offline
+    acceptance is not evidence of online revocation checking.
+  - T24/T25 establish only the recorded sample acceptance and rejection results.
+    They do not establish revocation handling. The native Broadcom rejection
+    demonstrates publisher pinning; a valid unsigned PE and an end-to-end
+    third-party regression test remain separate nonblocking follow-ups.
+  - Adding online revocation requires a new owner decision specifying offline
+    and lookup-failure behavior, deadlines and user-visible outcomes, followed
+    by separate implementation review and validation. This entry does not
+    authorize that work or a silent change to the current policy.
+
+## D-033 Bounded coverage acceptance and deferred work for 1.0.3
+
+- **Status:** Accepted (2026-11-14), explicit owner approval of the two final
+  coverage additions and the listed deferrals. No merge or release authority.
+- **Decision:** Preserve the accepted A/B, Cancel, RC7 search/history and T24/T25
+  results with their recorded limits; do not repeat those test campaigns.
+  Before final-change preparation, add automated coverage for busy migration
+  followed by a successful once-only retry, and prepare a short owner-VM check
+  for writable custom MSI task targets and newer portable CLI task ownership.
+- **Accepted coverage limits for this release:**
+  - Native selected-search single-query validation, no-reboot shared discovery
+    snapshot and remaining-firmware defaults rely on automated tests and code
+    review. The real RC7 run covered full context fallback and reboot-required
+    verification, not those other paths or a measured speed improvement.
+  - Additional VM root-file/link/hard-link cases rely on existing automated
+    coverage; the accepted planted-junction and migration evidence is retained.
+  - Additional USB/drive-letter substitution, referenced/active worker
+    retirement and other unexecuted scheduling/installer edge options are
+    deferred. This does not waive the two explicit SYSTEM-boundary checks above.
+  - A valid unsigned PE fixture and an end-to-end trusted non-Microsoft signer
+    CI regression remain follow-ups. The native Broadcom rejection remains
+    sample evidence; malformed-input refusal is not a valid-unsigned-PE test.
+  - Low review notes L1-L3 and U1-U4, and investigation of the pre-existing
+    Upgrade status "operation busy" launch message, remain nonblocking work.
+- **Consequences:** Record deferred checks as unexecuted/accepted risk, never
+  as passes. Keep existing installer/security behavior and the accepted RC7
+  artifacts unchanged. Helpers must be reviewed before owner-VM execution.
+  Final-head CI, temporary candidate-workflow removal and separately authorized
+  production-artifact smoke tests (including Windows 10), update discovery and
+  security verdicts remain required. This is not shipping approval.
+
+## D-034 Final RC acceptance precedes the main merge decision
+
+- **Status:** Accepted (2026-11-14), explicit owner clarification that `main`
+  represents readiness for updating users. No merge or publication is authorized.
+- **Decision:** Prepare a final-head, version-stamped RC with full CI and an
+  exact-head independent review before the owner runs the short finishing VM
+  visit. Include Windows 10 compatibility and the shipped 1.0.2 self-update
+  path. Reuse prior accepted evidence under D-033 rather than repeat campaigns.
+- **Consequences:** A preparation/code-review PASS alone is not merge readiness.
+  RC artifacts may be produced by read-only CI dispatch without any Git tag or
+  GitHub release. A local-feed upgrade rehearsal is not public-feed validation.
+  RC acceptance does not waive production-stamped artifact smoke, security and
+  feed gates, or supply permission to merge, tag or publish. Preserve the D-033
+  limits and obtain the owner's separate decision before any such action.
+
 ## Open questions
 
-None at the moment.
+None at the moment. D-027, D-028, D-029, D-030, D-031, D-032, D-033 and D-034 record the separately accepted owner
+decisions; their original predecessor entries remain intact.

@@ -1,4 +1,5 @@
 using System;
+using WinTool.App.Presentation;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -108,6 +109,9 @@ namespace WinTool.App.ViewModels
         private CancellationTokenSource cancellation;
         private bool loaded;
         private bool busy;
+        private RunStage runStage = RunStage.Checking;
+        private ScanResult discoverySnapshot;
+        private LastRunPresentation lastRun = LastRunPresentation.Empty;
         private bool hasScanned;
         private DateTime? lastScan;
         private PendingRestartState pending = PendingRestartState.None;
@@ -142,7 +146,7 @@ namespace WinTool.App.ViewModels
             this.env = env;
             ScanCommand = new AsyncCommand(ScanAsync, () => !busy);
             InstallCommand = new AsyncCommand(InstallAsync, () => !busy && !pending.Pending && Rows.Any(r => r.IsSelected));
-            CancelCommand = new RelayCommand(() => cancellation?.Cancel(), () => busy && cancellation != null);
+            CancelCommand = new RelayCommand(CancelCurrentOperation, () => CanRequestCancellation);
             RestartCommand = new RelayCommand(RestartNow, () => pending.Pending && !busy);
             HealthCheckCommand = new AsyncCommand(() => HealthAsync(true), () => !busy);
             CollectLogsCommand = new AsyncCommand(CollectLogsAsync, () => !busy);
@@ -161,6 +165,21 @@ namespace WinTool.App.ViewModels
         public void RequestCancel()
         {
             if (CancelCommand.CanExecute(null)) CancelCommand.Execute(null);
+        }
+
+        private void CancelCurrentOperation()
+        {
+            if (!CanRequestCancellation) return;
+            var source = cancellation;
+            var requestedAt = DateTime.UtcNow;
+            var requestedStage = runStage;
+            // Signal before diagnostic I/O so logging cannot delay the boundary check.
+            source.Cancel();
+            env.Log.Write(EventIds.CancelRequested, EventLevel.Information,
+                "CancelRequested: UI stage=" + requestedStage + "; requestedAtUtc=" + requestedAt.ToString("O", CultureInfo.InvariantCulture) +
+                ". Waiting for the current Windows operation to finish.");
+            OnPropertyChanged(nameof(ProgressText));
+            CommandManager.InvalidateRequerySuggested();
         }
         public ICommand RestartCommand { get; }
 
@@ -181,8 +200,9 @@ namespace WinTool.App.ViewModels
         public bool IsBusy { get => busy; private set { if (Set(ref busy, value)) OnPropertyChanged(nameof(IsIdle)); } }
         public bool IsIdle => !busy;
         public bool HasScanned => hasScanned;
+        public string LastRunText => lastRun.Format(key => T[key], T.Culture);
         public bool HasUpdates => Rows.Count > 0;
-        public bool NoUpdatesFound => hasScanned && Rows.Count == 0;
+        public bool NoUpdatesFound => hasScanned && discoverySnapshot?.Complete == true && Rows.Count == 0;
         public int ImportantCount => Rows.Count(r => r.IsImportant);
         public int OtherCount => Rows.Count(r => !r.IsImportant);
 
@@ -201,7 +221,9 @@ namespace WinTool.App.ViewModels
         public bool HasMessage => !string.IsNullOrEmpty(Message);
         public bool MessageIsError { get => messageIsError; private set => Set(ref messageIsError, value); }
 
-        public string ProgressText { get => progressText; private set => Set(ref progressText, value); }
+        private bool CanRequestCancellation => busy && cancellation != null && !cancellation.IsCancellationRequested &&
+            (runStage == RunStage.Checking || runStage == RunStage.Searching || runStage == RunStage.Downloading);
+        public string ProgressText { get => cancellation?.IsCancellationRequested == true ? T["WU_CancelPending"] : progressText; private set => Set(ref progressText, value); }
         public double ProgressValue { get => progressValue; private set => Set(ref progressValue, value); }
         public bool ProgressIndeterminate { get => progressIndeterminate; private set => Set(ref progressIndeterminate, value); }
 
@@ -255,11 +277,14 @@ namespace WinTool.App.ViewModels
             if (!Begin(T["WU_Progress_Searching"], indeterminate: true)) return;
             try
             {
+                if (OtherOperationRunning()) { SetMessage(() => T["WU_OperationRunning"], false); return; }
                 var settings = env.Store.LoadSettings();
-                var scan = await Task.Run(() => new ScanService(env.CreateAgent(), env.Log).Scan(UpdateScope.Default(settings.InstallFirmwareUpdates)));
+                var scan = await Task.Run(() => ReportOnlyScan.TryRun(env.TryAcquireOperationLock,
+                    () => new ScanService(env.CreateAgent(), env.Log).Scan(UpdateScope.Default(settings.InstallFirmwareUpdates))));
+                if (scan == null) { SetMessage(() => T["WU_OperationRunning"], false); return; }
                 ApplyScan(scan);
                 var none = Rows.Count == 0;
-                SetMessage(none ? () => T["WU_NoUpdates"] : (Func<string>)null, false);
+                SetMessage(!scan.Complete ? () => T["WU_SearchPartial"] : none ? () => T["WU_NoUpdates"] : (Func<string>)null, false);
             }
             catch (UpdateAgentException ex)
             {
@@ -280,12 +305,18 @@ namespace WinTool.App.ViewModels
             if (!Begin(T["WU_Progress_Starting"], indeterminate: true)) return;
 
             cancellation = new CancellationTokenSource();
-            var progress = new Progress<RunProgress>(OnProgress);
+            var progressSource = cancellation;
+            var progress = new Progress<RunProgress>(value =>
+            {
+                if (ReferenceEquals(cancellation, progressSource)) OnProgress(value);
+            });
             var dispatcher = Application.Current.Dispatcher;
             var request = new RunRequest
             {
                 Type = RunType.Manual,
                 SelectedKeys = new HashSet<string>(selected.Select(r => r.Key)),
+                SelectionWorkflow = true,
+                Selection = discoverySnapshot?.Select(new HashSet<string>(selected.Select(r => r.Key))),
                 Scope = UpdateScope.Default(includeFirmware: selected.Any(r => r.Scanned.IsFirmware) || env.Store.LoadSettings().InstallFirmwareUpdates),
                 OnWindowsBusy = activity => (BusyDecision)dispatcher.Invoke(new Func<BusyDecision>(() =>
                     Dialogs.Confirm(T.Format("WU_Busy_Question", activity.Message)) ? BusyDecision.Snooze : BusyDecision.Cancel))
@@ -312,6 +343,7 @@ namespace WinTool.App.ViewModels
                 if (row != null) row.Result = item.Succeeded ? T["WU_Item_Installed"] : T.Format("WU_Item_Failed", HResults.ToHex(item.HResult));
             }
 
+            if (outcome.PostScan != null) ApplyScan(outcome.PostScan);
             SetMessage(() => Explain(outcome), outcome.Result == RunResult.Failed || outcome.Result == RunResult.DownloadFailed || outcome.Result == RunResult.SucceededWithErrors);
             pending = await Task.Run(() => env.Probe.GetPendingRestart());
             if (outcome.RebootRequired || pending.Pending)
@@ -323,7 +355,6 @@ namespace WinTool.App.ViewModels
                 return;
             }
 
-            if (outcome.Result == RunResult.Succeeded || outcome.Result == RunResult.SucceededWithErrors) await ScanAsync();
             RaiseSummary();
         }
 
@@ -482,16 +513,19 @@ namespace WinTool.App.ViewModels
 
             if (settings.InstallFirmwareUpdates && !current.InstallFirmwareUpdates && !Dialogs.Confirm(T["WU_Firmware_Schedule_Warning"])) return;
 
-            // D-014: a schedule needs a stable path. A portable copy offers to install WinTool, whose MSI creates the schedule.
+            // D-027: portable scheduling offers MSI installation or a protected local task copy.
             if (settings.ScheduleEnabled && IsPortableCopy())
             {
                 var choice = Dialogs.Choose(T.Format("WU_Schedule_InstallOffer", env.ExecutablePath));
                 if (choice == System.Windows.MessageBoxResult.Cancel) return;
-                if (choice == System.Windows.MessageBoxResult.Yes && InstallForSchedule != null)
+                if (choice == System.Windows.MessageBoxResult.Yes)
                 {
-                    env.Store.SaveSettings(settings);
-                    if (await InstallForSchedule(MsiScheduleProperties.CommandLine(settings))) return;
-                    // The MSI is not available: fall through and schedule this copy, as with No.
+                    if (InstallForSchedule != null)
+                    {
+                        if (await InstallForSchedule(MsiScheduleProperties.CommandLine(settings))) return;
+                    }
+                    SetScheduleMessage(() => T["WU_Schedule_TargetUnavailable"], true);
+                    return;
                 }
             }
 
@@ -501,6 +535,8 @@ namespace WinTool.App.ViewModels
                 env.Store.SaveSettings(settings);
                 SetScheduleMessage(() => settings.ScheduleEnabled ? T["WU_Schedule_Saved"] : T["WU_Schedule_Off"], false);
             }
+            catch (WinTool.Core.Updates.InstalledCopyRequiredException)
+            { SetScheduleMessage(() => T["WU_Schedule_TargetUnavailable"], true); }
             catch (Exception ex) when (ex is InvalidOperationException || ex is UnauthorizedAccessException || ex is System.Runtime.InteropServices.COMException || ex is ArgumentException)
             {
                 SetScheduleMessage(() => T.Format("WU_Schedule_Failed", ex.Message), true);
@@ -559,6 +595,7 @@ namespace WinTool.App.ViewModels
 
         private void ApplyScan(ScanResult scan)
         {
+            discoverySnapshot = scan;
             Rows.Clear();
             foreach (var update in scan.Updates.Where(u => u.Excluded != ExclusionReason.Scope)) Rows.Add(new UpdateRowViewModel(update));
             hasScanned = true;
@@ -568,6 +605,8 @@ namespace WinTool.App.ViewModels
 
         private void OnProgress(RunProgress value)
         {
+            runStage = value.Stage;
+            CommandManager.InvalidateRequerySuggested();
             switch (value.Stage)
             {
                 case RunStage.Searching:
@@ -592,11 +631,19 @@ namespace WinTool.App.ViewModels
 
         private string Explain(RunOutcome outcome)
         {
+            var text = ExplainResult(outcome);
+            if (outcome.SelectionSkipped.Count > 0) text += " " + T.Format("WU_SelectionSkipped", outcome.SelectionSkipped.Count, outcome.SelectionSkipped.Count(s => s.Reason == SelectionSkipReason.ChangedRevision));
+            if (outcome.VerificationUnknown || outcome.PostScan != null && !outcome.PostScan.Complete) text += " " + T["WU_SearchPartial"];
+            return text;
+        }
+        private string ExplainResult(RunOutcome outcome)
+        {
             switch (outcome.Result)
             {
+                case RunResult.SelectionUnavailable: return T["WU_SelectionUnavailable"];
                 case RunResult.Succeeded: return T["WU_Result_Succeeded"];
                 case RunResult.SucceededWithErrors: return T["WU_Result_SomeFailed"];
-                case RunResult.NoUpdates: return T["WU_NoUpdates"];
+                case RunResult.NoUpdates: return outcome.SelectionSkipped.Count > 0 ? T["WU_SelectionUnavailable"] : T["WU_NoUpdates"];
                 case RunResult.RebootRequired:
                     return outcome.Items.Any(i => i.Succeeded) ? T["WU_Result_Restart"] : T["WU_Result_RestartBlocking"];
                 case RunResult.Cancelled: return T["WU_Result_Cancelled"];
@@ -617,13 +664,13 @@ namespace WinTool.App.ViewModels
 
         private bool IsPortableCopy()
         {
-            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            return !env.ExecutablePath.StartsWith(programFiles, StringComparison.OrdinalIgnoreCase);
+            return !WinTool.Core.Updates.InstalledCopy.IsInstalled(env.ExecutablePath);
         }
 
         private bool Begin(string text, bool indeterminate)
         {
             if (busy) return false;
+            runStage = RunStage.Checking;
             IsBusy = true;
             ProgressText = text;
             ProgressIndeterminate = indeterminate;
@@ -657,6 +704,8 @@ namespace WinTool.App.ViewModels
 
         private void RaiseSummary()
         {
+            lastRun = LastRunPresentation.Read(env.Store.LoadState);
+            OnPropertyChanged(nameof(LastRunText));
             foreach (var name in new[] { nameof(HasScanned), nameof(HasUpdates), nameof(NoUpdatesFound), nameof(ImportantCount), nameof(OtherCount),
                 nameof(LastCheckText), nameof(CountText), nameof(RestartPending), nameof(NoRestartPending), nameof(RestartReason) })
             {

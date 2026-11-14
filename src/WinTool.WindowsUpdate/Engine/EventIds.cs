@@ -17,9 +17,14 @@ namespace WinTool.WindowsUpdate.Engine
         public const int UpdateFound = 2022;
         public const int UpdateSkippedFirmware = 2023;
         public const int UpdateSkippedScope = 2024;
+        public const int SearchQueryStarted = 2025;
+        public const int SearchQueryFinished = 2026;
+        public const int SearchPlan = 2027;
+        public const int VerificationResult = 2028;
         public const int DownloadResult = 2030;
         public const int InstallResult = 2031;
         public const int UpdateItemFailed = 2032;
+        public const int CancelRequested = 2033;
         public const int RetryScheduled = 2040;
         public const int RetryNotScheduled = 2041;
         public const int RetryCancelled = 2042;

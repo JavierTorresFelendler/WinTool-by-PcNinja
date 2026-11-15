@@ -669,8 +669,8 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
 
 ## Open questions
 
-D-037 accepts D-036's plan and clarifications. Actual merge/tag/draft/publication
-authorization, including the conditional action at publication, remains pending.
-Earlier entries remain intact. No operational authorization is inferred.
-Issue #29 implementation is not authorized: independent design review and
-resolution of the launch/fallback boundaries in its plan are pending.
+Release 1.0.3 was subsequently published under separate owner authorization;
+its closeout is recorded in PR #28. Earlier decision entries remain historical
+and do not grant new execution authority. Issue #29 implementation is not
+authorized: independent design review and resolution of the launch/fallback
+boundaries in its plan are pending under D-038.

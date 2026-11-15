@@ -642,8 +642,35 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   failure action when obtaining publication authority; nothing is executed by
   this planning approval. D-033, D-034 and D-035 limits remain unchanged.
 
+## D-038 Installed-copy-aware universal launch (Issue #29 planning approval)
+
+- **Status:** Accepted for planning and independent review (2026-11-15),
+  explicit owner approval. No implementation or release authority.
+- **Decision:** For the release after 1.0.3, plan a replacement for D-026's
+  always-ask amendments. A manual universal launch should open a protected
+  installed copy of the same or newer version without an installation question.
+  If the protected installed version is older, offer an explicit update: Yes
+  runs the carried installer; No opens the installed copy. Not-installed behavior
+  keeps Install / Run portable / Cancel.
+- **Explicit portable intent:** Plan a documented `--portable` option for a
+  deliberate GUI portable launch. Do not allow an older portable GUI to proceed
+  against a known newer installation's data, including through that option.
+  Preserve single-instance, existing CLI, self-update and elevation boundaries;
+  unresolved interactions require design review before implementation.
+- **Trust:** Silent redirection requires a protected installed executable.
+  Unprotected targets fall back to an explained choice, never silent execution.
+  Detailed safe fallback and failed-launch handling are review points, not
+  permission to weaken trust checks or silently reinstall/repair a machine.
+- **Consequences:** Keep all original D-026 entries intact and retain current
+  shipped 1.0.3 behavior. The new policy becomes runtime behavior only after
+  plan review and separate implementation approval. No MSI, updater, task
+  ownership, shared-code or data-format change is authorized by this entry.
+  See [the bounded plan](plans/ISSUE-29-LAUNCH.md).
+
 ## Open questions
 
 D-037 accepts D-036's plan and clarifications. Actual merge/tag/draft/publication
 authorization, including the conditional action at publication, remains pending.
 Earlier entries remain intact. No operational authorization is inferred.
+Issue #29 implementation is not authorized: independent design review and
+resolution of the launch/fallback boundaries in its plan are pending.

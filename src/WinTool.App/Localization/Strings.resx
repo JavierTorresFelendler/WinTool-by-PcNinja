@@ -52,6 +52,33 @@ No: run this copy without installing.
 Cancel: close.</value></data>
   <data name="Startup_InstallFailed" xml:space="preserve"><value>The installer could not start:
 {0}</value></data>
+  <data name="Startup_UpdateInstalled" xml:space="preserve"><value>Update WinTool from {0} to {1}?
+
+Yes: open the installer to update.
+No: open the installed version.
+Cancel: close.</value></data>
+  <data name="Startup_UnprotectedUpdate" xml:space="preserve"><value>The installed copy cannot be opened safely because ordinary users can change its file or folder:
+{0}
+
+Yes: open the installer to update.
+No: run this downloaded copy as portable.
+Cancel: close. Folder permissions will not be repaired.</value></data>
+  <data name="Startup_UnprotectedPortable" xml:space="preserve"><value>The installed copy cannot be opened safely because ordinary users can change its file or folder:
+{0}
+
+OK: run this downloaded copy as portable.
+Cancel: close. Folder permissions will not be repaired.</value></data>
+  <data name="Startup_OlderPortableBlocked" xml:space="preserve"><value>This copy ({0}) is older than the installed version ({1}):
+{2}
+
+Portable startup was stopped to protect data written by the newer version. Open the protected installed copy directly, or use a newer download.</value></data>
+  <data name="Startup_InstalledLaunchFailed" xml:space="preserve"><value>The installed copy could not be opened:
+{0}
+{1}
+
+WinTool has stopped. No installer or portable fallback was started.</value></data>
+  <data name="Startup_InstalledChanged" xml:space="preserve"><value>The installed copy changed or is no longer protected. Close this window and try again.</value></data>
+  <data name="Startup_NoProcess" xml:space="preserve"><value>Windows did not return a process for the installed copy.</value></data>
   <data name="Error_Unexpected" xml:space="preserve"><value>Something went wrong. The details are in the log:
 {0}</value></data>
   <data name="Dash_Refresh" xml:space="preserve"><value>Refresh</value></data>

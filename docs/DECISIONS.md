@@ -667,10 +667,45 @@ Status values: **Accepted**, **Proposed** (waiting for the owner), **Superseded*
   ownership, shared-code or data-format change is authorized by this entry.
   See [the bounded plan](plans/ISSUE-29-LAUNCH.md).
 
+## D-039 Implement installed-copy-aware universal launch (Issue #29)
+
+- **Status:** Accepted (2026-11-15), explicit owner approval after FABLE's
+  exact-head plan review at 949d85d and its six implementation recommendations.
+  This authorizes bounded implementation, tests, CI, independent code review
+  and a short disposable-VM launch visit; no merge, tag or release.
+- **Decision:** Supersede D-026's always-ask GUI amendments for the universal
+  EXE only. Activate an existing window first. Otherwise, open a protected
+  registered same/newer installation without a question. For an older protected
+  installation ask Update X to Y (product versions): Yes starts the embedded
+  installer, No opens the installed copy, Cancel closes. A missing/unreadable
+  registered executable retains the safe not-installed choice and diagnostic.
+- **Unprotected installations:** Never launch them from the downloaded EXE,
+  including after a question. Show the path and explanation. A newer download
+  offers Update / Portable / Cancel; an equal download offers Portable / Cancel.
+  An older download shows a block and closes. No ACL repair or relocation.
+- **Portable intent:** Lone `--portable`, the internal `--portable-chosen`
+  marker, and a self-update restart mean no question, not authority. Recompute
+  trust/version facts after elevation. A known newer installation blocks an
+  older portable GUI. Mixed marker/argument forms return usage exit 2 with no
+  window. The fence precedes migration, task maintenance and the main window;
+  early logs/per-user localization still occur. Existing CLI commands and old
+  already-released binaries are not fenced by this decision.
+- **Execution:** After the activation probe, decide/redirect before taking the
+  instance guard, in standard-user and already-elevated paths. Recheck installed
+  protection immediately before redirection. A failed launch reports path and
+  reason, logs and returns new GUI exit 6; no implicit MSI or portable fallback.
+  The same code reports a blocked older GUI or failed installer start.
+- **Boundaries:** Pure facts/argument/answer policy in Core with existing Core
+  tests; thin app executor checked by review and VM. Plain builds without an
+  embedded MSI remain unchanged. No shared code, MSI, updater, protected-data,
+  scheduling, elevation-model or data-format changes. Keep D-038 as historical
+  planning approval. Review the exact implementation head before VM execution;
+  passing unit tests alone is not launch/UAC acceptance.
+
 ## Open questions
 
 Release 1.0.3 was subsequently published under separate owner authorization;
 its closeout is recorded in PR #28. Earlier decision entries remain historical
-and do not grant new execution authority. Issue #29 implementation is not
-authorized: independent design review and resolution of the launch/fallback
-boundaries in its plan are pending under D-038.
+and do not grant new execution authority. Issue #29 bounded implementation is
+authorized under D-039; exact-head code review and focused VM acceptance remain
+pending. Merge and release decisions remain separate.

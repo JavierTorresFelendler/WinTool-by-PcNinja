@@ -17,8 +17,7 @@ namespace WinTool.Core.Updates
     }
 
     /// <summary>
-    /// D-026 addition: the downloaded universal EXE always asks; when Install is chosen and this version
-    /// or a newer one is already installed, it starts that copy instead of reinstalling it.
+    /// Registered installation identity and metadata. Universal GUI choices use UniversalLaunchPolicy (D-039).
     /// </summary>
     public static class InstalledCopy
     {
@@ -37,6 +36,23 @@ namespace WinTool.Core.Updates
         }
 
         public static bool IsInstalled(string exePath) => IsInstalled(exePath, ReadInstallFolder());
+
+        /// <summary>Require consistent product/file metadata; never display a four-part file version as a product version.</summary>
+        public static bool TryReadVersion(string productVersion, string fileVersion, out AppVersion version)
+        {
+            version = null;
+            try
+            {
+                AppVersion product;
+                Version file;
+                if (!AppVersion.TryParse(productVersion, out product) || !Version.TryParse(fileVersion, out file) || product.FileVersion != file)
+                    return false;
+                version = product;
+                return true;
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is OverflowException || ex is FormatException)
+            { return false; }
+        }
 
         public static bool IsInstalled(string exePath, string installFolder)
         {

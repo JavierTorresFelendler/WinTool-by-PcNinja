@@ -451,4 +451,31 @@ Cancelar: no hacer nada.</value></data>
   <data name="History_Result_Unavailable" xml:space="preserve"><value>Actualizaciones seleccionadas no disponibles</value></data>
   <data name="History_Result_Failed" xml:space="preserve"><value>Fallida</value></data>
   <data name="History_Result_Incomplete" xml:space="preserve"><value>Registrada en curso; finalización desconocida</value></data>
+  <data name="Startup_UpdateInstalled" xml:space="preserve"><value>¿Actualizar WinTool de {0} a {1}?
+
+Sí: abrir el instalador para actualizar.
+No: abrir la versión instalada.
+Cancelar: cerrar.</value><comment>needs review</comment></data>
+  <data name="Startup_UnprotectedUpdate" xml:space="preserve"><value>No se puede abrir la copia instalada de forma segura porque los usuarios sin permisos de administrador pueden modificar su archivo o carpeta:
+{0}
+
+Sí: abrir el instalador para actualizar.
+No: ejecutar esta copia descargada como portátil.
+Cancelar: cerrar. No se repararán los permisos de la carpeta.</value><comment>needs review</comment></data>
+  <data name="Startup_UnprotectedPortable" xml:space="preserve"><value>No se puede abrir la copia instalada de forma segura porque los usuarios sin permisos de administrador pueden modificar su archivo o carpeta:
+{0}
+
+Aceptar: ejecutar esta copia descargada como portátil.
+Cancelar: cerrar. No se repararán los permisos de la carpeta.</value><comment>needs review</comment></data>
+  <data name="Startup_OlderPortableBlocked" xml:space="preserve"><value>Esta copia ({0}) es anterior a la versión instalada ({1}):
+{2}
+
+Se ha detenido el inicio portátil para proteger los datos de la versión más reciente. Abre directamente la copia instalada protegida o utiliza una descarga más reciente.</value><comment>needs review</comment></data>
+  <data name="Startup_InstalledLaunchFailed" xml:space="preserve"><value>No se pudo abrir la copia instalada:
+{0}
+{1}
+
+WinTool se ha detenido. No se ha iniciado ningún instalador ni una copia portátil alternativa.</value><comment>needs review</comment></data>
+  <data name="Startup_InstalledChanged" xml:space="preserve"><value>La copia instalada ha cambiado o ya no está protegida. Cierra esta ventana e inténtalo de nuevo.</value><comment>needs review</comment></data>
+  <data name="Startup_NoProcess" xml:space="preserve"><value>Windows no devolvió un proceso para la copia instalada.</value><comment>needs review</comment></data>
 </root>

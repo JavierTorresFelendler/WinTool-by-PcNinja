@@ -207,7 +207,7 @@ namespace WinTool.App
                 var portableOnly = decision == UniversalLaunch.AskUnprotected && !canUpdate;
                 var result = MessageBox.Show(text, ProductInfo.Name,
                     portableOnly ? MessageBoxButton.OKCancel : MessageBoxButton.YesNoCancel,
-                    MessageBoxImage.Question, MessageBoxResult.Cancel, options);
+                    MessageBoxImage.Question, decision == UniversalLaunch.AskInstall ? MessageBoxResult.Yes : MessageBoxResult.Cancel, options);
                 answer = result == MessageBoxResult.Yes ? LaunchAnswer.Yes :
                     result == MessageBoxResult.No || (portableOnly && result == MessageBoxResult.OK) ? LaunchAnswer.No : LaunchAnswer.Cancel;
             }

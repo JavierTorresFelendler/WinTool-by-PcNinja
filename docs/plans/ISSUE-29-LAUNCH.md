@@ -1,6 +1,11 @@
 # Issue #29: installed-copy-aware universal GUI launch
 
-Planning only; owner approved D-038, not implementation. Target after 1.0.3;
+Historical reviewed plan at 949d85d. The owner subsequently approved bounded
+implementation and all six review recommendations under D-039. The original
+planning text below is retained as the review baseline; D-039 governs the final
+choices. Code review and VM acceptance are separate and still required.
+
+Planning only at the time: owner approved D-038, not implementation. Target after 1.0.3;
 do not modify or rebuild published assets. Independent FABLE review comes next,
 followed by reconciliation and separate owner implementation authorization.
 

@@ -451,4 +451,31 @@
   <data name="History_Result_Unavailable" xml:space="preserve"><value>העדכונים שנבחרו אינם זמינים</value></data>
   <data name="History_Result_Failed" xml:space="preserve"><value>נכשלה</value></data>
   <data name="History_Result_Incomplete" xml:space="preserve"><value>תועדה כפעילה; ההשלמה אינה ידועה</value></data>
+  <data name="Startup_UpdateInstalled" xml:space="preserve"><value>לעדכן את WinTool מגרסה ‎{0}‎ לגרסה ‎{1}‎?
+
+כן: פתיחת המתקין לעדכון.
+לא: פתיחת הגרסה המותקנת.
+ביטול: סגירה.</value></data>
+  <data name="Startup_UnprotectedUpdate" xml:space="preserve"><value>אי אפשר לפתוח בבטחה את העותק המותקן כי משתמשים רגילים יכולים לשנות את הקובץ או את התיקייה שלו:
+‎{0}‎
+
+כן: פתיחת המתקין לעדכון.
+לא: הפעלת העותק שהורד במצב נייד.
+ביטול: סגירה. הרשאות התיקייה לא יתוקנו.</value></data>
+  <data name="Startup_UnprotectedPortable" xml:space="preserve"><value>אי אפשר לפתוח בבטחה את העותק המותקן כי משתמשים רגילים יכולים לשנות את הקובץ או את התיקייה שלו:
+‎{0}‎
+
+אישור: הפעלת העותק שהורד במצב נייד.
+ביטול: סגירה. הרשאות התיקייה לא יתוקנו.</value></data>
+  <data name="Startup_OlderPortableBlocked" xml:space="preserve"><value>העותק הזה (‎{0}‎) ישן מהגרסה המותקנת (‎{1}‎):
+‎{2}‎
+
+ההפעלה במצב נייד נעצרה כדי להגן על נתוני הגרסה החדשה. יש לפתוח ישירות את העותק המותקן המוגן, או להשתמש בהורדה חדשה יותר.</value></data>
+  <data name="Startup_InstalledLaunchFailed" xml:space="preserve"><value>לא ניתן לפתוח את העותק המותקן:
+‎{0}‎
+{1}
+
+WinTool נעצר. לא הופעל מתקין או עותק נייד חלופי.</value></data>
+  <data name="Startup_InstalledChanged" xml:space="preserve"><value>העותק המותקן השתנה או שכבר אינו מוגן. יש לסגור את החלון ולנסות שוב.</value></data>
+  <data name="Startup_NoProcess" xml:space="preserve"><value>Windows לא החזיר תהליך עבור העותק המותקן.</value></data>
 </root>

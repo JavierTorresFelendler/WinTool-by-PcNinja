@@ -13,6 +13,8 @@ using WinTool.Core.Diagnostics;
 using WinTool.Core.Localization;
 using WinTool.Core.Platform;
 using WinTool.Core.Settings;
+using WinTool.Core.Updates;
+using WinTool.Core.Security;
 
 namespace WinTool.App
 {
@@ -23,6 +25,7 @@ namespace WinTool.App
         internal const int ExitUnsupportedOs = 3;
         internal const int ExitAlreadyRunningNotResponding = 4;
         internal const int ExitElevationCancelled = 5;
+        internal const int ExitLaunchFailed = 6;
 
         private const int ErrorCancelled = 1223;
 
@@ -38,12 +41,18 @@ namespace WinTool.App
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static int Run(string[] args)
         {
-            // The elevated restart of a launch whose user already answered Install / Run portable (D-026).
-            var portableChosen = args.Length == 1 && args[0] == PortableChosenArgument;
-            AppLog.Current.Info("App", ProductInfo.Name + " " + ProductInfo.InformationalVersion + "; mode: " + (args.Length > 0 && !portableChosen ? "CLI" : "GUI"));
+            var hasInstaller = EmbeddedInstaller.IsPresent;
+            var arguments = UniversalLaunchPolicy.Classify(args, hasInstaller);
+            var portableChosen = arguments == StartupArguments.PortableGui;
+            AppLog.Current.Info("App", ProductInfo.Name + " " + ProductInfo.InformationalVersion + "; mode: " + (arguments == StartupArguments.CommandLine || arguments == StartupArguments.UsageError ? "CLI" : "GUI"));
             if (WinToolPaths.DataRootOverride != null)
                 AppLog.Current.Info("App", "Data folders redirected to " + WinToolPaths.DataRootOverride + " (" + WinToolPaths.DataRootVariable + ").");
-            if (args.Length > 0 && !portableChosen)
+            if (arguments == StartupArguments.UsageError)
+            {
+                AppLog.Current.Warn("App", "Portable GUI flags must be used alone.");
+                return ExitUsage;
+            }
+            if (arguments == StartupArguments.CommandLine)
             {
                 return CommandLine.Run(args);
             }
@@ -62,14 +71,26 @@ namespace WinTool.App
             PcNinjaSingleInstance.DiagnosticSink = message => AppLog.Current.Info("SingleInstance", message);
             var options = new PcNinjaSingleInstanceOptions();
 
+            if (hasInstaller)
+            {
+                var restart = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(ViewModels.AppUpdateViewModel.WaitForPidVariable));
+                // Wait before probing, so a self-update does not activate its exiting predecessor.
+                WaitForReplacedCopy();
+                PcNinjaSingleInstanceOutcome probe;
+                PcNinjaSingleInstance.TryActivateExisting(ProductInfo.SingleInstanceAppId, options, out probe);
+                if (probe == PcNinjaSingleInstanceOutcome.ActivatedExisting) return ExitOk;
+                if (probe == PcNinjaSingleInstanceOutcome.ExistingNotResponding) return ShowNotResponding();
+                // Redirect before acquiring the guard, including an already-elevated launch.
+                var launchExit = ChooseUniversalLaunch(portableChosen || restart);
+                if (launchExit.HasValue) return launchExit.Value;
+            }
+
             if (!IsAdministrator() && !ElevationSkippedForDevelopment())
             {
                 PcNinjaSingleInstanceOutcome probe;
                 PcNinjaSingleInstance.TryActivateExisting(ProductInfo.SingleInstanceAppId, options, out probe);
                 if (probe == PcNinjaSingleInstanceOutcome.ActivatedExisting) return ExitOk;
                 if (probe == PcNinjaSingleInstanceOutcome.ExistingNotResponding) return ShowNotResponding();
-                // Asked before elevation: installing runs the MSI, which asks for administrator rights itself.
-                if (!portableChosen && !AskInstallOrPortable()) return ExitOk;
                 if (TestOverridesSet())
                 {
                     // Windows does not pass this process's environment to the elevated copy, and
@@ -82,8 +103,6 @@ namespace WinTool.App
                 return RestartElevated(EmbeddedInstaller.IsPresent ? PortableChosenArgument : null);
             }
 
-            // A self-update restart (WaitForPid) is not a manual launch: it never asks.
-            var askHere = !portableChosen && string.IsNullOrEmpty(Environment.GetEnvironmentVariable(ViewModels.AppUpdateViewModel.WaitForPidVariable));
             WaitForReplacedCopy();
 
             PcNinjaSingleInstanceOutcome outcome;
@@ -96,8 +115,11 @@ namespace WinTool.App
                     return ExitOk;
                 }
 
-                // Started with administrator rights already: asked here, after a running window was activated instead.
-                if (askHere && !AskInstallOrPortable()) return ExitOk;
+                if (hasInstaller)
+                {
+                    var fresh = ReadLaunchFacts(true);
+                    if (UniversalLaunchPolicy.Decide(fresh.Facts) == UniversalLaunch.BlockOlder) return ShowOlderBlocked(fresh);
+                }
 
                 try { MachineDataTransition.Initialize(deferWhenBusy: true); }
                 catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is InvalidOperationException)
@@ -163,83 +185,123 @@ namespace WinTool.App
             !string.IsNullOrWhiteSpace(TestEnvironment.Get(WinTool.Core.Updates.AppUpdater.FeedVariable));
 
         /// <summary>Internal: the elevated restart after the user chose Run portable; not a command.</summary>
-        internal const string PortableChosenArgument = "--portable-chosen";
+        internal const string PortableChosenArgument = UniversalLaunchPolicy.InternalPortableArgument;
 
-        /// <summary>
-        /// D-026 (owner, after T-011): each manual launch of a downloaded universal EXE asks Install or
-        /// Run portable. Returns false when this process should end (the installer was started, or the
-        /// user closed the question). Never asked for the command line or an installed copy.
-        /// </summary>
-        private static bool AskInstallOrPortable()
+        /// <summary>Null continues this GUI; a value ends startup before migration/maintenance (D-039).</summary>
+        private static int? ChooseUniversalLaunch(bool portableIntent)
         {
-            if (!EmbeddedInstaller.IsPresent) return true;
-            var exe = Process.GetCurrentProcess().MainModule.FileName;
-            if (WinTool.Core.Security.ProtectedTaskCopy.IsManagedPath(exe) && WinTool.Core.Security.ProtectedMachineData.IsProtectedExecutable(exe)) return true;
-            if (WinTool.Core.Updates.InstalledCopy.IsInstalled(exe)) return true;
+            var observed = ReadLaunchFacts(portableIntent);
+            var decision = UniversalLaunchPolicy.Decide(observed.Facts);
+            AppLog.Current.Info("App", "Universal launch decision: " + decision + ".");
+            if (decision == UniversalLaunch.BlockOlder) return ShowOlderBlocked(observed);
 
-            // The installed copy itself (also outside Program Files) never asks.
-            var installed = FindInstalledCopy();
-            var choice = WinTool.Core.Updates.InstalledCopy.Decide(exe, installed?.Item1, installed?.Item2, WinTool.Core.Updates.AppVersion.Current.FileVersion);
-            if (choice == WinTool.Core.Updates.LaunchChoice.RunThis) return true;
-
+            var answer = LaunchAnswer.Cancel;
             var options = Loc.Instance.FlowDirection == FlowDirection.RightToLeft
-                ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
-                : MessageBoxOptions.None;
-            var answer = MessageBox.Show(Loc.Instance["Startup_InstallOrPortable"], ProductInfo.Name,
-                MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes, options);
-            if (answer == MessageBoxResult.Cancel) return false;
-            if (answer == MessageBoxResult.No)
+                ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign : MessageBoxOptions.None;
+            if (decision == UniversalLaunch.AskInstall || decision == UniversalLaunch.AskUpdate || decision == UniversalLaunch.AskUnprotected)
             {
-                AppLog.Current.Info("App", "Run portable chosen.");
-                return true;
+                var canUpdate = UniversalLaunchPolicy.CanInstall(observed.Facts);
+                var text = decision == UniversalLaunch.AskInstall ? Loc.Instance["Startup_InstallOrPortable"] :
+                    decision == UniversalLaunch.AskUpdate ? Loc.Instance.Format("Startup_UpdateInstalled", observed.Version, AppVersion.Current) :
+                    Loc.Instance.Format(canUpdate ? "Startup_UnprotectedUpdate" : "Startup_UnprotectedPortable", observed.Path);
+                var portableOnly = decision == UniversalLaunch.AskUnprotected && !canUpdate;
+                var result = MessageBox.Show(text, ProductInfo.Name,
+                    portableOnly ? MessageBoxButton.OKCancel : MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question, MessageBoxResult.Cancel, options);
+                answer = result == MessageBoxResult.Yes ? LaunchAnswer.Yes :
+                    result == MessageBoxResult.No || (portableOnly && result == MessageBoxResult.OK) ? LaunchAnswer.No : LaunchAnswer.Cancel;
             }
 
-            // Install chosen, but this version or a newer one is already installed: start it instead of
-            // reinstalling (owner, 2026-11-07). An older installed version is updated by the installer.
-            if (choice == WinTool.Core.Updates.LaunchChoice.RunInstalled)
+            var action = UniversalLaunchPolicy.Resolve(observed.Facts, answer);
+            if (action == LaunchAction.Stop) return ExitOk;
+            if (action == LaunchAction.RunCurrent)
+            {
+                // A dialog/marker is intent only. A registry/version change can still block this copy.
+                var fresh = ReadLaunchFacts(true);
+                if (UniversalLaunchPolicy.Decide(fresh.Facts) == UniversalLaunch.BlockOlder) return ShowOlderBlocked(fresh);
+                return null;
+            }
+            if (action == LaunchAction.OpenInstalled)
             {
                 try
                 {
-                    Process.Start(new ProcessStartInfo(installed.Item1) { UseShellExecute = true, WorkingDirectory = System.IO.Path.GetDirectoryName(installed.Item1) });
-                    AppLog.Current.Info("App", "Install chosen; WinTool " + installed.Item2 + " is already installed, started " + installed.Item1 + ".");
-                    return false;
+                    var fresh = ReadLaunchFacts(false);
+                    if (fresh.Path != observed.Path || fresh.Version?.FileVersion != observed.Version?.FileVersion ||
+                        !fresh.Facts.InstalledProtected || !ProtectedMachineData.IsProtectedExecutable(fresh.Path))
+                        throw new InvalidOperationException(Loc.Instance["Startup_InstalledChanged"]);
+                    var child = Process.Start(new ProcessStartInfo(fresh.Path)
+                    { UseShellExecute = true, WorkingDirectory = System.IO.Path.GetDirectoryName(fresh.Path) });
+                    if (child == null) throw new InvalidOperationException(Loc.Instance["Startup_NoProcess"]);
+                    child.Dispose();
+                    AppLog.Current.Info("App", "Started protected installed copy " + fresh.Path + ".");
+                    return ExitOk;
                 }
-                catch (Exception ex) when (ex is Win32Exception || ex is System.IO.IOException || ex is InvalidOperationException)
+                catch (Exception ex) when (ex is Win32Exception || ex is System.IO.IOException || ex is InvalidOperationException || ex is UnauthorizedAccessException || ex is ArgumentException || ex is System.Security.SecurityException)
                 {
-                    AppLog.Current.Warn("App", "Could not start the installed copy " + installed.Item1 + "; running the installer: " + ex.Message);
+                    AppLog.Current.Error("App", "Installed copy launch failed; no fallback.", ex);
+                    ShowMessage(Loc.Instance.Format("Startup_InstalledLaunchFailed", observed.Path, ex.Message), MessageBoxImage.Error);
+                    return ExitLaunchFailed;
                 }
             }
 
-            try
+            // Only explicit Install/Update consent reaches here; never downgrade after a changed lookup.
+            if (!UniversalLaunchPolicy.CanInstall(ReadLaunchFacts(false).Facts))
             {
-                EmbeddedInstaller.StartInstall();
+                ShowMessage(Loc.Instance["Startup_InstalledChanged"], MessageBoxImage.Warning);
+                return ExitLaunchFailed;
             }
-            catch (Exception ex) when (ex is System.IO.IOException || ex is System.IO.InvalidDataException || ex is InvalidOperationException || ex is Win32Exception || ex is UnauthorizedAccessException)
+            try { EmbeddedInstaller.StartInstall(); return ExitOk; }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is InvalidOperationException || ex is Win32Exception || ex is UnauthorizedAccessException)
             {
                 AppLog.Current.Error("App", "The embedded installer could not start.", ex);
                 ShowMessage(Loc.Instance.Format("Startup_InstallFailed", ex.Message), MessageBoxImage.Error);
+                return ExitLaunchFailed;
             }
-
-            return false;
         }
 
-        /// <summary>The installed WinTool (path and file version) from the MSI's InstallFolder value, or null.</summary>
-        private static Tuple<string, Version> FindInstalledCopy()
+        private sealed class LaunchObservation
         {
+            public UniversalLaunchFacts Facts;
+            public string Path;
+            public AppVersion Version;
+        }
+
+        private static LaunchObservation ReadLaunchFacts(bool portableIntent)
+        {
+            var exe = Process.GetCurrentProcess().MainModule.FileName;
+            var folder = InstalledCopy.ReadInstallFolder();
+            var result = new LaunchObservation { Facts = new UniversalLaunchFacts
+            {
+                HasInstaller = true, PortableIntent = portableIntent, CurrentVersion = AppVersion.Current.FileVersion,
+                IsInstalledSelf = InstalledCopy.IsInstalled(exe, folder),
+                IsProtectedWorker = ProtectedTaskCopy.IsManagedPath(exe) && ProtectedMachineData.IsProtectedExecutable(exe)
+            }};
             try
             {
-                var folder = InstallDefault("InstallFolder");
-                if (string.IsNullOrWhiteSpace(folder)) return null;
+                if (string.IsNullOrWhiteSpace(folder)) return result;
+                if (!System.IO.Path.IsPathRooted(folder)) throw new ArgumentException("Install folder is not absolute.");
                 var path = System.IO.Path.Combine(folder, ReleaseFiles.Executable);
-                if (!System.IO.File.Exists(path)) return null;
-                Version version;
-                return Version.TryParse(FileVersionInfo.GetVersionInfo(path).FileVersion, out version) ? Tuple.Create(path, version) : null;
+                var info = FileVersionInfo.GetVersionInfo(path);
+                AppVersion version;
+                if (!InstalledCopy.TryReadVersion(info.ProductVersion, info.FileVersion, out version))
+                    throw new InvalidOperationException("Installed version metadata is missing or inconsistent.");
+                result.Path = path;
+                result.Version = version;
+                result.Facts.InstalledVersion = version.FileVersion;
+                result.Facts.InstalledProtected = ProtectedMachineData.IsProtectedExecutable(path);
             }
-            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is ArgumentException)
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException || ex is ArgumentException || ex is NotSupportedException || ex is InvalidOperationException || ex is System.Security.SecurityException)
             {
-                AppLog.Current.Warn("App", "Could not check for an installed copy: " + ex.Message);
-                return null;
+                AppLog.Current.Warn("App", "Could not check registered installed copy: " + ex.Message);
             }
+            return result;
+        }
+
+        private static int ShowOlderBlocked(LaunchObservation observed)
+        {
+            AppLog.Current.Warn("App", "Older portable GUI blocked before machine initialization.");
+            ShowMessage(Loc.Instance.Format("Startup_OlderPortableBlocked", AppVersion.Current, observed.Version, observed.Path), MessageBoxImage.Warning);
+            return ExitLaunchFailed;
         }
 
         private static int RestartElevated(string argument)

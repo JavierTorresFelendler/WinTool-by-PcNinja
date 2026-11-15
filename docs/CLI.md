@@ -19,6 +19,32 @@ Start-Process .\WinTool-by-PcNinja.exe -ArgumentList 'update','run' -Wait -NoNew
 
 Scheduled tasks and the MSI always wait.
 
+## Universal EXE GUI launch (D-039, after 1.0.3)
+
+With an embedded MSI, a manual launch opens a protected registered installation
+of the same or a newer version without a question. An older protected install
+gets an Update question: Yes opens the installer, No opens that installed copy,
+Cancel closes. With no readable installation, Install / Run portable / Cancel
+remains available. Only explicit consent starts the installer.
+
+Use `WinTool-by-PcNinja.exe --portable` alone for deliberate portable GUI intent.
+The internal `--portable-chosen` marker and a self-update restart carry the same
+intent, never permission: each elevated child rediscovers the installation.
+A known newer installation blocks an older portable GUI before machine-data
+migration, task maintenance or the main window. Early logging and per-user UI
+settings reads still occur. CLI commands are outside this compatibility fence.
+An existing running window is activated first, including an older one.
+
+An unprotected installed file is never opened by the downloaded EXE. A newer
+download offers Update / Portable / Cancel; an equal download offers Portable
+/ Cancel; an older download shows the block and closes. No permissions are
+repaired and no install is relocated. A failed protected-copy launch shows its
+path and reason and exits 6, without falling back to an installer or Portable.
+The same code reports a blocked older GUI or a failed installer start.
+Mixing either portable marker with any other argument returns usage exit 2
+without a window. Plain EXEs without an embedded MSI retain their old launch
+behavior; the public `--portable` option is universal-only.
+
 ## Windows Update
 
 | Command | Admin | What it does |
